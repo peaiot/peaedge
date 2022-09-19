@@ -1,0 +1,15 @@
+.idea
+__pycache__
+.vscode
+/resources/*.xlsx
+/release/
+release
+__debug_bin
+dist/
+.DS_Store
+assets/build.txt
+assets/buildver.txt
+
+peaedge.db
+peaedge.yml
+log_info.log
