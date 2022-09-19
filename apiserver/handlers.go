@@ -23,7 +23,7 @@ import (
 )
 
 func (s *ApiServer) initRouter() {
-	s.root.Add(http.MethodGet, "/freeradius/authorize", s.Status)
+	s.root.Add(http.MethodGet, "/status", s.Status)
 }
 
 func (s *ApiServer) Status(c echo.Context) error {
