@@ -1,3 +1,2 @@
-id,name,proto_type,mbrtu_addr,mbtcp_addr,mbtcp_port,mbslave_id,baud_rate,pkt_delay,remark
-3,4206,modbusrtu,COM1,N/A,0,1,9600,100,N/A
-4,色谱,modbustcp,N/A,127.0.0.1,1502,2,0,100,N/A
+id,name,mn,proto_type,mbrtu_addr,mbtcp_addr,mbtcp_port,mbslave_id,baud_rate,pkt_delay,remark
+1,测试,MN20220101,modbustcp,N/A,127.0.0.1,1502,2,0,100,测试设备

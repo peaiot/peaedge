@@ -21,6 +21,9 @@ type ApiServer struct {
 }
 
 func Listen() error {
+	if !app.IsInit() {
+		return fmt.Errorf("app not init")
+	}
 	server = NewApiServer()
 	server.initRouter()
 	return server.Start()
@@ -51,15 +54,15 @@ func NewApiServer() *ApiServer {
 	p := prometheus.NewPrometheus("peaedge", nil)
 	p.Use(s.root)
 	s.root.HideBanner = true
-	s.root.Logger.SetLevel(common.If(app.Config.Web.Debug, elog.DEBUG, elog.INFO).(elog.Lvl))
-	s.root.Debug = app.Config.Web.Debug
+	s.root.Logger.SetLevel(common.If(app.Config().Web.Debug, elog.DEBUG, elog.INFO).(elog.Lvl))
+	s.root.Debug = app.Config().Web.Debug
 	return s
 }
 
 // Start 启动服务器
 func (s *ApiServer) Start() error {
-	log.Infof("启动 API 服务器 %s:%d", app.Config.Web.Host, app.Config.Web.Port)
-	err := s.root.Start(fmt.Sprintf("%s:%d", app.Config.Web.Host, app.Config.Web.Port))
+	log.Infof("启动 API 服务器 %s:%d", app.Config().Web.Host, app.Config().Web.Port)
+	err := s.root.Start(fmt.Sprintf("%s:%d", app.Config().Web.Host, app.Config().Web.Port))
 	if err != nil {
 		log.Errorf("启动 API 服务器错误 %s", err.Error())
 	}

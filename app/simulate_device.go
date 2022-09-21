@@ -27,15 +27,15 @@ func (s SimulateDevice) getModbusReg(startAddr uint16) (re *models.ModbusReg, er
 	var dev models.ModbusDevice
 	switch s.Proto {
 	case "modbusrtu":
-		err = DB.Where("proto_type = ? and mbrtu_addr = ? and mbslave_id = ?", s.Proto, s.Addr, s.SlaveId).First(&dev).Error
+		err = gormDB.Where("proto_type = ? and mbrtu_addr = ? and mbslave_id = ?", s.Proto, s.Addr, s.SlaveId).First(&dev).Error
 	case "modbustcp":
-		err = DB.Where("proto_type = ? and mbtcp_addr = ? and mbtcp_port = ? and mbslave_id = ?", s.Proto, s.Addr, s.SlaveId).First(&dev).Error
+		err = gormDB.Where("proto_type = ? and mbtcp_addr = ? and mbtcp_port = ? and mbslave_id = ?", s.Proto, s.Addr, s.SlaveId).First(&dev).Error
 	}
 	if err != nil {
 		return nil, err
 	}
 	var reg models.ModbusReg
-	err = DB.Where("device_id = ? and start_addr = ?", dev.Id, startAddr).First(&reg).Error
+	err = gormDB.Where("device_id = ? and start_addr = ?", dev.Id, startAddr).First(&reg).Error
 	return &reg, err
 }
 

@@ -11,6 +11,7 @@ require (
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/goburrow/modbus v0.1.0
 	github.com/goburrow/serial v0.1.0
+	github.com/gocarina/gocsv v0.0.0-20220914091333-ceebdd90b590 // indirect
 	github.com/golang-jwt/jwt/v4 v4.4.2
 	github.com/json-iterator/go v1.1.12
 	github.com/labstack/echo-contrib v0.13.0

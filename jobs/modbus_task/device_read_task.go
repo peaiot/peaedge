@@ -24,11 +24,16 @@ const (
 )
 
 func StartModbusReadTask() {
+	defer func() {
+		if err := recover(); err != nil {
+			log.Error(err)
+		}
+	}()
 	app.ResetModbusDevConnStatus()
 	var limitPool = golimit.NewGoLimitPool()
 	for {
 		var devices = make([]models.ModbusDevice, 0)
-		err := app.DB.Find(&devices).Error
+		err := app.DB().Find(&devices).Error
 		if err != nil {
 			emsg := fmt.Sprintf("读取设备列表失败... %s", err.Error())
 			log.Errorf(emsg)
@@ -72,7 +77,7 @@ func ReadModbusRtuRegData(dev models.ModbusDevice) {
 		}
 	}()
 	var modbusregs []models.ModbusReg
-	err := app.DB.Where("device_id = ?", dev.Id).Find(&modbusregs).Error
+	err := app.DB().Where("device_id = ?", dev.Id).Find(&modbusregs).Error
 	if err != nil || modbusregs == nil || len(modbusregs) == 0 {
 		// log.Errorf("读取设备[%s]寄存器列表失败或无寄存器... %s", dev.Name, err)
 		time.Sleep(time.Millisecond * 1000)
@@ -94,7 +99,7 @@ func ReadModbusRtuRegData(dev models.ModbusDevice) {
 			continue
 		}
 
-		if app.Debug() {
+		if app.IsDebug() {
 			log.Debugf("正在读取设备 [%s]-[%s] 数据 ", dev.Name, reg.Name)
 		}
 
@@ -124,7 +129,7 @@ func ReadModbusTcpRegData(dev models.ModbusDevice) {
 	}()
 
 	var modbusregs []models.ModbusReg
-	err := app.DB.Where("device_id = ?", dev.Id).Find(&modbusregs).Error
+	err := app.DB().Where("device_id = ?", dev.Id).Find(&modbusregs).Error
 	if err != nil || modbusregs == nil || len(modbusregs) == 0 {
 		// log.Errorf("读取设备[%s]寄存器列表失败或无寄存器... %s", dev.Name, err)
 		time.Sleep(time.Millisecond * 1000)
@@ -187,7 +192,7 @@ func _readCoilData(dev models.ModbusDevice, reg models.ModbusReg, client modbus.
 		app.SaveModbusRegRtd(reg.Id, "N/A", err.Error())
 		return
 	}
-	if app.Debug() {
+	if app.IsDebug() {
 		log.Infof("读取到设备[%s]寄存器[%s]原始值 %d", dev.Name, reg.Name, val)
 	}
 
@@ -233,7 +238,7 @@ func _read0304RegisterData(dev models.ModbusDevice, reg models.ModbusReg, client
 		}
 	}()
 	var regvar models.ModbusVar
-	err := app.DB.Where("id = ?", reg.VarId).First(&regvar).Error
+	err := app.DB().Where("id = ?", reg.VarId).First(&regvar).Error
 	if err != nil {
 		log.Errorf("计算设备[%s]寄存器[%s]值失败, 未绑定变量", dev.Name, reg.Name)
 		app.SaveModbusRegRtd(reg.Id, "N/A", err.Error())
@@ -283,7 +288,7 @@ func _read0304RegisterData(dev models.ModbusDevice, reg models.ModbusReg, client
 		return
 	}
 
-	if app.Debug() {
+	if app.IsDebug() {
 		log.Debugf("读取到设备[%s]寄存器[%s]原始值 %v", dev.Name, reg.Name, dataval)
 	}
 
@@ -297,7 +302,7 @@ func _read0304RegisterData(dev models.ModbusDevice, reg models.ModbusReg, client
 			log.Errorf("计算设备[%s]寄存器[%s]值失败, 模拟量计算错误, 请检查参数, %v", dev.Name, reg.Name, err.Error())
 			app.SaveModbusRegRtd(reg.Id, "N/A", err.Error())
 		}
-		if app.Debug() {
+		if app.IsDebug() {
 			log.Infof("计算设备[%s]寄存器[%s]结果值 DoComputeDxyResult %s", dev.Name, reg.Name, result)
 		}
 	} else if reg.MaxSpval > 0 && reg.MaxSpval > reg.MinSpval {
@@ -307,7 +312,7 @@ func _read0304RegisterData(dev models.ModbusDevice, reg models.ModbusReg, client
 			log.Errorf("计算设备[%s]寄存器[%s]值失败, 模拟量计算错误, 请检查参数, %s", dev.Name, reg.Name, err.Error())
 			app.SaveModbusRegRtd(reg.Id, "N/A", err.Error())
 		}
-		if app.Debug() {
+		if app.IsDebug() {
 			log.Debugf("计算设备[%s]寄存器[%s]结果值 DoComputeResult %s", dev.Name, reg.Name, result)
 		}
 	}

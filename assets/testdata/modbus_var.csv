@@ -1,29 +1,6 @@
-id,name,data_type,unit,init_val,min_val,max_val,min_aval,max_aval,dx_val,dy_val,save_delay,decimals,sign,jscript,h212_attr,h212_rtd_status,remark
-1282940224061902848,温度,Analog,度,0,0,300,N/A,N/A,N/A,N/A,60,2,0,N/A,a01012,enabled,N/A
-1283236660062261248,氧量,Analog,%,0,0,30,N/A,N/A,1,0,30,2,0,N/A,a19001,enabled,N/A
-1283263221800964096,I0.O,Digital,N/A,0,0,65535,N/A,N/A,1,0,30,0,0,N/A,N/A,disabled,N/A
-1283930596376383488,I0.1,Digital,N/A,0,0,65535,N/A,N/A,1,0,30,0,0,N/A,N/A,disabled,N/A
-1283930663074205696,I0.2,Digital,N/A,0,0,65535,N/A,N/A,1,0,30,0,0,N/A,N/A,disabled,N/A
-1283930704539095040,I0.3,Digital,N/A,0,0,65535,N/A,N/A,1,0,30,0,0,N/A,N/A,disabled,N/A
-1283930806351630336,I0.4,Digital,N/A,0,0,65535,N/A,N/A,1,0,30,0,0,N/A,N/A,disabled,N/A
-1283931511770648576,I0.5,Digital,N/A,0,0,65535,N/A,N/A,1,0,30,0,0,N/A,N/A,disabled,N/A
-1283931653626204160,I0.6,Digital,N/A,0,0,65535,N/A,N/A,1,0,30,0,0,N/A,N/A,disabled,N/A
-1283931719732629504,I0.7,Digital,N/A,0,0,65535,N/A,N/A,1,0,30,0,0,N/A,N/A,disabled,N/A
-1283931858182410240,I1.0,Digital,N/A,0,0,65535,N/A,N/A,1,0,30,0,0,N/A,N/A,disabled,N/A
-1283931935114334208,I1.1,Digital,N/A,0,0,65535,N/A,N/A,1,0,30,0,0,N/A,N/A,disabled,N/A
-1283934351545143296,Q0.1,Digital,N/A,0,0,65535,N/A,N/A,1,0,30,0,0,N/A,N/A,disabled,N/A
-1289491225648631808,压力,Analog,PA,0,-10000,10000,N/A,N/A,N/A,N/A,60,2,0,N/A,a01013,enabled,N/A
-1289491241968668672,流速,Analog,M/S,0,0,30,N/A,N/A,N/A,N/A,60,2,0,N/A,a01011,enabled,N/A
-1289491244720132096,湿度,Analog,%,0,0,40,N/A,N/A,N/A,N/A,60,2,0,N/A,a01014,enabled,N/A
-1289491247358349312,温度2,Analog,度,0,0,300,N/A,N/A,N/A,N/A,60,2,0,N/A,N/A,disabled,N/A
+id,name,data_type,unit,init_val,min_val,max_val,min_aval,max_aval,dx_val,dy_val,save_delay,decimals,sign,jscript,hj212_attr,hj212_rtd_status,remark
 1289491627160965120,总烃,Analog,mg/m3,0,0,10000,N/A,N/A,1,0,60,2,1,N/A,a24087,enabled,N/A
 1289491653526360064,甲烷,Analog,mg/m3,0,0,10000,N/A,N/A,1,0,60,2,1,N/A,a05002,enabled,N/A
 1289491748200189952,苯,Analog,mg/m3,0,0,200,N/A,N/A,1,0,60,2,1,N/A,a25002,enabled,N/A
 1289491754965602304,甲苯,Analog,mg/m3,0,0,200,N/A,N/A,1,0,60,2,1,N/A,a25003,enabled,N/A
 1289492024252502016,二甲苯,Analog,mg/m3,0,0,200,N/A,N/A,1,0,60,2,1,N/A,a25005,enabled,N/A
-1293423842395754496,非甲烷总烃,Analog,mg/m3,N/A,N/A,N/A,N/A,N/A,N/A,N/A,60,0,100,"return Number(regs[""总烃""].data) - Number(regs[""甲烷""].data);",a24088,enabled,N/A
-1293458723649687552,苯系物,Analog,mg/m3,N/A,N/A,N/A,N/A,N/A,N/A,N/A,0,0,1,"return Number(regs[""苯""].data) + Number(regs[""甲苯""].data) +Number(regs[""二甲苯""].data) ;",N/A,disabled,N/A
-1293785111346876416,半径,Analog,米,0.4,N/A,N/A,N/A,N/A,1,0,0,2,1,N/A,N/A,enabled,N/A
-1293796644223258624,小时流量,Analog,m3/h,N/A,N/A,N/A,N/A,N/A,N/A,N/A,0,0,1,"return Number(regs[""流速""].data)*Number(vars[""半径""].init_val)*Number(vars[""半径""].init_val) * 3.14 * 3600 ;",N/A,disabled,N/A
-1304239850966552576,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,0,0,0,N/A,N/A,disabled,N/A
-1305390259936497664,流速2,Analog,m/s,0,-10000,10000,N/A,N/A,1,0,60,2,0,N/A,N/A,disabled,N/A

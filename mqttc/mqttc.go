@@ -14,6 +14,9 @@ import (
 var daemon *MqttDaemon
 
 func StartDaemon() error {
+	if !app.IsInit() {
+		return fmt.Errorf("app not init")
+	}
 	daemon = newMqttDaemon()
 	return daemon.Start()
 }
@@ -32,7 +35,7 @@ type InitializeMsg struct {
 func newMqttDaemon() *MqttDaemon {
 	d := &MqttDaemon{}
 	d.ClientId = sysid.GetSystemSid()
-	d.BrokerSerer = app.Config.Mqtt.Broker
+	d.BrokerSerer = app.Config().Mqtt.Broker
 	return d
 }
 
@@ -59,8 +62,8 @@ func (d MqttDaemon) Start() error {
 	opts := mqtt.NewClientOptions().
 		AddBroker(d.BrokerSerer).
 		SetClientID(d.ClientId).
-		SetUsername(app.Config.Mqtt.Username).
-		SetPassword(app.Config.Mqtt.Password)
+		SetUsername(app.Config().Mqtt.Username).
+		SetPassword(app.Config().Mqtt.Password)
 	opts.SetKeepAlive(30 * time.Second)
 	opts.SetPingTimeout(1 * time.Second)
 	opts.ConnectRetry = true

@@ -35,10 +35,15 @@ type MqttConfig struct {
 	Debug    bool   `yaml:"debug"`
 }
 
+type DataConfig struct {
+	RtdSave string `yaml:"rtd_save"`
+}
+
 type AppConfig struct {
 	System SysConfig  `yaml:"system"`
 	Mqtt   MqttConfig `yaml:"mqtt"`
 	Web    WebConfig  `yaml:"web"`
+	Data   DataConfig `yaml:"data"`
 }
 
 func (c *AppConfig) GetLogDir() string {
@@ -128,6 +133,9 @@ var DefaultBssConfig = &AppConfig{
 		Host:      "0.0.0.0",
 		Port:      1850,
 		JwtSecret: "9b6de5cc-0731-edge-peax-0f568ac9da37",
+	},
+	Data: DataConfig{
+		RtdSave: "60s",
 	},
 }
 

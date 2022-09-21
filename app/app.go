@@ -19,24 +19,27 @@ import (
 )
 
 var (
-	Config *config.AppConfig
-	DB     *gorm.DB
-	// Cache  *freecache.Cache
+	appConfig *config.AppConfig
+	gormDB    *gorm.DB
+	isInit    bool
+	// cache  *freecache.Cache
 )
 
 // Init Global initialization call
 func Init(cfg *config.AppConfig) {
-	Config = cfg
+	appConfig = cfg
 	setupTimeZone()
 	setupLogger()
 	// Cache = freecache.NewCache(32 * 1024 * 1024)
 	var err error
-	DB, err = getGormDB()
+	gormDB, err = getGormDB()
 	common.Must(err)
+	isInit = true
 	log.Infof("app init done")
 }
+
 func setupTimeZone() {
-	tz := Config.System.Location
+	tz := appConfig.System.Location
 	if tz == "" {
 		tz = "Asia/Shanghai"
 	}
@@ -51,14 +54,14 @@ func setupTimeZone() {
 // Initialization log
 func setupLogger() {
 	level := logging.INFO
-	if Config.System.Debug {
+	if appConfig.System.Debug {
 		level = logging.DEBUG
 	}
-	log.SetupLog(level, Config.System.SyslogAddr, Config.GetLogDir(), Config.System.Appid)
+	log.SetupLog(level, appConfig.System.SyslogAddr, appConfig.GetLogDir(), appConfig.System.Appid)
 }
 
 func getGormDB() (*gorm.DB, error) {
-	pool, err := gorm.Open(sqlite.Open(Config.System.DBFile), &gorm.Config{
+	pool, err := gorm.Open(sqlite.Open(appConfig.System.DBFile), &gorm.Config{
 		DisableForeignKeyConstraintWhenMigrating: true,
 		SkipDefaultTransaction:                   true,
 		PrepareStmt:                              true,
@@ -69,7 +72,7 @@ func getGormDB() (*gorm.DB, error) {
 			slog.New(log.Stdlog{}, "\r\n", slog.LstdFlags), // io writer
 			logger.Config{
 				SlowThreshold: time.Second, // Slow SQL threshold
-				// LogLevel:                  common.If(Config.System.Debug, logger.Info, logger.Silent).(logger.LogLevel), // Log level
+				// LogLevel:                  common.If(Config.System.IsDebug, logger.Info, logger.Silent).(logger.LogLevel), // Log level
 				LogLevel:                  logger.Silent, // Log level
 				IgnoreRecordNotFoundError: true,          // Ignore ErrRecordNotFound error for logger
 				Colorful:                  true,          // Disable color
@@ -85,8 +88,8 @@ func getGormDB() (*gorm.DB, error) {
 }
 
 func OnExit() {
-	if DB != nil {
-		sdb, _ := DB.DB()
+	if gormDB != nil {
+		sdb, _ := gormDB.DB()
 		_ = sdb.Close()
 	}
 }
@@ -104,18 +107,29 @@ func Migrate(track bool) (err error) {
 		}
 	}()
 	if track {
-		_ = DB.Debug().Migrator().AutoMigrate(models.Tables...)
+		_ = gormDB.Debug().Migrator().AutoMigrate(models.Tables...)
 	} else {
-		_ = DB.Migrator().AutoMigrate(models.Tables...)
+		_ = gormDB.Migrator().AutoMigrate(models.Tables...)
 	}
 	return nil
 }
 
 func Initdb() {
-	_ = DB.Migrator().DropTable(models.Tables...)
-	_ = DB.Migrator().AutoMigrate(models.Tables...)
+	_ = gormDB.Migrator().DropTable(models.Tables...)
+	_ = gormDB.Migrator().AutoMigrate(models.Tables...)
 }
 
-func Debug() bool {
-	return Config.System.Debug
+func Config() *config.AppConfig {
+	return appConfig
+}
+func DB() *gorm.DB {
+	return gormDB
+}
+
+func IsDebug() bool {
+	return appConfig.System.Debug
+}
+
+func IsInit() bool {
+	return isInit
 }

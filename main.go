@@ -105,7 +105,7 @@ func main() {
 	// 根据依赖关系按顺序进行初始化
 	// 1-应用全局初始化
 	app.Init(_config)
-	app.Migrate(_config.System.Debug)
+	_ = app.Migrate(_config.System.Debug)
 	// 2-任务调度初始化
 	jobs.Init()
 	defer app.OnExit()

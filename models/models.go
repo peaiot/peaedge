@@ -68,26 +68,26 @@ type ModbusReg struct {
 
 // ModbusVar 变量定义
 type ModbusVar struct {
-	Id            string    `json:"id" csv:"id"`
-	Name          string    `json:"name" csv:"name"`
-	DataType      string    `json:"data_type" csv:"data_type"`
-	Unit          string    `json:"unit" csv:"unit"`
-	InitVal       string    `json:"init_val" csv:"init_val"`
-	MinVal        string    `json:"min_val" csv:"min_val"`
-	MaxVal        string    `json:"max_val" csv:"max_val"`
-	MinAval       string    `json:"min_aval" csv:"min_aval"`
-	MaxAval       string    `json:"max_aval" csv:"max_aval"`
-	DxVal         string    `json:"dx_val" csv:"dx_val"`
-	DyVal         string    `json:"dy_val" csv:"dy_val"`
-	SaveDelay     int       `json:"save_delay" csv:"save_delay"`
-	Decimals      int       `json:"decimals" csv:"decimals"`
-	Sign          int       `json:"sign" csv:"sign"`
-	Jscript       string    `json:"jscript" csv:"jscript"`
-	H212Attr      string    `json:"h212_attr" csv:"h_212_attr"`
-	H212RtdStatus string    `json:"h212_rtd_status" csv:"h_212_rtd_status"`
-	Remark        string    `json:"remark" csv:"remark"`
-	CreatedAt     time.Time `json:"created_at"`
-	UpdatedAt     time.Time `json:"updated_at"`
+	Id             string    `json:"id" csv:"id"`
+	Name           string    `json:"name" csv:"name"`
+	DataType       string    `json:"data_type" csv:"data_type"`
+	Unit           string    `json:"unit" csv:"unit"`
+	InitVal        string    `json:"init_val" csv:"init_val"`
+	MinVal         string    `json:"min_val" csv:"min_val"`
+	MaxVal         string    `json:"max_val" csv:"max_val"`
+	MinAval        string    `json:"min_aval" csv:"min_aval"`
+	MaxAval        string    `json:"max_aval" csv:"max_aval"`
+	DxVal          string    `json:"dx_val" csv:"dx_val"`
+	DyVal          string    `json:"dy_val" csv:"dy_val"`
+	SaveDelay      int       `json:"save_delay" csv:"save_delay"`
+	Decimals       int       `json:"decimals" csv:"decimals"`
+	Sign           int       `json:"sign" csv:"sign"`
+	Jscript        string    `json:"jscript" csv:"jscript"`
+	Hj212Attr      string    `json:"hj212_attr" csv:"hj212_attr"`
+	Hj212RtdStatus string    `json:"hj212_rtd_status" csv:"hj212_rtd_status"`
+	Remark         string    `json:"remark" csv:"remark"`
+	CreatedAt      time.Time `json:"created_at"`
+	UpdatedAt      time.Time `json:"updated_at"`
 }
 
 // Hj212Queue 212消息队列
@@ -126,10 +126,10 @@ type IotDevice struct {
 
 // DeviceRtdData 设备实时数据
 type DeviceRtdData struct {
-	ID        string    `gorm:"primaryKey" json:"id"`
+	ID        string    `json:"id"`
 	MN        string    `json:"mn"`
 	Name      string    `json:"name"`
-	Value     float64   `json:"value"`
+	Value     string    `json:"value"`
 	CreatedAt time.Time `json:"created_at"`
 }
 

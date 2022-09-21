@@ -25,7 +25,7 @@ func NewModbusRTUClient(rtuaddr string, baudRate int, pktDelay int, slaveId int)
 	handler.StopBits = 1
 	handler.IdleTimeout = time.Second * 5
 	handler.Timeout = 1000 * time.Millisecond
-	if Debug() {
+	if IsDebug() {
 		handler.Logger = slog.New(log.Stdlog{}, "Modbus-RTU", 0)
 	}
 	err := handler.Connect()
@@ -45,7 +45,7 @@ func GetModbusTCPClient(devaddr string, port int, slaveid int) (modbus.Client, e
 	handler.SlaveId = byte(slaveid)
 	handler.Timeout = 1000 * time.Millisecond
 	handler.IdleTimeout = time.Second * 10
-	if Debug() {
+	if IsDebug() {
 		handler.Logger = slog.New(log.Stdlog{}, "Modbus-TCP", 0)
 	}
 	err := handler.Connect()
