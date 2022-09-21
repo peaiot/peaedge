@@ -19,7 +19,7 @@ type ClientHandler interface {
 type client struct {
 	packager    Packager
 	transporter Transporter
-	lock *sync.Mutex
+	lock        *sync.Mutex
 }
 
 // NewClient creates a new modbus client with given backend handler.
@@ -29,7 +29,7 @@ func NewClient(handler ClientHandler) Client {
 
 // NewClient2 creates a new modbus client with given backend packager and transporter.
 func NewClient2(packager Packager, transporter Transporter, locak *sync.Mutex) Client {
-	return &client{packager: packager, transporter: transporter, lock:locak}
+	return &client{packager: packager, transporter: transporter, lock: locak}
 }
 
 func (mb *client) Connect() error {
@@ -40,6 +40,19 @@ func (mb *client) Connect() error {
 		return mb.transporter.(*RTUClientHandler).Connect()
 	case *TCPClientHandler:
 		return mb.transporter.(*TCPClientHandler).Connect()
+	default:
+		return nil
+	}
+}
+
+func (mb *client) Close() error {
+	switch mb.transporter.(type) {
+	case *RTUClientTransport:
+		return mb.transporter.(*RTUClientTransport).Close()
+	case *RTUClientHandler:
+		return mb.transporter.(*RTUClientHandler).Close()
+	case *TCPClientHandler:
+		return mb.transporter.(*TCPClientHandler).Close()
 	default:
 		return nil
 	}

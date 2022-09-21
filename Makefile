@@ -43,8 +43,9 @@ build:
 
 build-linux:
 	go generate
-	buildpre
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -ldflags \
+	make buildpre
+	CC=x86_64-linux-musl-gcc CXX=x86_64-linux-musl-g++ \
+	CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -a -ldflags \
 	'\
 	-X "main.BuildVersion=${BUILD_VERSION}"\
 	-X "main.ReleaseVersion=${RELEASE_VERSION}"\
@@ -54,7 +55,7 @@ build-linux:
 	-X "main.CommitDate=${COMMIT_DATE}"\
 	-X "main.CommitUser=${COMMIT_USER}"\
 	-X "main.CommitSubject=${COMMIT_SUBJECT}"\
-	-s -w -extldflags "-static"\
+	-s -w -extldflags "-static" -linkmode "external" \
 	' \
     -o ${RELEASE_DIR}/${BUILD_NAME} ${SOURCE}
 

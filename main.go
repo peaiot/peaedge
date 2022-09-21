@@ -16,8 +16,8 @@ import (
 	"github.com/toughstruct/peaedge/common/installer"
 	"github.com/toughstruct/peaedge/common/log"
 	"github.com/toughstruct/peaedge/config"
+	"github.com/toughstruct/peaedge/jobs"
 	"github.com/toughstruct/peaedge/mqttc"
-	"github.com/toughstruct/peaedge/scheduler"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -107,7 +107,7 @@ func main() {
 	app.Init(_config)
 	app.Migrate(_config.System.Debug)
 	// 2-任务调度初始化
-	scheduler.Init()
+	jobs.Init()
 	defer app.OnExit()
 
 	g.Go(func() error {

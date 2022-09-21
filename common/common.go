@@ -328,15 +328,6 @@ func Base642file(b64str string, file string) error {
 	return ioutil.WriteFile(file, data, 777)
 }
 
-func GetCaptchaFont(dir string) string {
-	var fpath = path.Join(dir, "comic.ttf")
-	if !FileExists(fpath) {
-		MakeDir(dir)
-		_ = Base642file(Fontb64, fpath)
-	}
-	return fpath
-}
-
 func parseWithLocation(name string, timeStr string) (time.Time, error) {
 	locationName := name
 	if l, err := time.LoadLocation(locationName); err != nil {

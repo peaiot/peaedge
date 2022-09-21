@@ -9,7 +9,7 @@ dist/
 .DS_Store
 assets/build.txt
 assets/buildver.txt
-
+peapub
 peaedge.db
 peaedge.yml
 log_info.log

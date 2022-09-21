@@ -4,8 +4,8 @@ import (
 	"embed"
 )
 
-//go:embed resources
-var Resources embed.FS
+//go:embed testdata
+var TestData embed.FS
 
 //go:embed build.txt
 var BuildInfo string

@@ -1,4 +1,4 @@
-package scheduler
+package jobs
 
 import (
 	"sync"
@@ -8,6 +8,7 @@ import (
 	_ "github.com/robfig/cron/v3"
 	"github.com/toughstruct/peaedge/app"
 	"github.com/toughstruct/peaedge/common/timeutil"
+	"github.com/toughstruct/peaedge/jobs/modbus_task"
 )
 
 // 计划任务管理
@@ -36,6 +37,7 @@ func addNamedJob(name string, ljob *namedJob) {
 // Init 初始化任务计划
 func Init() {
 	loc, _ := time.LoadLocation(app.Config.System.Location)
+	go modbus_task.StartModbusReadTask()
 	Sched = cron.New(cron.WithLocation(loc))
 	Sched.Start()
 }
