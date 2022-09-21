@@ -5,15 +5,13 @@ go 1.16
 require (
 	github.com/360EntSecGroup-Skylar/excelize v1.4.1
 	github.com/bwmarrin/snowflake v0.3.0
-	github.com/coocood/freecache v1.2.2
 	github.com/denisbrodbeck/machineid v1.0.1
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/dpapathanasiou/go-modbus v0.0.0-20200626124227-44739634e73d
 	github.com/eclipse/paho.mqtt.golang v1.4.1
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/goburrow/modbus v0.1.0
 	github.com/goburrow/serial v0.1.0
-	github.com/gocarina/gocsv v0.0.0-20220914091333-ceebdd90b590 // indirect
+	github.com/golang-jwt/jwt/v4 v4.4.2
 	github.com/json-iterator/go v1.1.12
 	github.com/labstack/echo-contrib v0.13.0
 	github.com/labstack/echo/v4 v4.7.2
