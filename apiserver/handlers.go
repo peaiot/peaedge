@@ -24,8 +24,18 @@ import (
 
 func (s *ApiServer) initRouter() {
 	s.root.Add(http.MethodGet, "/status", s.Status)
+	s.root.Add(http.MethodGet, "/", s.Welcome)
 }
 
 func (s *ApiServer) Status(c echo.Context) error {
+	return c.JSON(http.StatusOK, map[string]string{
+		"status": "ok",
+	})
+	return nil
+}
+func (s *ApiServer) Welcome(c echo.Context) error {
+	return c.JSON(http.StatusOK, map[string]string{
+		"message": "Welcome to PeaEdge",
+	})
 	return nil
 }
