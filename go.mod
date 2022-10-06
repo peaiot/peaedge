@@ -16,7 +16,7 @@ require (
 	github.com/goplus/igop v0.9.2
 	github.com/json-iterator/go v1.1.12
 	github.com/labstack/echo-contrib v0.13.0
-	github.com/labstack/echo/v4 v4.7.2
+	github.com/labstack/echo/v4 v4.9.0
 	github.com/labstack/gommon v0.3.1
 	github.com/mitchellh/mapstructure v1.4.1
 	github.com/montanaflynn/stats v0.6.6
@@ -31,7 +31,6 @@ require (
 	github.com/talkincode/gocron v1.6.3
 	github.com/tarm/goserial v0.0.0-20151007205400-b3440c3c6355 // indirect
 	github.com/tbrandon/mbserver v0.0.0-20211210035124-daf3c8c4269f
-	github.com/yuin/gopher-lua v0.0.0-20220504180219-658193537a64
 	golang.org/x/exp v0.0.0-20200331195152-e8c3332aa8e5 // indirect
 	golang.org/x/image v0.0.0-20220722155232-062f8c9fd539
 	golang.org/x/sync v0.0.0-20220722155255-886fb9371eb4
