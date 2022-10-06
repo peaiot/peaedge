@@ -18,7 +18,9 @@ package common
 
 import (
 	"fmt"
+	"math"
 	"net/url"
+	"strconv"
 	"testing"
 )
 
@@ -86,4 +88,8 @@ func TestUUID(t *testing.T) {
 func TestFormatTimeDuration(t *testing.T) {
 	t.Log(FormatTimeDuration(8640046))
 	t.Log("")
+	t.Log(strconv.FormatFloat(math.NaN(), 'f', -1, 64))
+	f, err := strconv.ParseFloat("NaN", 64)
+	t.Log(err)
+	t.Log(f)
 }

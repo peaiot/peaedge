@@ -14,13 +14,13 @@ func main() {
 	app.Initdb()
 	devs, err := readModbusDevice()
 	common.Must(err)
-	app.DB.Create(&devs)
+	app.DB().Create(&devs)
 	vars, err := readModbusVar()
 	common.Must(err)
-	app.DB.Create(&vars)
+	app.DB().Create(&vars)
 	regs, err := readModbusReg()
 	common.Must(err)
-	app.DB.Create(&regs)
+	app.DB().Create(&regs)
 }
 
 func readModbusDevice() (data []*models.ModbusDevice, err error) {

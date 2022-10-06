@@ -1,4 +1,4 @@
-id,name,data_type,unit,init_val,min_val,max_val,min_aval,max_aval,dx_val,dy_val,save_delay,decimals,sign,jscript,hj212_attr,hj212_rtd_status,remark
+id,name,data_type,unit,init_val,min_val,max_val,min_aval,max_aval,dx_val,dy_val,save_delay,decimals,sign,jscript,hj212_factor,hj212_send,remark
 1289491627160965120,总烃,Analog,mg/m3,0,0,10000,N/A,N/A,1,0,60,2,1,N/A,a24087,enabled,N/A
 1289491653526360064,甲烷,Analog,mg/m3,0,0,10000,N/A,N/A,1,0,60,2,1,N/A,a05002,enabled,N/A
 1289491748200189952,苯,Analog,mg/m3,0,0,200,N/A,N/A,1,0,60,2,1,N/A,a25002,enabled,N/A

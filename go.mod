@@ -8,11 +8,12 @@ require (
 	github.com/denisbrodbeck/machineid v1.0.1
 	github.com/dpapathanasiou/go-modbus v0.0.0-20200626124227-44739634e73d
 	github.com/eclipse/paho.mqtt.golang v1.4.1
+	github.com/go-gota/gota v0.12.0
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/goburrow/modbus v0.1.0
 	github.com/goburrow/serial v0.1.0
-	github.com/gocarina/gocsv v0.0.0-20220914091333-ceebdd90b590 // indirect
 	github.com/golang-jwt/jwt/v4 v4.4.2
+	github.com/goplus/igop v0.9.2
 	github.com/json-iterator/go v1.1.12
 	github.com/labstack/echo-contrib v0.13.0
 	github.com/labstack/echo/v4 v4.7.2
@@ -30,8 +31,10 @@ require (
 	github.com/talkincode/gocron v1.6.3
 	github.com/tarm/goserial v0.0.0-20151007205400-b3440c3c6355 // indirect
 	github.com/tbrandon/mbserver v0.0.0-20211210035124-daf3c8c4269f
-	golang.org/x/image v0.0.0-20191009234506-e7c1f5e7dbb8
-	golang.org/x/sync v0.0.0-20220601150217-0de741cfad7f
+	github.com/yuin/gopher-lua v0.0.0-20220504180219-658193537a64
+	golang.org/x/exp v0.0.0-20200331195152-e8c3332aa8e5 // indirect
+	golang.org/x/image v0.0.0-20220722155232-062f8c9fd539
+	golang.org/x/sync v0.0.0-20220722155255-886fb9371eb4
 	golang.org/x/text v0.3.7
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df

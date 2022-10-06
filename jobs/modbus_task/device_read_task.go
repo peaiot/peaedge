@@ -180,7 +180,7 @@ func _readCoilData(dev models.ModbusDevice, reg models.ModbusReg, client modbus.
 	ret, err := client.ReadCoils(uint16(reg.StartAddr), 1)
 	if err != nil {
 		log.Errorf("读取设备[%s]寄存器[%s]失败 %s", dev.Name, reg.Name, err.Error())
-		app.SaveModbusRegRtd(reg.Id, "N/A", err.Error())
+		app.SaveModbusRegRtd(reg.Id, "N/A", app.DataFlagFailure, err.Error())
 		return
 	}
 
@@ -189,14 +189,14 @@ func _readCoilData(dev models.ModbusDevice, reg models.ModbusReg, client modbus.
 	err = binary.Read(boolBuffer, binary.BigEndian, &val)
 	if err != nil {
 		log.Errorf("解析设备[%s]寄存器[%s]值失败 %s", dev.Name, reg.Name, err.Error())
-		app.SaveModbusRegRtd(reg.Id, "N/A", err.Error())
+		app.SaveModbusRegRtd(reg.Id, "N/A", app.DataFlagOver, err.Error())
 		return
 	}
 	if app.IsDebug() {
 		log.Infof("读取到设备[%s]寄存器[%s]原始值 %d", dev.Name, reg.Name, val)
 	}
 
-	app.SaveModbusRegRtd(reg.Id, strconv.Itoa(int(val)), "success")
+	app.SaveModbusRegRtd(reg.Id, strconv.Itoa(int(val)), app.DataFlagSuccess, "success")
 }
 
 // 读取modbus 寄存器数据并更新数据
@@ -209,7 +209,8 @@ func _readDiscreteInputData(dev models.ModbusDevice, reg models.ModbusReg, clien
 	ret, err := client.ReadDiscreteInputs(uint16(reg.StartAddr), 1)
 	if err != nil {
 		log.Errorf("读取设备[%s]寄存器[%s]失败 %s", dev.Name, reg.Name, err.Error())
-		app.SaveModbusRegRtd(reg.Id, "N/A", err.Error())
+		app.SaveModbusRegRtd(reg.Id, "N/A", app.DataFlagFailure, err.Error())
+
 		return
 	}
 
@@ -218,7 +219,7 @@ func _readDiscreteInputData(dev models.ModbusDevice, reg models.ModbusReg, clien
 	err = binary.Read(boolBuffer, binary.BigEndian, &val)
 	if err != nil {
 		log.Errorf("解析设备[%s]寄存器[%s]值失败 %s", dev.Name, reg.Name, err.Error())
-		app.SaveModbusRegRtd(reg.Id, "N/A", err.Error())
+		app.SaveModbusRegRtd(reg.Id, "N/A", app.DataFlagOver, err.Error())
 		return
 	}
 
@@ -226,7 +227,7 @@ func _readDiscreteInputData(dev models.ModbusDevice, reg models.ModbusReg, clien
 		log.Infof("读取到设备[%s]寄存器[%s]原始值 %d", dev.Name, reg.Name, val)
 	}
 
-	app.SaveModbusRegRtd(reg.Id, strconv.Itoa(int(val)), "success")
+	app.SaveModbusRegRtd(reg.Id, strconv.Itoa(int(val)), app.DataFlagSuccess, "success")
 
 }
 
@@ -241,7 +242,7 @@ func _read0304RegisterData(dev models.ModbusDevice, reg models.ModbusReg, client
 	err := app.DB().Where("id = ?", reg.VarId).First(&regvar).Error
 	if err != nil {
 		log.Errorf("计算设备[%s]寄存器[%s]值失败, 未绑定变量", dev.Name, reg.Name)
-		app.SaveModbusRegRtd(reg.Id, "N/A", err.Error())
+		app.SaveModbusRegRtd(reg.Id, "N/A", app.DataFlagStop, err.Error())
 		return
 	}
 
@@ -258,7 +259,7 @@ func _read0304RegisterData(dev models.ModbusDevice, reg models.ModbusReg, client
 
 	if err != nil {
 		log.Errorf("读取设备[%s]寄存器[%s]失败 %s", dev.Name, reg.Name, err.Error())
-		app.SaveModbusRegRtd(reg.Id, "N/A", err.Error())
+		app.SaveModbusRegRtd(reg.Id, "N/A", app.DataFlagFailure, err.Error())
 		return
 	}
 
@@ -268,7 +269,7 @@ func _read0304RegisterData(dev models.ModbusDevice, reg models.ModbusReg, client
 	err = binary.Read(boolBuffer, binary.BigEndian, &dataval)
 	if err != nil {
 		log.Errorf("解析设备[%s]寄存器[%s]值失败 %s", dev.Name, reg.Name, err.Error())
-		app.SaveModbusRegRtd(reg.Id, "N/A", err.Error())
+		app.SaveModbusRegRtd(reg.Id, "N/A", app.DataFlagOver, err.Error())
 		return
 	}
 
@@ -284,7 +285,7 @@ func _read0304RegisterData(dev models.ModbusDevice, reg models.ModbusReg, client
 
 	if val == ERRORVALUE {
 		log.Errorf("解析设备[%s]寄存器[%s]值失败 %s", dev.Name, reg.Name, "")
-		app.SaveModbusRegRtd(reg.Id, "N/A", "ERRORVALUE")
+		app.SaveModbusRegRtd(reg.Id, "N/A", app.DataFlagOver, "ERRORVALUE")
 		return
 	}
 
@@ -300,7 +301,7 @@ func _read0304RegisterData(dev models.ModbusDevice, reg models.ModbusReg, client
 			regvar.MinVal, regvar.MaxVal, regvar.MaxAval, regvar.MinAval, int32(regvar.Decimals), regvar.Sign)
 		if err != nil {
 			log.Errorf("计算设备[%s]寄存器[%s]值失败, 模拟量计算错误, 请检查参数, %v", dev.Name, reg.Name, err.Error())
-			app.SaveModbusRegRtd(reg.Id, "N/A", err.Error())
+			app.SaveModbusRegRtd(reg.Id, "N/A", app.DataFlagOver, err.Error())
 		}
 		if app.IsDebug() {
 			log.Infof("计算设备[%s]寄存器[%s]结果值 DoComputeDxyResult %s", dev.Name, reg.Name, result)
@@ -310,7 +311,7 @@ func _read0304RegisterData(dev models.ModbusDevice, reg models.ModbusReg, client
 			regvar.MinVal, regvar.MaxVal, regvar.MaxAval, regvar.MinAval, int32(regvar.Decimals), regvar.Sign)
 		if err != nil {
 			log.Errorf("计算设备[%s]寄存器[%s]值失败, 模拟量计算错误, 请检查参数, %s", dev.Name, reg.Name, err.Error())
-			app.SaveModbusRegRtd(reg.Id, "N/A", err.Error())
+			app.SaveModbusRegRtd(reg.Id, "N/A", app.DataFlagOver, err.Error())
 		}
 		if app.IsDebug() {
 			log.Debugf("计算设备[%s]寄存器[%s]结果值 DoComputeResult %s", dev.Name, reg.Name, result)
@@ -319,9 +320,9 @@ func _read0304RegisterData(dev models.ModbusDevice, reg models.ModbusReg, client
 
 	if result == "" {
 		log.Errorf("计算设备[%s]寄存器[%s]值失败, 无结果, 请检查参数, %v", dev.Name, reg.Name, err)
-		app.SaveModbusRegRtd(reg.Id, "N/A", "NoResult")
+		app.SaveModbusRegRtd(reg.Id, "N/A", app.DataFlagStop, "NoResult")
 		return
 	}
 
-	app.SaveModbusRegRtd(reg.Id, result, "success")
+	app.SaveModbusRegRtd(reg.Id, result, app.DataFlagSuccess, "success")
 }
