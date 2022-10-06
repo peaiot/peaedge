@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {{template "header"}}
+    <title>PeaEdge</title>
+</head>
+<body>
+<script>
+    webix.ready(function () {
+        webix.ui({
+            padding: 10,
+            rows: [
+                {
+                    css: "mydashboard",
+                    height: 120,
+                    padding: 7,
+                    cols: [
+                        {view: "mytemplate", src: "/admin/metrics/system/cpuusage", borderless: true}, {width: 7},
+                        {view: "mytemplate", src: "/admin/metrics/system/memusage", borderless: true}, {width: 7},
+                        {view: "mytemplate", src: "/admin/metrics/system/uptime", borderless: true},
+                    ]
+                },
+                {
+                    cols: [
+
+                    ]
+                }
+            ]
+        })
+    })
+</script>
+</body>
+</html>

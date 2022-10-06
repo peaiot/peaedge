@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {{template "header"}}
+    <title>PeaEdge</title>
+</head>
+<body>
+<script>
+    webix.ready(function () {
+        let frameid = webix.uid()
+        let doItemAction = function (id) {
+            let menuitem = $$("main-sidebar").getItem(id);
+            if (menuitem.url) {
+                $$(frameid).load(menuitem.url);
+            }
+        }
+        webix.ui({
+            rows: [
+                {
+                    view: "toolbar",
+                    id: "main-toolbar",
+                    padding: 3,
+                    height: 64,
+                    css: "page-nav",
+                    elements: [
+                        {
+                            cols: [
+                                {
+                                    view: "button",
+                                    css: "nav-toggle",
+                                    type: "icon",
+                                    icon: "mdi mdi-home",
+                                    width: 30,
+                                    align: "left",
+                                    click: function () {
+                                        $$(frameid).load("/admin/dashboard");
+                                    }
+                                },
+                                {
+                                    css: "nav-title-bar",
+                                    rows: [
+                                        {
+                                            view: "label",
+                                            height: 30,
+                                            paddingX: 10,
+                                            borderless: true,
+                                            label: "PeaEdge Iot Gateway",
+                                            css: "nav-m-title"
+                                        },
+                                        {view: "label", height: 30, paddingX: 10, borderless: true, label: "Build:{{buildver}}", css: "nav-s-title"},
+                                    ]
+                                },
+                                {width: 50}, {},
+                                {
+                                    view: "button", css: "nav-item", type: "icon", icon: "mdi mdi-logout", height: 25, width: 90,
+                                    borderless: true, label: "退出", click: function () {
+                                        window.location.href = "/logout";
+                                    }
+                                },
+                                {view: "label", id: "global_datetime", label: "", width: 165, css: "global-datetime"},
+                            ]
+                        }
+                    ]
+                },
+                {
+                    borderless: true,
+                    cols: [
+                        {
+                            rows: [
+                                {
+                                    rows: [
+                                        {
+                                            height: 40,
+                                            cols: [
+                                                {width: 8},
+                                                {
+                                                    view: "button", type: "icon", icon: "mdi mdi-apps", width: 36, align: "left", click: function () {
+                                                        $$("main-sidebar").toggle()
+                                                    }
+                                                }, {width: 10},
+                                                {view: "label", css: "sidebar-title", label: "PeaEdge"},
+                                            ]
+                                        },
+                                        {
+                                            id: "main-sidebar",
+                                            view: "sidebar",
+                                            scroll: "auto",
+                                            width: 227,
+                                            url: "/admin/menu.json",
+                                            on: {
+                                                onAfterSelect: doItemAction,
+                                                onItemClick: doItemAction,
+                                            }
+                                        },
+                                    ]
+                                }
+                            ]
+                        },
+                        {css: "iframe-page", view: "iframe", id: frameid, src: "/admin/dashboard"},
+                    ]
+                }
+            ]
+        });
+        setInterval(function () {
+            $$("global_datetime").define("label", webix.Date.dateToStr("%Y-%m-%d %H:%i:%s")(new Date()));
+            $$("global_datetime").refresh();
+        }, 1000);
+    })
+</script>
+</body>
+</html>

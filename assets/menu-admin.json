@@ -1,0 +1,16 @@
+[
+  {"id": "100", "value": "系统状态", "icon": "mdi mdi-monitor-dashboard", "url": "/admin/dashboard"},
+  {
+    "id": "120", "value": "Modbus", "icon": "mdi mdi-switch", "data": [
+      {"id": "1200", "value": "设备管理", "icon": "mdi mdi-server", "url": "/admin/modbus/device"},
+      {"id": "1201", "value": "变量管理", "icon": "mdi mdi-server", "url": "/admin/modbus/var"}
+    ]
+  },
+  {
+    "id": "200", "value": "系统管理", "icon": "mdi mdi-cogs", "data": [
+      {"id": "2001", "value": "系统设置", "icon": "mdi mdi-cogs", "url": "/admin/settings"},
+      {"id": "2002", "value": "操作员管理", "icon": "mdi mdi-account", "url": "/admin/opr"},
+      {"id": "2003", "value": "数据脚本", "icon": "mdi mdi-folder", "url": "/admin/datascript"}
+    ]
+  }
+]

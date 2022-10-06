@@ -21,6 +21,12 @@ func main() {
 	regs, err := readModbusReg()
 	common.Must(err)
 	app.DB().Create(&regs)
+	oprs, err := readSysopr()
+	common.Must(err)
+	for _, opr := range oprs {
+		opr.Password = common.Sha256Hash(opr.Password)
+	}
+	app.DB().Create(&oprs)
 }
 
 func readModbusDevice() (data []*models.ModbusDevice, err error) {
@@ -49,6 +55,18 @@ func readModbusVar() (data []*models.ModbusVar, err error) {
 
 func readModbusReg() (data []*models.ModbusReg, err error) {
 	f, err := assets.TestData.Open("testdata/modbus_reg.csv")
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+	if err := gocsv.Unmarshal(f, &data); err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
+func readSysopr() (data []*models.SysOpr, err error) {
+	f, err := assets.TestData.Open("testdata/sys_opr.csv")
 	if err != nil {
 		return nil, err
 	}

@@ -1,0 +1,2 @@
+id,realname,mobile,email,username,password,level,status,remark
+1,管理员,0000,000,admin,peaedge,super,enabled,默认管理员

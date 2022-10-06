@@ -223,20 +223,20 @@ big endian	aa bb cc dd	高尾端，高字节在低地址
 big endian byte swap	bb aa dd cc	每 2 字节使用高尾端，2 字节内部使用低尾端
 little endian	dd cc bb aa	低尾端，低字节在低地址
 little endian byte swap	cc dd aa bb	每 2 字节使用低尾端，2 字节内部使用高尾端
- */
+*/
 func GetFloat32Value(p1, p2 uint16, format string) float32 {
-	var A,B,C,D byte
+	var A, B, C, D byte
 	switch format {
 	case BigEndian: // ABCD
-		A,B,C,D = byte(p1 & 0xff), byte((p1 & 0xff00) >> 8),byte(p2 & 0xff), byte((p2 & 0xff00) >> 8)
+		A, B, C, D = byte(p1&0xff), byte((p1&0xff00)>>8), byte(p2&0xff), byte((p2&0xff00)>>8)
 	case BigEndianSwap: // BADC
-	    B,A,D,C = byte(p1 & 0xff), byte((p1 & 0xff00) >> 8),byte(p2 & 0xff), byte((p2 & 0xff00) >> 8)
+		B, A, D, C = byte(p1&0xff), byte((p1&0xff00)>>8), byte(p2&0xff), byte((p2&0xff00)>>8)
 	case LittleEndian: // DCBA
-		D,C,B,A = byte(p1 & 0xff), byte((p1 & 0xff00) >> 8),byte(p2 & 0xff), byte((p2 & 0xff00) >> 8)
+		D, C, B, A = byte(p1&0xff), byte((p1&0xff00)>>8), byte(p2&0xff), byte((p2&0xff00)>>8)
 	case LittleEndianSwap: // CDAB
-		C,D,A,B = byte(p1 & 0xff), byte((p1 & 0xff00) >> 8),byte(p2 & 0xff), byte((p2 & 0xff00) >> 8)
+		C, D, A, B = byte(p1&0xff), byte((p1&0xff00)>>8), byte(p2&0xff), byte((p2&0xff00)>>8)
 	default:
-		A,B,C,D = byte(p1 & 0xff), byte((p1 & 0xff00) >> 8),byte(p2 & 0xff), byte((p2 & 0xff00) >> 8)
+		A, B, C, D = byte(p1&0xff), byte((p1&0xff00)>>8), byte(p2&0xff), byte((p2&0xff00)>>8)
 	}
 	return math.Float32frombits(binary.LittleEndian.Uint32([]byte{A, B, C, D}))
 }
@@ -248,7 +248,7 @@ big endian	aa bb cc dd	高尾端，高字节在低地址
 big endian byte swap	bb aa dd cc	每 2 字节使用高尾端，2 字节内部使用低尾端
 little endian	dd cc bb aa	低尾端，低字节在低地址
 little endian byte swap	cc dd aa bb	每 2 字节使用低尾端，2 字节内部使用高尾端
- */
+*/
 func GetFloat64Value(p1, p2, p3, p4 uint16, format string) float64 {
 	V1 := byte(p1 & 0xff)
 	V2 := byte((p1 & 0xff00) >> 8)
@@ -261,15 +261,15 @@ func GetFloat64Value(p1, p2, p3, p4 uint16, format string) float64 {
 	var A, B, C, D, E, F, G, H byte
 	switch format {
 	case BigEndian: // ABCDEFGH:
-		A, B, C, D, E, F, G, H = V1,V2,V3,V4,V5,V6,V7,V8
+		A, B, C, D, E, F, G, H = V1, V2, V3, V4, V5, V6, V7, V8
 	case BigEndianSwap: // BADCFEHG:
-		B, A, D, C, F, E, H, G = V1,V2,V3,V4,V5,V6,V7,V8
+		B, A, D, C, F, E, H, G = V1, V2, V3, V4, V5, V6, V7, V8
 	case LittleEndian: // HGFEDCBA
-		H, G, F, E, D, C, B, A = V1,V2,V3,V4,V5,V6,V7,V8
+		H, G, F, E, D, C, B, A = V1, V2, V3, V4, V5, V6, V7, V8
 	case LittleEndianSwap: // GHEFCDAB
-		G, H, E, F, C, D, A, B = V1,V2,V3,V4,V5,V6,V7,V8
+		G, H, E, F, C, D, A, B = V1, V2, V3, V4, V5, V6, V7, V8
 	default:
-		A, B, C, D, E, F, G, H = V1,V2,V3,V4,V5,V6,V7,V8
+		A, B, C, D, E, F, G, H = V1, V2, V3, V4, V5, V6, V7, V8
 	}
 	return math.Float64frombits(binary.LittleEndian.Uint64([]byte{A, B, C, D, E, F, G, H}))
 }

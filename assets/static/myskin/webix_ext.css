@@ -1,0 +1,28 @@
+.webix_all_tabs .webix_item_tab.webix_selected:hover {
+    background-color: rgba(174, 174, 174, 0.37);
+}
+
+.webix_item_tab.webix_selected {
+    border-bottom-width: 0;
+    background-color: rgba(174, 174, 174, .37);
+}
+
+.webix_all_tabs .webix_item_tab {
+    border-top: #e8e8e8 solid 1px;
+    border-right: #e8e8e8 solid 1px;
+    border-bottom-width: 0;
+    border-left-width: 0;
+    border-top-right-radius: 10px;
+    text-decoration: none!important;
+    /*background: #e3e3e3;*/
+}
+
+
+.webix_inp_bottom_label {
+    font-size: 10px;
+    color: #696969;
+}
+
+.webix_view {
+    border-color: #e7e7e7 !important;
+}

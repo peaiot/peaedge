@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {{template "header"}}
+    <title>PeaEdge</title>
+</head>
+<body>
+<script>
+
+    let deleteItem = function (ids, callback) {
+        webix.confirm({
+            title: "Operation confirmation",
+            ok: "Yes", cancel: "No",
+            text: "Confirm to delete? This operation is irreversible.",
+            callback: function (ev) {
+                if (ev) {
+                    webix.ajax().get('/admin/modbus/var/delete', {ids: ids}).then(function (result) {
+                        if (callback)
+                            callback()
+                    }).fail(function (xhr) {
+                        webix.message({type: 'error', text: "Delete Failure:" + xhr.statusText, expire: 2000});
+                    });
+                }
+            }
+        });
+    }
+
+
+    webix.ready(function () {
+        let importUrl = '/admin/modbus/var/import'
+        let exportUrl = '/admin/modbus/var/export'
+        let tableid = webix.uid();
+        let uploadid = webix.uid();
+        let reloadData = wxui.reloadDataFunc(tableid, "/admin/modbus/var/query", null)
+        wxui.initUploadApi(uploadid, importUrl, reloadData);
+        webix.ui({
+            css: "main-panel",
+            padding: 7,
+            rows: [
+                wxui.getPageToolbar({
+                    title: "Modbus 变量",
+                    icon: "mdi mdi-server",
+                    elements: [{},
+                        wxui.getPrimaryButton("保存", 90, false, function () {
+                            $$(tableid).eachRow(
+                                function (row) {
+                                    let item = $$(tableid).getItem(row);
+                                    let data = webix.copy(item)
+                                    data.webix_operation = "update"
+                                    webix.ajax().post("/admin/modbus/var/save", data).then(function (result) {
+                                    })
+                                }
+                            );
+                            webix.message({type: 'info', text: "数据已提交", expire: 1500});
+                        }),
+                        wxui.getPrimaryButton("创建", 90, false, function () {
+                            let citem = $$(devListid).getSelectedItem()
+                            if (!citem) {
+                                webix.message({type: 'error', text: "请选择设备", expire: 1500});
+                            }
+                            $$(tableid).add({device_id: citem.id});
+                        }),
+                        wxui.getDangerButton("删除", 90, false, function () {
+                            $$(tableid).editStop();
+                            let rows = wxui.getTableCheckedIds(tableid);
+                            if (rows.length === 0) {
+                                webix.message({type: 'error', text: "请选择一项", expire: 1500});
+                            } else {
+                                deleteItem(rows.join(","), reloadData);
+                            }
+                        }),
+                        wxui.getIconButton("导入", 90, "import", false, function () {
+                            $$(uploadid).fileDialog({});
+                        }),
+                        wxui.getIconButton("导出", 90, "download", false, function () {
+                            wxui.exportData("/bss/modbus/var/export", 'modbus变量.csv')
+                        }),
+                    ]
+                }),
+                wxui.getDatatable({
+                    tableid: tableid,
+                    editable: true,
+                    url: "/admin/modbus/var/query",
+                    save: "/admin/modbus/var/save",
+                    columns: [
+                        {
+                            id: "state",
+                            header: {content: "masterCheckbox", css: "center"},
+                            headermenu: false,
+                            adjust: true,
+                            css: "center",
+                            template: "{common.checkbox()}"
+                        },
+                        {
+                            id: "name", header: ["名称"], fillspace: true, editor: "text", sort: "string"
+                        },
+                        {id: "data_type", header: "数据类型", editor: "select", options: "/admin/datatype/options", adjust: true, sort: "string"},
+                        {id: "unit", header: "数据单位", editor: "text", adjust: true, sort: "int"},
+                        {id: "byte_order", header: "字节序", editor: "select", options: "/admin/byteorder/options", adjust: true, sort: "string"},
+                        {id: "script_id", editor: "select", options: "/admin/datascript/options", header: "函数脚本", adjust: true, sort: "string"},
+                        {id: "hj212_factor", header: "212因子", editor: "text", adjust: true, sort: "string"},
+                        {id: "hj212_send", editor: "select", options: "/admin/status/options", header: "212启用", adjust: true, sort: "string"},
+                        {id: "remark", header: ["备注"], editor: "text", sort: "string", hidden: true},
+                        {header: {content: "headerMenu"}, headermenu: false, width: 35}
+                    ],
+                    rightSplit: 1,
+                }),
+            ]
+        })
+    })
+</script>
+</body>
+</html>

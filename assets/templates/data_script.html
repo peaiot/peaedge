@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {{template "header"}}
+    <script src="/static/views/codemirror.js?v={{pagever}}" type="text/javascript" charset="utf-8"></script>
+    <title>PeaEdge</title>
+</head>
+<body>
+<script>
+    let tableid = webix.uid()
+    let funcId = webix.uid()
+    let srcid = webix.uid()
+    let argid = webix.uid()
+    let getColumns = function () {
+        return [
+            {view: "text", name: "name", label: "名称", css: "nborder-input",},
+            {view: "text", id:funcId, name: "func_name", label: "函数名", css: "nborder-input",},
+            {
+                cols:[
+                    {view: "text", id:argid,  name: "args", label: "测试参数", css: "nborder-input",},
+                    {
+                            view: "button",
+                            name: "submit",
+                            type: "form",
+                            value: "测试",
+                            width: 120,
+                            height: 36,
+                            click: function () {
+                                let params = {
+                                    "args": $$(argid).getValue(),
+                                    "func": $$(funcId).getValue(),
+                                    "src": $$(srcid).getValue()
+                                }
+                                webix.ajax().post("/admin/datascript/test", params).then(function (result) {
+                                    let resp = result.json();
+                                    webix.message({type: resp.msgtype, text: resp.msg, expire: 5000});
+                                })
+                            }
+                        },
+                ]
+            },
+            {view: "label", label: "脚本内容",},
+            {name: "content", id:srcid, view: "codemirror-editor", mode: "go"},
+        ]
+    }
+
+    let deleteItem = function (ids, callback) {
+        webix.confirm({
+            title: "Operation confirmation",
+            ok: "Yes", cancel: "No",
+            text: "Confirm to delete? This operation is irreversible.",
+            callback: function (ev) {
+                if (ev) {
+                    webix.ajax().get('/admin/datascript/delete', {ids: ids}).then(function (result) {
+                        let resp = result.json();
+                        webix.message({type: resp.msgtype, text: resp.msg, expire: 2000});
+                        if (callback)
+                            callback()
+                    }).fail(function (xhr) {
+                        webix.message({type: 'error', text: "Delete Failure:" + xhr.statusText, expire: 2000});
+                    });
+                }
+            }
+        });
+    }
+
+
+    webix.ready(function () {
+        let tableid = webix.uid();
+        let reloadData = wxui.reloadDataFunc(tableid, "/admin/datascript/query", null)
+        webix.ui({
+            css: "main-panel",
+            padding: 7,
+            rows: [
+                wxui.getPageToolbar({
+                    title: "预设管理",
+                    icon: "mdi mdi-document",
+                    elements: [
+                        wxui.getPrimaryButton("编辑", 90, false, function () {
+                            let item = $$(tableid).getSelectedItem();
+                            if (item) {
+                                let vitem = webix.copy(item)
+                                wxui.openFormWindow({
+                                    fullscreen: true,
+                                    width: 640,
+                                    height: 720,
+                                    title: "修改脚本",
+                                    data: vitem,
+                                    post: "/admin/datascript/update",
+                                    callback: reloadData,
+                                    elements: getColumns()
+                                }).show();
+                            } else {
+                                webix.message({type: 'error', text: "Please select one", expire: 1500});
+                            }
+                        }),
+                        wxui.getPrimaryButton("克隆", 90, false, function () {
+                            let item = $$(tableid).getSelectedItem();
+                            if (item) {
+                                let vitem = webix.copy(item)
+                                vitem._id = ""
+                                vitem.id = ""
+                                wxui.openFormWindow({
+                                    fullscreen: true,
+                                    width: 640,
+                                    height: 720,
+                                    title: "克隆脚本",
+                                    data: vitem,
+                                    post: "/admin/datascript/add",
+                                    callback: reloadData,
+                                    elements: getColumns()
+                                }).show();
+                            } else {
+                                webix.message({type: 'error', text: "Please select one", expire: 1500});
+                            }
+                        }),
+                        wxui.getPrimaryButton("创建", 90, false, function () {
+                            wxui.openFormWindow({
+                                fullscreen: true,
+                                width: 640,
+                                height: 720,
+                                title: "创建脚本",
+                                post: "/admin/datascript/add",
+                                callback: reloadData,
+                                elements: getColumns()
+                            }).show();
+                        }),
+                        wxui.getDangerButton("删除", 90, false, function () {
+                            let rows = wxui.getTableCheckedIds(tableid);
+                            if (rows.length === 0) {
+                                webix.message({type: 'error', text: "Please select one", expire: 1500});
+                            } else {
+                                deleteItem(rows.join(","), reloadData);
+                            }
+                        }),
+                    ],
+                }),
+                wxui.getDatatable({
+                    tableid: tableid,
+                    url: '/admin/datascript/query',
+                    columns: [
+                        {
+                            id: "state",
+                            header: {content: "masterCheckbox", css: "center"},
+                            headermenu: false,
+                            adjust: true,
+                            css: "center",
+                            template: "{common.checkbox()}"
+                        },
+                        {
+                            id: "name",
+                            header: ["名称"],
+                            fillspace: true,
+                            sort: "server",
+                        },
+                        {
+                            id: "func_name",
+                            header: ["函数名"],
+                            fillspace: true,
+                            sort: "server",
+                        },
+                        {header: {content: "headerMenu"}, headermenu: false, width: 35}
+                    ],
+                    rightSplit: 1,
+                    pager: true,
+                }),
+                wxui.getTableFooterBar({
+                    tableid: tableid,
+                    callback: reloadData,
+                    actions: [],
+                }),
+            ]
+        })
+    })
+</script>
+</body>
+</html>

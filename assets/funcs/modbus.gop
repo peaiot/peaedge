@@ -18,5 +18,3 @@ func HandlerModbusData(src float64) float64 {
 	
 	return math.Round(result*100) / 100
 }
-
-println(HandlerModbusData(1024.0))
