@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {{template "header"}}
+    <title>PeaEdge</title>
+</head>
+<body>
+<script>
+
+    let deleteItem = function (ids, callback) {
+        webix.confirm({
+            title: "Operation confirmation",
+            ok: "Yes", cancel: "No",
+            text: "Confirm to delete? This operation is irreversible.",
+            callback: function (ev) {
+                if (ev) {
+                    webix.ajax().get('/admin/modbus/reg/delete', {ids: ids}).then(function (result) {
+                        if (callback)
+                            callback()
+                    }).fail(function (xhr) {
+                        webix.message({type: 'error', text: "Delete Failure:" + xhr.statusText, expire: 2000});
+                    });
+                }
+            }
+        });
+    }
+
+    let deleteDeviceItem = function (ids, callback) {
+        webix.confirm({
+            title: "Operation confirmation",
+            ok: "Yes", cancel: "No",
+            text: "Confirm to delete? This operation is irreversible.",
+            callback: function (ev) {
+                if (ev) {
+                    webix.ajax().get('/admin/modbus/device/delete', {ids: ids}).then(function (result) {
+                        if (callback)
+                            callback()
+                    }).fail(function (xhr) {
+                        webix.message({type: 'error', text: "Delete Failure:" + xhr.statusText, expire: 2000});
+                    });
+                }
+            }
+        });
+    }
+
+    webix.ready(function () {
+        let importUrl = '/admin/modbus/reg/import'
+        let exportUrl = '/admin/modbus/reg/export'
+        let tableid = webix.uid();
+        let uploadid = webix.uid();
+        let devListid = webix.uid();
+        let devuploadid = webix.uid();
+        let queryid = webix.uid()
+        let reloadData = wxui.reloadDataFunc(tableid, "/admin/modbus/reg/query", null)
+        wxui.initUploadApi(uploadid, importUrl, reloadData);
+        webix.ui({
+            css: "main-panel",
+            padding: 7,
+            rows: [
+                wxui.getPageToolbar({
+                    title: "Modbus 设备",
+                    icon: "mdi mdi-server",
+                    elements: [{},
+                        wxui.getPrimaryButton("保存", 90, false, function () {
+                            $$(tableid).eachRow(
+                                function (row) {
+                                    let item = $$(tableid).getItem(row);
+                                    let data = webix.copy(item)
+                                    data.webix_operation = "update"
+                                    webix.ajax().post("/admin/modbus/reg/save", data).then(function (result) {
+                                    })
+                                }
+                            );
+                            webix.message({type: 'info', text: "数据已提交", expire: 1500});
+                        }),
+                        wxui.getPrimaryButton("创建", 90, false, function () {
+                            let citem = $$(devListid).getSelectedItem()
+                            if (!citem) {
+                                webix.message({type: 'error', text: "请选择设备", expire: 1500});
+                            }
+                            $$(tableid).add({device_id: citem.id});
+                        }),
+                        wxui.getDangerButton( "删除", 90, false, function () {
+                            $$(tableid).editStop();
+                            let rows = wxui.getTableCheckedIds(tableid);
+                            if (rows.length === 0) {
+                                webix.message({type: 'error', text: "请选择一项", expire: 1500});
+                            } else {
+                                deleteItem(rows.join(","), reloadData);
+                            }
+                        }),
+                        wxui.getIconButton("导入", 90, "import", false, function () {
+                            $$(uploadid).fileDialog({});
+                        }),
+                        wxui.getIconButton("导出", 90, "download", false, function () {
+                            wxui.exportData("/bss/modbus/reg/export", 'modbus寄存器.csv')
+                        }),
+                    ]
+                }),
+                {
+                    cols: [
+                        {
+                            width: 280,
+                            rows: [
+                                {view: "template", template: "<b>设备列表</b>", type: "header", css: "webix_header"},
+                                {
+                                    id: devListid, view: "list", borderless: false, css: "dev-items", select: true, scroll: "auto",
+                                    type: {height: 40},
+                                    template: "<i class='mdi mdi-switch'></i> <span>#name#</span>",
+                                    on: {
+                                        onAfterSelect: function (id) {
+                                            let item = this.getItem(id)
+                                            $$("device_attrs").setValues(item)
+                                            wxui.reloadDataFunc(tableid, '/admin/modbus/reg/query?device_id=' + item.id, null)()
+                                        }
+                                    },
+                                    ready: function () {
+                                        $$(devListid).select($$(devListid).getFirstId())
+                                    },
+                                    url: "/admin/modbus/device/query",
+                                },
+                                {
+                                    bloderless: false,
+                                    cols: [
+                                        wxui.getIconButton("添加", 70, "plus", false, function () {
+                                            webix.ajax().post("/admin/modbus/device/save", {
+                                                webix_operation: "insert",
+                                                name: "新设备"
+                                            }).then(function (result) {
+                                                wxui.reloadDataFunc(devListid, '/admin/modbus/device/query', null)()
+                                            })
+                                        }),
+                                        wxui.getIconButton("导入", 70, "import", false, function () {
+                                            $$(devuploadid).fileDialog({});
+                                        }),
+                                        wxui.getIconButton("删除", 70, "delete", false, function () {
+                                            let citem = $$(devListid).getSelectedItem()
+                                            if (!citem) {
+                                                webix.message({type: 'error', text: "请选择设备", expire: 1500});
+                                            }
+                                            deleteDeviceItem(citem.id, function () {
+                                                wxui.reloadDataFunc(devListid, '/admin/modbus/device/query', null)()
+                                            })
+                                        }),
+                                        wxui.getIconButton( "刷新", 70, "refresh", false, function () {
+                                            wxui.reloadDataFunc(devListid, '/admin/modbus/device/query', null)()
+                                        }),
+                                    ]
+                                },
+                                {view: "template", template: "<b>设备属性</b>", type: "header", css: "webix_header"},
+                                {
+                                    view: "property", id: "device_attrs", height: 360, complexData: true,
+                                    scroll: false,
+                                    elements: [
+                                        {type: "hidden", id: "id", label: "设备id"},
+                                        {type: "text", id: "name", label: "设备名称"},
+                                        {type: "select", id: "proto_type", label: "协议类型", options: "/admin/modbus/proto/options"},
+                                        {type: "select", id: "mbrtu_addr", label: "mbrtu 地址", options: "/admin/device/ports"},
+                                        {type: "text", id: "mbtcp_addr", label: "mbtcp 地址"},
+                                        {type: "text", id: "mbtcp_port", label: "mbtcp 端口"},
+                                        {type: "text", id: "mbslave_id", label: "从机ID"},
+                                        {type: "text", id: "baud_rate", label: "比特率"},
+                                        {type: "text", id: "pkt_delay", label: "包延时(MS)"},
+                                        {type: "text", id: "remark", label: "备注"},
+                                    ],
+                                    on: {
+                                        onAfterEditStop: function () {
+                                            let param = $$("device_attrs").getValues()
+                                            param.webix_operation = "update"
+                                            webix.ajax().post("/admin/modbus/device/save", param).then(function (result) {
+                                                wxui.reloadDataFunc(devListid, '/admin/modbus/device/query', null)()
+                                            })
+                                        }
+                                    }
+                                }
+                            ]
+                        },
+                        wxui.getDatatable({
+                            tableid: tableid,
+                            editable: true,
+                            url: "/admin/modbus/reg/query",
+                            save: "/admin/modbus/reg/save",
+                            columns: [
+                                {
+                                    id: "state",
+                                    header: {content: "masterCheckbox", css: "center"},
+                                    headermenu: false,
+                                    adjust: true,
+                                    css: "center",
+                                    template: "{common.checkbox()}"
+                                },
+                                {
+                                    id: "name", header: ["名称"], fillspace: true,editor: "text", sort: "string"
+                                },
+                                {id: "reg_type", header:"类型",editor: "select",  options:"/admin/regtype/options", adjust: true, sort: "string"},
+                                {id: "start_addr", header:"数据地址",editor: "text", adjust: true, sort: "int"},
+                                {id: "data_len", header:"数据长度",editor: "text", adjust: true, sort: "int"},
+                                {id: "access_type", header:"读写权限", editor: "text",adjust: true, sort: "string"},
+                                {id: "var_id", header:"绑定变量", editor: "select", options:"/admin/modbus/var/options", adjust: true, sort: "string"},
+                                {id: "status", editor: "select", options: "/admin/status/options", header: "启用状态", adjust: true, sort: "string"},
+                                {id: "remark", header: ["备注"], editor: "text", sort: "string", hidden: true},
+                                {header: {content: "headerMenu"}, headermenu: false, width: 35}
+                            ],
+                            rightSplit: 1,
+                        }),
+                    ]
+                },
+            ]
+        })
+    })
+</script>
+</body>
+</html>

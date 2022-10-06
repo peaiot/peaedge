@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {{template "header"}}
+    <title>PeaEdge</title>
+</head>
+<body>
+<script>
+    let tableid = webix.uid()
+    let getColumns = function () {
+        return [
+            {view: "text", name: "realname", label: "姓名", css: "nborder-input",},
+            {view: "text", name: "username", label: "名称", css: "nborder-input",},
+            {view: "text", name: "password", label: "密码", css: "nborder-input",},
+            {
+                view: "combo", name: "level", label: "类型", css: "nborder-input", options: [
+                    {id: "super", value: "管理员"},
+                    {id: "opr", value: "操作员"},
+                    {id: "api", value: "API用户"},
+                ]
+            },
+            {view: "textarea", name: "remark", label: "备注"},
+        ]
+    }
+
+    let deleteItem = function (ids, callback) {
+        webix.confirm({
+            title: "Operation confirmation",
+            ok: "Yes", cancel: "No",
+            text: "Confirm to delete? This operation is irreversible.",
+            callback: function (ev) {
+                if (ev) {
+                    webix.ajax().get('/admin/opr/delete', {ids: ids}).then(function (result) {
+                        let resp = result.json();
+                        webix.message({type: resp.msgtype, text: resp.msg, expire: 2000});
+                        if (callback)
+                            callback()
+                    }).fail(function (xhr) {
+                        webix.message({type: 'error', text: "Delete Failure:" + xhr.statusText, expire: 2000});
+                    });
+                }
+            }
+        });
+    }
+
+    webix.ready(function () {
+        let tableid = webix.uid();
+        let uploadid = webix.uid();
+        let reloadData = wxui.reloadDataFunc(tableid, "/admin/opr/query")
+        webix.ui({
+            rows: [
+                {
+                    css: "query-toolbar",
+                    paddingX: 10,
+                    cols: [{},
+                        wxui.getPrimaryButton("编辑", 90, false, function () {
+                            let item = $$(tableid).getSelectedItem();
+                            if (item) {
+                                let vitem = webix.copy(item)
+                                vitem.password = ""
+                                wxui.openFormWindow({
+                                    width: 640,
+                                    height: 720,
+                                    title: "操作员修改",
+                                    data: vitem,
+                                    post: "/admin/opr/update",
+                                    callback: reloadData,
+                                    elements: getColumns()
+                                }).show();
+                            } else {
+                                webix.message({type: 'error', text: "Please select one", expire: 1500});
+                            }
+                        }),
+                        wxui.getPrimaryButton("克隆", 90, false, function () {
+                            let item = $$(tableid).getSelectedItem();
+                            if (item) {
+                                let vitem = webix.copy(item)
+                                vitem._id = ""
+                                vitem.id = ""
+                                vitem.password = ""
+                                wxui.openFormWindow({
+                                    width: 640,
+                                    height: 720,
+                                    title: "操作员克隆",
+                                    data: vitem,
+                                    post: "/admin/opr/add",
+                                    callback: reloadData,
+                                    elements: getColumns()
+                                }).show();
+                            } else {
+                                webix.message({type: 'error', text: "Please select one", expire: 1500});
+                            }
+                        }),
+                        wxui.getPrimaryButton("创建", 90, false, function () {
+                            wxui.openFormWindow({
+                                width: 640,
+                                height: 720,
+                                title: "操作员创建",
+                                post: "/admin/opr/add",
+                                callback: reloadData,
+                                elements: getColumns()
+                            }).show();
+                        }),
+                        wxui.getDangerButton("删除", 90, false, function () {
+                            let rows = wxui.getTableCheckedIds(tableid);
+                            if (rows.length === 0) {
+                                webix.message({type: 'error', text: "Please select one", expire: 1500});
+                            } else {
+                                deleteItem(rows.join(","), reloadData);
+                            }
+                        }),
+                    ]
+                },
+                wxui.getDatatable({
+                    tableid: tableid,
+                    url: '/admin/opr/query',
+                    columns: [
+                        {
+                            id: "state",
+                            header: {content: "masterCheckbox", css: "center"},
+                            headermenu: false,
+                            adjust: true,
+                            css: "center",
+                            template: "{common.checkbox()}"
+                        },
+                        {
+                            id: "username",
+                            header: ["名称", {content: "serverFilter"}],
+                            adjust: true,
+                            sort: "server",
+                        },
+                        {
+                            id: "realname",
+                            header: ["姓名", {content: "serverFilter"}],
+                            adjust: true,
+                            sort: "server",
+                        },
+                        {
+                            id: "level",
+                            header: ["类型", {content: "serverFilter"}],
+                            adjust: true,
+                            sort: "server",
+                        },
+                        {
+                            id: "status",
+                            header: ["状态", {content: "serverFilter"}],
+                            adjust: true,
+                            sort: "server",
+                        },
+                        {
+                            id: "remark",
+                            header: ["备注", {content: "serverFilter"}],
+                            sort: "server",
+                            fillspace: true
+                        },
+                        {header: {content: "headerMenu"}, headermenu: false, width: 35}
+                    ],
+                    rightSplit: 1,
+                    pager: true,
+                }),
+                wxui.getTableFooterBar({
+                    tableid: tableid,
+                    callback: reloadData,
+                    actions: [],
+                }),
+            ]
+        })
+    })
+</script>
+</body>
+</html>

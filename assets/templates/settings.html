@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {{template "header"}}
+    <title>PeaEdge</title>
+</head>
+<body>
+<script>
+
+    let getColumns = function () {
+        return [
+            {view: "counter", name: "sort", min: 1, max: 1000, label: "排序", css: "nborder-input",},
+            {view: "combo", name: "type", label: "类型", options: ["system", "radius", "tr069"], css: "nborder-input",},
+            {view: "text", name: "name", label: "名称", css: "nborder-input",},
+            {view: "text", name: "value", label: "默认值", css: "nborder-input",},
+            {view: "textarea", name: "remark", label: "备注"},
+        ]
+    }
+
+
+    let deleteItem = function (ids, callback) {
+        webix.confirm({
+            title: "Operation confirmation",
+            ok: "Yes", cancel: "No",
+            text: "Confirm to delete? This operation is irreversible.",
+            callback: function (ev) {
+                if (ev) {
+                    webix.ajax().get('/admin/settings/delete', {ids: ids}).then(function (result) {
+                        let resp = result.json();
+                        webix.message({type: resp.msgtype, text: resp.msg, expire: 2000});
+                        if (callback)
+                            callback()
+                    }).fail(function (xhr) {
+                        webix.message({type: 'error', text: "Delete Failure:" + xhr.statusText, expire: 2000});
+                    });
+                }
+            }
+        });
+    }
+
+    webix.ready(function () {
+        let tabid = webix.uid()
+        reloadData = function () {
+            window.location.reload()
+        }
+        webix.ui({
+            css: "main-panel",
+            padding: 7,
+            rows: [
+                wxui.getPageToolbar({
+                    icon: "mdi mdi-cogs",
+                    title: "系统设置",
+                    elements: [
+                        wxui.getPrimaryButton("创建", 90, false, function () {
+                            wxui.openFormWindow({
+                                width: 640,
+                                height: 720,
+                                title: "创建参数",
+                                post: "/admin/settings/add",
+                                callback: reloadData,
+                                elements: getColumns()
+                            }).show();
+                        }),
+                        wxui.getDangerButton("删除", 90, false, function () {
+                            let item = $$($$(tabid).getValue()).getSelectedItem();
+                            if (item) {
+                                deleteItem(item.id, reloadData);
+                            } else {
+                                webix.message({type: 'error', text: "Please select one", expire: 1500});
+                            }
+                        }),
+                    ]
+                }),
+                {
+                    id: tabid,
+                    view: "tabbar",
+                    css: "main-tabs",
+                    animate: false,
+                    bottomOffset: 0,
+                    optionWidth: 210,
+                    height: 40,
+                    align: 'left',
+                    multiview: true,
+                    value: "systemView", // the initially selected tab
+                    options: [
+                        {"id": "systemView", "value": "系统配置"},
+                        {"id": "radiusView", "value": "RADIUS 配置"},
+                        {"id": "tr069View", "value": "TR069 配置"},
+                    ]
+                },
+                {
+                    cells: [
+                        wxui.getDatatable({
+                            tableid: "systemView",
+                            url: '/admin/settings/system/query',
+                            save: '/admin/settings/save',
+                            select: true,
+                            editable: true,
+                            leftSplit: 0,
+                            rightSplit: 0,
+                            columns: [
+                                {id: "name", header: "属性", width: 210},
+                                {id: "remark", header: "描述", width: 210},
+                                {
+                                    id: "value", header: "值 (点击修改自动保存)", editor: "text", fillspace: true, template: function (obj) {
+                                        return obj.value;
+                                    }
+                                },
+                            ],
+                        }),
+                        wxui.getDatatable({
+                            tableid: "radiusView",
+                            url: '/admin/settings/radius/query',
+                            save: '/admin/settings/save',
+                            select: true,
+                            editable: true,
+                            leftSplit: 0,
+                            rightSplit: 0,
+                            columns: [
+                                {id: "name", header: "属性", width: 210},
+                                {id: "remark", header: "描述", width: 210},
+                                {
+                                    id: "value", header: "值 (点击修改自动保存)", editor: "text", fillspace: true, template: function (obj) {
+                                        return obj.value;
+                                    }
+                                },
+                            ],
+                        }),
+                        wxui.getDatatable({
+                            tableid: "tr069View",
+                            url: '/admin/settings/tr069/query',
+                            save: '/admin/settings/save',
+                            select: true,
+                            editable: true,
+                            leftSplit: 0,
+                            rightSplit: 0,
+                            columns: [
+                                {id: "name", header: "属性", width: 210},
+                                {id: "remark", header: "描述", width: 210},
+                                {
+                                    id: "value", header: "值 (点击修改自动保存)", editor: "text", fillspace: true, template: function (obj) {
+                                        return obj.value;
+                                    }
+                                },
+                            ],
+                        }),
+                    ]
+                },
+
+            ]
+        })
+    })
+</script>
+</body>
+</html>
