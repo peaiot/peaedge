@@ -10,7 +10,6 @@ import (
 	"runtime"
 	_ "time/tzdata"
 
-	"github.com/toughstruct/peaedge/apiserver"
 	"github.com/toughstruct/peaedge/app"
 	"github.com/toughstruct/peaedge/assets"
 	"github.com/toughstruct/peaedge/common/installer"
@@ -18,6 +17,7 @@ import (
 	"github.com/toughstruct/peaedge/config"
 	"github.com/toughstruct/peaedge/jobs"
 	"github.com/toughstruct/peaedge/mqttc"
+	"github.com/toughstruct/peaedge/webserver"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -112,7 +112,7 @@ func main() {
 
 	g.Go(func() error {
 		log.Info("Start Web server ...")
-		return apiserver.Listen()
+		return webserver.Listen()
 	})
 
 	g.Go(func() error {

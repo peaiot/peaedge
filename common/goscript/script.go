@@ -17,9 +17,9 @@ import (
 	_ "github.com/goplus/igop/pkg/time"
 )
 
-func RunFunc(filename, source string, funcName string, args ...interface{}) (interface{}, error) {
+func RunFunc(source string, funcName string, args ...interface{}) (interface{}, error) {
 	ctx := igop.NewContext(0)
-	p, err := ctx.LoadFile(filename, source)
+	p, err := ctx.LoadFile(funcName+".gop", source)
 	if err != nil {
 		return nil, err
 	}

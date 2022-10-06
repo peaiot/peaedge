@@ -8,5 +8,5 @@ import (
 
 func main() {
 	app.Init(config.LoadConfig(""))
-	_ = app.DB.Migrator().AutoMigrate(models.Tables...)
+	_ = app.DB().Migrator().AutoMigrate(models.Tables...)
 }

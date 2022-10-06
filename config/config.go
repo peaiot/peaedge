@@ -21,11 +21,11 @@ type SysConfig struct {
 }
 
 type WebConfig struct {
-	Host      string `yaml:"host"`
-	Port      int    `yaml:"port"`
-	TlsPort   int    `yaml:"tls_port"`
-	JwtSecret string `yaml:"jwt_secret"`
-	Debug     bool   `yaml:"debug"`
+	Host    string `yaml:"host"`
+	Port    int    `yaml:"port"`
+	TlsPort int    `yaml:"tls_port"`
+	Secret  string `yaml:"jwt_secret"`
+	Debug   bool   `yaml:"debug"`
 }
 
 type MqttConfig struct {
@@ -118,7 +118,7 @@ func setEnvIntValue(name string, val *int) {
 
 var DefaultBssConfig = &AppConfig{
 	System: SysConfig{
-		Appid:      "peaedge-1",
+		Appid:      "peaedge1",
 		Location:   "Asia/Shanghai",
 		Workdir:    "/var/peaedge",
 		DBFile:     "/var/peaedge/peaedge.db",
@@ -130,9 +130,9 @@ var DefaultBssConfig = &AppConfig{
 		Broker: "tcp://",
 	},
 	Web: WebConfig{
-		Host:      "0.0.0.0",
-		Port:      1850,
-		JwtSecret: "9b6de5cc-0731-edge-peax-0f568ac9da37",
+		Host:   "0.0.0.0",
+		Port:   1850,
+		Secret: "9b6de5cc-0731-edge-peax-0f568ac9da37",
 	},
 	Data: DataConfig{
 		RtdSave: "60s",
@@ -165,7 +165,7 @@ func LoadConfig(cfile string) *AppConfig {
 	setEnvBoolValue("PEAEDGE_SYSTEM_DEBUG", &cfg.System.Debug)
 	setEnvValue("PEAEDGE_SYSLOG_HOST", &cfg.System.SyslogAddr)
 	setEnvValue("PEAEDGE_WEB_HOST", &cfg.Web.Host)
-	setEnvValue("PEAEDGE_WEB_SECRET", &cfg.Web.JwtSecret)
+	setEnvValue("PEAEDGE_WEB_SECRET", &cfg.Web.Secret)
 	setEnvIntValue("PEAEDGE_WEB_PORT", &cfg.Web.Port)
 	setEnvBoolValue("PEAEDGE_WEB_DEBUG", &cfg.Web.Debug)
 

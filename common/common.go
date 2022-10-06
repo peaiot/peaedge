@@ -164,10 +164,10 @@ func UUIDint64() int64 {
 	return snowflakeNode.Generate().Int64()
 }
 
-func UUIDBase32() (string, error) {
+func UUIDBase32() string {
 	id := snowflakeNode.Generate()
 	// Print out the ID in a few different ways.
-	return id.Base32(), nil
+	return id.Base32()
 }
 
 // Convert to Big Hump format
