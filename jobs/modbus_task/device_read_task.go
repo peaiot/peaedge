@@ -287,7 +287,7 @@ func _read0304RegisterData(dev models.ModbusDevice, reg models.ModbusReg, client
 	var script models.DataScript
 	err = app.DB().Where("id = ?", regvar.ScriptId).First(&script).Error
 	if err == nil {
-		vret, err := goscript.RunFunc(script.Content, "HandlerModbusData", cast.ToFloat64(result))
+		vret, err := goscript.RunFunc(script.Content, script.FuncName, cast.ToFloat64(result))
 		if err != nil {
 			app.SaveModbusRegRtd(reg.Id, common.NA, app.DataFlagOver, err.Error())
 			log.Errorf("计算设备[%s]寄存器[%s]值失败, 请检查参数, %v", dev.Name, reg.Name, err.Error())
