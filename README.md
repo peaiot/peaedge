@@ -1,23 +1,29 @@
-# PeaEdge
+# PEAEDGE
 
-PeaEdge 是一个物联网边缘节点软件，它可以运行在各种支持 linux 的嵌入式设备上，如树莓派等。
+PeaEdge is an IoT edge node software that runs on various linux-enabled embedded devices, such as Raspberry Pi.
 
-## 系统架构
+## System Architecture
 
+<img width="921" alt="image" src="https://user-images.githubusercontent.com/377938/194464498-c6fcaef6-b58a-4259-8cbc-ecf9ee1f05fd.png">
 
-## 特性
+## Features
 
-- 标准 Modbus 设备采集控制
-- Mqtt 消息支持
+- [x] Standard Modbus Device Access Management
+- Mqtt Protocol Support
+- Integrated LoraWan Protocol Support
+- Bluetooth terminal access support
+- Zigbee Protocol Support
+- [x] Hj212 Protocol Support
+- Camera access support(Openonvif)
 
 ## License
 
 PeaEdge is licensed under the LGPL. See [LICENSE](LICENSE) for the full license text.
 
-## 贡献
+## Contribute
 
-欢迎任何形式的贡献，包括但不限于 issue、pull request、文档、示例等。
+We welcome contributions of any kind, including but not limited to issues, pull requests, documentation, examples, etc.
 
-## 联系我们
+## Contact US
 
-如果您有任何问题，可以通过邮件联系我们：
+If you have any questions, you can contact us by email at
