@@ -2,6 +2,9 @@
 
 PeaEdge is an IoT edge node software that runs on various linux-enabled embedded devices, such as Raspberry Pi.
 
+
+[CN](README_CN.md)
+
 ## System Architecture
 
 <img width="921" alt="image" src="https://user-images.githubusercontent.com/377938/194464498-c6fcaef6-b58a-4259-8cbc-ecf9ee1f05fd.png">
