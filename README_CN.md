@@ -8,10 +8,11 @@ PeaEdge是一个物联网边缘节点软件，可以运行在各种支持Linux�
 
 <img width="921" alt="image" src="https://user-images.githubusercontent.com/377938/194464498-c6fcaef6-b58a-4259-8cbc-ecf9ee1f05fd.png">
 
-## 特点
+## 功能特性
 
 - [x] 标准Modbus设备访问管理
-- 支持Mqtt协议
+- [x] 实现 modbus tcp slave 和 rtu slave
+- [x] 支持Mqtt协议
 - 集成的LoraWan协议支持
 - 蓝牙终端访问支持
 - Zigbee协议支持

@@ -64,7 +64,7 @@ func (d MqttDaemon) Start() error {
 		SetClientID(d.ClientId).
 		SetUsername(app.Config().Mqtt.Username).
 		SetPassword(app.Config().Mqtt.Password)
-	opts.SetKeepAlive(30 * time.Second)
+	opts.SetKeepAlive(60 * time.Second)
 	opts.SetPingTimeout(1 * time.Second)
 	opts.ConnectRetry = true
 	opts.AutoReconnect = true

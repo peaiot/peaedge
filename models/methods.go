@@ -2,6 +2,7 @@ package models
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/toughstruct/peaedge/common/timeutil"
 )
@@ -28,4 +29,8 @@ func (d Hj212Queue) MarshalJSON() ([]byte, error) {
 		CreateTime: timeutil.FmtDatetimeString(d.CreateTime),
 		LastSend:   timeutil.FmtDatetimeString(d.LastSend),
 	})
+}
+
+func (r ModbusSlaveReg) Sign() string {
+	return fmt.Sprintf("%s:%d", r.RegType, r.Register)
 }

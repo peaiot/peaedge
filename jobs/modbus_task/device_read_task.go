@@ -5,6 +5,8 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
+	"io"
+	"net"
 	"strconv"
 	"sync"
 	"time"
@@ -20,10 +22,19 @@ import (
 )
 
 const (
-	ERRORVALUE          = 999999999999
 	ConstProtoModbusRTU = "modbusrtu"
 	ConstProtoModbusTCP = "modbustcp"
 )
+
+var sleep5s *time.Ticker
+var sleep1s *time.Ticker
+var sleep100ms *time.Ticker
+
+func init() {
+	sleep5s = time.NewTicker(time.Second * 5)
+	sleep1s = time.NewTicker(time.Second * 1)
+	sleep100ms = time.NewTicker(time.Millisecond * 100)
+}
 
 func StartModbusReadTask() {
 	defer func() {
@@ -31,6 +42,8 @@ func StartModbusReadTask() {
 			log.Error(err)
 		}
 	}()
+
+	<-sleep5s.C
 	app.ResetModbusDevConnStatus()
 	var limitPool = golimit.NewGoLimitPool()
 	for {
@@ -39,7 +52,7 @@ func StartModbusReadTask() {
 		if err != nil {
 			emsg := fmt.Sprintf("读取设备列表失败... %s", err.Error())
 			log.Errorf(emsg)
-			time.Sleep(time.Second * 5)
+			<-sleep5s.C
 			continue
 		}
 
@@ -81,8 +94,7 @@ func ReadModbusRtuRegData(dev models.ModbusDevice) {
 	var modbusregs []models.ModbusReg
 	err := app.DB().Where("device_id = ?", dev.Id).Find(&modbusregs).Error
 	if err != nil || modbusregs == nil || len(modbusregs) == 0 {
-		// log.Errorf("读取设备[%s]寄存器列表失败或无寄存器... %s", dev.Name, err)
-		time.Sleep(time.Millisecond * 1000)
+		<-sleep1s.C
 		return
 	}
 
@@ -97,7 +109,7 @@ func ReadModbusRtuRegData(dev models.ModbusDevice) {
 
 	for _, reg := range modbusregs {
 		if reg.Status == "disabled" {
-			time.Sleep(time.Millisecond * 100)
+			<-sleep100ms.C
 			continue
 		}
 
@@ -117,7 +129,7 @@ func ReadModbusRtuRegData(dev models.ModbusDevice) {
 		default:
 			continue
 		}
-		time.Sleep(time.Millisecond * time.Duration(100))
+		<-sleep100ms.C
 	}
 
 }
@@ -133,8 +145,7 @@ func ReadModbusTcpRegData(dev models.ModbusDevice) {
 	var modbusregs []models.ModbusReg
 	err := app.DB().Where("device_id = ?", dev.Id).Find(&modbusregs).Error
 	if err != nil || modbusregs == nil || len(modbusregs) == 0 {
-		// log.Errorf("读取设备[%s]寄存器列表失败或无寄存器... %s", dev.Name, err)
-		time.Sleep(time.Millisecond * 1000)
+		<-sleep1s.C
 		return
 	}
 
@@ -145,7 +156,6 @@ func ReadModbusTcpRegData(dev models.ModbusDevice) {
 		return
 	}
 	app.UpdateModbusDevConnStatus(dev.Id, "success")
-	defer client.Close()
 
 	for _, reg := range modbusregs {
 		if reg.Status == "disabled" {
@@ -181,6 +191,7 @@ func _readCoilData(dev models.ModbusDevice, reg models.ModbusReg, client modbus.
 	}()
 	ret, err := client.ReadCoils(uint16(reg.StartAddr), 1)
 	if err != nil {
+		checkClientConn(err, client)
 		log.Errorf("读取设备[%s]寄存器[%s]失败 %s", dev.Name, reg.Name, err.Error())
 		app.SaveModbusRegRtd(reg.Id, common.NA, app.DataFlagFailure, err.Error())
 		return
@@ -206,6 +217,7 @@ func _readDiscreteInputData(dev models.ModbusDevice, reg models.ModbusReg, clien
 	}()
 	ret, err := client.ReadDiscreteInputs(uint16(reg.StartAddr), 1)
 	if err != nil {
+		checkClientConn(err, client)
 		log.Errorf("读取设备[%s]寄存器[%s]失败 %s", dev.Name, reg.Name, err.Error())
 		app.SaveModbusRegRtd(reg.Id, common.NA, app.DataFlagFailure, err.Error())
 		return
@@ -224,7 +236,7 @@ func _readDiscreteInputData(dev models.ModbusDevice, reg models.ModbusReg, clien
 
 }
 
-// 读取modbus 寄存器数据并更新数据
+// 读取 modbus 寄存器数据并更新数据
 func _read0304RegisterData(dev models.ModbusDevice, reg models.ModbusReg, client modbus.Client, regtype string) {
 	defer func() {
 		if err := recover(); err != nil {
@@ -239,7 +251,7 @@ func _read0304RegisterData(dev models.ModbusDevice, reg models.ModbusReg, client
 		return
 	}
 
-	var reglen uint16 = uint16(reg.DataLen / 2)
+	var reglen = uint16(reg.DataLen)
 	var ret []byte
 	switch regtype {
 	case "HoldingRegister":
@@ -251,6 +263,7 @@ func _read0304RegisterData(dev models.ModbusDevice, reg models.ModbusReg, client
 	}
 
 	if err != nil {
+		checkClientConn(err, client)
 		log.Errorf("读取设备[%s]寄存器[%s]失败 %s", dev.Name, reg.Name, err.Error())
 		app.SaveModbusRegRtd(reg.Id, common.NA, app.DataFlagFailure, err.Error())
 		return
@@ -303,4 +316,13 @@ func _read0304RegisterData(dev models.ModbusDevice, reg models.ModbusReg, client
 	}
 
 	app.SaveModbusRegRtd(reg.Id, result, app.DataFlagSuccess, "success")
+}
+
+func checkClientConn(err error, client modbus.Client) {
+	if errors.Is(err, net.ErrClosed) ||
+		errors.Is(err, net.ErrWriteToConnected) ||
+		errors.Is(err, io.ErrUnexpectedEOF) ||
+		errors.Is(err, io.EOF) {
+		_ = client.ReConnect()
+	}
 }

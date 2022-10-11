@@ -3,7 +3,7 @@ package app
 import (
 	"fmt"
 	slog "log"
-	"os"
+	"sync"
 	"time"
 
 	"github.com/toughstruct/peaedge/common/log"
@@ -12,10 +12,6 @@ import (
 
 // NewModbusRTUClient 创建新的 modbusrtu 客户端
 func NewModbusRTUClient(rtuaddr string, baudRate int, pktDelay int, slaveId int) (modbus.Client, error) {
-	// 模拟设备
-	if os.Getenv("PEAEDGE_VMDEV") != "" {
-		return NewSimulateDevice("modbusrtu", rtuaddr, 0, slaveId), nil
-	}
 	handler := modbus.NewRTUClientHandler(rtuaddr)
 	handler.SlaveId = byte(slaveId)
 	handler.BaudRate = baudRate
@@ -35,16 +31,26 @@ func NewModbusRTUClient(rtuaddr string, baudRate int, pktDelay int, slaveId int)
 	return modbus.NewClient(handler), nil
 }
 
+var tcpMbPoolLock sync.Mutex
+var tcpMbPool map[string]modbus.Client
+
+func init() {
+	tcpMbPoolLock = sync.Mutex{}
+	tcpMbPool = make(map[string]modbus.Client)
+}
+
 // GetModbusTCPClient 获取TCP 客户端
 func GetModbusTCPClient(devaddr string, port int, slaveid int) (modbus.Client, error) {
-	// 模拟设备
-	if os.Getenv("PEAEDGE_VMDEV") != "" {
-		return NewSimulateDevice("modbustcp", devaddr, port, slaveid), nil
+	tcpMbPoolLock.Lock()
+	defer tcpMbPoolLock.Unlock()
+	key := fmt.Sprintf("tcp://%s:%d/%d", devaddr, port, slaveid)
+	if c, ok := tcpMbPool[key]; ok {
+		return c, nil
 	}
 	handler := modbus.NewTCPClientHandler(fmt.Sprintf("%s:%d", devaddr, port))
 	handler.SlaveId = byte(slaveid)
 	handler.Timeout = 1000 * time.Millisecond
-	handler.IdleTimeout = time.Second * 10
+	handler.IdleTimeout = time.Hour * 24
 	if IsDebug() {
 		handler.Logger = slog.New(log.Stdlog{}, "Modbus-TCP", 0)
 	}
@@ -53,5 +59,6 @@ func GetModbusTCPClient(devaddr string, port int, slaveid int) (modbus.Client, e
 		return nil, err
 	}
 	client := modbus.NewClient(handler)
+	tcpMbPool[key] = client
 	return client, nil
 }

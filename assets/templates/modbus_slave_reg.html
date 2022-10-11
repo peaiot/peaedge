@@ -2,7 +2,6 @@
 <html>
 <head>
     {{template "header"}}
-    <title>PeaEdge</title>
 </head>
 <body>
 <script>
@@ -14,7 +13,7 @@
             text: "Confirm to delete? This operation is irreversible.",
             callback: function (ev) {
                 if (ev) {
-                    webix.ajax().get('/admin/modbus/var/delete', {ids: ids}).then(function (result) {
+                    webix.ajax().get('/admin/modbus/slavereg/delete', {ids: ids}).then(function (result) {
                         if (callback)
                             callback()
                     }).fail(function (xhr) {
@@ -27,19 +26,19 @@
 
 
     webix.ready(function () {
-        let importUrl = '/admin/modbus/var/import'
-        let exportUrl = '/admin/modbus/var/export'
+        let importUrl = '/admin/modbus/slavereg/import'
+        let exportUrl = '/admin/modbus/slavereg/export'
         let tableid = webix.uid();
         let uploadid = webix.uid();
-        let reloadData = wxui.reloadDataFunc(tableid, "/admin/modbus/var/query", null)
+        let reloadData = wxui.reloadDataFunc(tableid, "/admin/modbus/slavereg/query", null)
         wxui.initUploadApi(uploadid, importUrl, reloadData);
         webix.ui({
             css: "main-panel",
             padding: 7,
             rows: [
                 wxui.getPageToolbar({
-                    title: "Modbus 变量",
-                    icon: "mdi mdi-server",
+                    title: "Slave 寄存器",
+                    icon: "mdi mdi-memory",
                     elements: [{},
                         wxui.getPrimaryButton("保存", 90, false, function () {
                             $$(tableid).eachRow(
@@ -47,13 +46,14 @@
                                     let item = $$(tableid).getItem(row);
                                     let data = webix.copy(item)
                                     data.webix_operation = "update"
-                                    webix.ajax().post("/admin/modbus/var/save", data).then(function (result) {
+                                    webix.ajax().post("/admin/modbus/slavereg/save", data).then(function (result) {
                                     })
                                 }
                             );
                             webix.message({type: 'info', text: "数据已提交", expire: 1500});
                         }),
                         wxui.getPrimaryButton("创建", 90, false, function () {
+                            $$(tableid).editStop();
                             $$(tableid).add({});
                         }),
                         wxui.getDangerButton("删除", 90, false, function () {
@@ -69,15 +69,15 @@
                             $$(uploadid).fileDialog({});
                         }),
                         wxui.getIconButton("导出", 90, "download", false, function () {
-                            wxui.exportData("/bss/modbus/var/export", 'modbus变量.csv')
+                            wxui.exportData("/bss/modbus/slavereg/export", 'modbus_slave_reg.csv')
                         }),
                     ]
                 }),
                 wxui.getDatatable({
                     tableid: tableid,
                     editable: true,
-                    url: "/admin/modbus/var/query",
-                    save: "/admin/modbus/var/save",
+                    url: "/admin/modbus/slavereg/query",
+                    save: "/admin/modbus/slavereg/save",
                     columns: [
                         {
                             id: "state",
@@ -87,20 +87,16 @@
                             css: "center",
                             template: "{common.checkbox()}"
                         },
-                        {
-                            id: "name", header: ["名称"], fillspace: true, editor: "text", sort: "string"
-                        },
-                        {id: "data_type", header: "数据类型", editor: "select", options: "/admin/datatype/options", adjust: true, sort: "string"},
-                        {id: "unit", header: "数据单位", editor: "text", adjust: true, sort: "int"},
-                        {id: "byte_order", header: "字节序", editor: "select", options: "/admin/byteorder/options", adjust: true, sort: "string"},
-                        {id: "script_id", editor: "select", options: "/admin/datascript/options", header: "函数脚本", adjust: true, sort: "string"},
-                        {id: "data_factor", header: "环境因子", editor: "text", adjust: true, sort: "string"},
-                        {id: "channel_status", editor: "select", options: "/admin/status/options", header: "通道启用", adjust: true, sort: "string"},
-                        {id: "remark", header: ["备注"], editor: "text", sort: "string", hidden: true},
+                        {id: "name", header: ["名称"], adjust: 140, editor: "text", sort: "string"},
+                        {id: "register", header: ["起始地址"], adjust: true, editor: "text", sort: "int"},
+                        {id: "reg_type", header: "寄存器类型", editor: "select", options: "/admin/regtype/options", width: 160, sort: "string"},
+                        {id: "length", header: "数据长度", editor: "text", adjust: true, sort: "int"},
+                        {id: "value", header: "初始值(HEX)", editor: "text",  width: 210, sort: "int"},
+                        {id: "remark", header: ["备注"], editor: "text", sort: "string", fillspace: true},
                         {header: {content: "headerMenu"}, headermenu: false, width: 35}
                     ],
                     rightSplit: 1,
-                    pager: true
+                    pager: true,
                 }),
                 wxui.getTableFooterBar({
                     tableid: tableid,
