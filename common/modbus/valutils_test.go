@@ -22,15 +22,15 @@ func TestDoComputeDxyResult(t *testing.T) {
 }
 
 func TestGetFloatValue(t *testing.T) {
-	var p1 uint16 = 16481
-	var p2 uint16 = 60293
-	v := GetFloatValue(p1, p2)
+	var p1 uint16 = 61111
+	var p2 uint16 = 56666
+	v := GetFloat32Value(p1, p2, BigEndian)
 	fmt.Println(v)
 }
 
 func TestGetFloatValue2(t *testing.T) {
-	var p1 uint16 = 16481
-	var p2 uint16 = 60293
+	var p1 uint16 = 33365
+	var p2 uint16 = 23456
 	v := GetFloatValue2(p1, p2)
 	fmt.Println(v)
 }
@@ -82,4 +82,9 @@ func TestTcpVlidate(t *testing.T) {
 	fmt.Println(tv.Len(1))
 	fmt.Println(tv.Sum(1))
 
+}
+
+func TestGenFloat2Hex(t *testing.T) {
+	a := fmt.Sprintf("%X\n", 999)
+	t.Log(a)
 }

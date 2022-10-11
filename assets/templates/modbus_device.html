@@ -80,7 +80,7 @@
                             }
                             $$(tableid).add({device_id: citem.id});
                         }),
-                        wxui.getDangerButton( "删除", 90, false, function () {
+                        wxui.getDangerButton("删除", 90, false, function () {
                             $$(tableid).editStop();
                             let rows = wxui.getTableCheckedIds(tableid);
                             if (rows.length === 0) {
@@ -142,7 +142,7 @@
                                                 wxui.reloadDataFunc(devListid, '/admin/modbus/device/query', null)()
                                             })
                                         }),
-                                        wxui.getIconButton( "刷新", 70, "refresh", false, function () {
+                                        wxui.getIconButton("刷新", 70, "refresh", false, function () {
                                             wxui.reloadDataFunc(devListid, '/admin/modbus/device/query', null)()
                                         }),
                                     ]
@@ -175,34 +175,66 @@
                                 }
                             ]
                         },
-                        wxui.getDatatable({
-                            tableid: tableid,
-                            editable: true,
-                            url: "/admin/modbus/reg/query",
-                            save: "/admin/modbus/reg/save",
-                            columns: [
-                                {
-                                    id: "state",
-                                    header: {content: "masterCheckbox", css: "center"},
-                                    headermenu: false,
-                                    adjust: true,
-                                    css: "center",
-                                    template: "{common.checkbox()}"
-                                },
-                                {
-                                    id: "name", header: ["名称"], fillspace: true,editor: "text", sort: "string"
-                                },
-                                {id: "reg_type", header:"类型",editor: "select",  options:"/admin/regtype/options", adjust: true, sort: "string"},
-                                {id: "start_addr", header:"数据地址",editor: "text", adjust: true, sort: "int"},
-                                {id: "data_len", header:"数据长度",editor: "text", adjust: true, sort: "int"},
-                                {id: "access_type", header:"读写权限", editor: "text",adjust: true, sort: "string"},
-                                {id: "var_id", header:"绑定变量", editor: "select", options:"/admin/modbus/var/options", adjust: true, sort: "string"},
-                                {id: "status", editor: "select", options: "/admin/status/options", header: "启用状态", adjust: true, sort: "string"},
-                                {id: "remark", header: ["备注"], editor: "text", sort: "string", hidden: true},
-                                {header: {content: "headerMenu"}, headermenu: false, width: 35}
-                            ],
-                            rightSplit: 1,
-                        }),
+                        {
+                            rows: [
+                                wxui.getDatatable({
+                                    tableid: tableid,
+                                    editable: true,
+                                    url: "/admin/modbus/reg/query",
+                                    save: "/admin/modbus/reg/save",
+                                    columns: [
+                                        {
+                                            id: "state",
+                                            header: {content: "masterCheckbox", css: "center"},
+                                            headermenu: false,
+                                            adjust: true,
+                                            css: "center",
+                                            template: "{common.checkbox()}"
+                                        },
+                                        {
+                                            id: "name", header: ["名称"], fillspace: true, editor: "text", sort: "string"
+                                        },
+                                        {
+                                            id: "reg_type",
+                                            header: "类型",
+                                            editor: "select",
+                                            options: "/admin/regtype/options",
+                                            adjust: true,
+                                            sort: "string"
+                                        },
+                                        {id: "start_addr", header: "地址", editor: "text", adjust: true, sort: "int"},
+                                        {id: "data_len", header: "长度", editor: "text", adjust: true, sort: "int"},
+                                        {id: "access_type", header: "读写", editor: "text", adjust: true, sort: "string"},
+                                        {
+                                            id: "var_id",
+                                            header: "变量",
+                                            editor: "select",
+                                            options: "/admin/modbus/var/options",
+                                            adjust: true,
+                                            sort: "string"
+                                        },
+                                        {
+                                            id: "status",
+                                            editor: "select",
+                                            options: "/admin/status/options",
+                                            header: "启用状态",
+                                            adjust: true,
+                                            sort: "string"
+                                        },
+                                        {id: "remark", header: ["备注"], editor: "text", sort: "string", hidden: true},
+                                        {header: {content: "headerMenu"}, headermenu: false, width: 35}
+                                    ],
+                                    rightSplit: 1,
+                                    pager: true
+                                }),
+                                wxui.getTableFooterBar({
+                                    tableid: tableid,
+                                    actions: [],
+                                    callback: reloadData
+                                }),
+                            ]
+                        },
+
                     ]
                 },
             ]

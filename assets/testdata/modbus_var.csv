@@ -1,6 +1,3 @@
-id,name,data_type,unit,byte_order,script_id,hj212_factor,hj212_send,remark
-1289491627160965120,总烃,float,mg/m3,BigEndian,bm3wnhieckryy,a24087,enabled,N/A
-1289491653526360064,甲烷,float,mg/m3,BigEndian,bm3wnhieckryy,a05002,enabled,N/A
-1289491748200189952,苯,float,mg/m3,BigEndian,bm3wnhieckryy,a25002,enabled,N/A
-1289491754965602304,甲苯,float,mg/m3,BigEndian,bm3wnhieckryy,a25003,enabled,N/A
-1289492024252502016,二甲苯,float,mg/m3,BigEndian,bm3wnhieckryy,a25005,enabled,N/A
+id,name,data_type,unit,byte_order,script_id,data_factor,channel_status,remark
+10000,总烃,uint16,mg/m3,BigEndian,bm3wnhieckryy,a24087,enabled,N/A
+10011,温度,uint16,C,BigEndian,,a05002,enabled,N/A

@@ -85,28 +85,29 @@ type ModbusReg struct {
 
 // ModbusVar 变量定义
 type ModbusVar struct {
-	Id          string    `json:"id" csv:"id" form:"id"`
-	Name        string    `json:"name" csv:"name" form:"name"`
-	DataType    string    `json:"data_type" csv:"data_type" form:"data_type"`
-	Unit        string    `json:"unit" csv:"unit" form:"unit"`
-	ByteOrder   string    `json:"byte_order" csv:"byte_order" form:"byte_order"`
-	ScriptId    string    `json:"script_id" csv:"script_id" form:"script_id"`
-	Hj212Factor string    `json:"hj212_factor" csv:"hj212_factor" form:"hj_212_factor"`
-	Hj212Send   string    `json:"hj212_send" csv:"hj212_send" form:"hj_212_send"`
-	Remark      string    `json:"remark" csv:"remark" form:"remark"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at" `
+	Id            string    `json:"id" csv:"id" form:"id"`
+	Name          string    `json:"name" csv:"name" form:"name"`
+	DataType      string    `json:"data_type" csv:"data_type" form:"data_type"`
+	Unit          string    `json:"unit" csv:"unit" form:"unit"`
+	ByteOrder     string    `json:"byte_order" csv:"byte_order" form:"byte_order"`
+	ScriptId      string    `json:"script_id" csv:"script_id" form:"script_id"`
+	DataFactor    string    `json:"data_factor" csv:"data_factor" form:"data_factor"`
+	ChannelStatus string    `json:"channel_status" csv:"channel_status" form:"channel_status"`
+	Remark        string    `json:"remark" csv:"remark" form:"remark"`
+	CreatedAt     time.Time `json:"created_at"`
+	UpdatedAt     time.Time `json:"updated_at" `
 }
 
 type ModbusVarTpl struct {
-	Id          string `json:"id" csv:"id" from:"id"`
-	Name        string `json:"name" csv:"name" from:"name"`
-	DataType    string `json:"data_type" csv:"data_type" from:"data_type"`
-	Unit        string `json:"unit" csv:"unit" from:"unit"`
-	ByteOrder   string `json:"byte_order" csv:"byte_order" from:"byte_order"`
-	ScriptId    string `json:"script_id" csv:"script_id" from:"script_id"`
-	Hj212Factor string `json:"hj212_factor" csv:"hj212_factor" from:"hj_212_factor"`
-	Remark      string `json:"remark" csv:"remark" from:"remark"`
+	Id            string `json:"id" csv:"id" from:"id"`
+	Name          string `json:"name" csv:"name" from:"name"`
+	DataType      string `json:"data_type" csv:"data_type" from:"data_type"`
+	Unit          string `json:"unit" csv:"unit" from:"unit"`
+	ByteOrder     string `json:"byte_order" csv:"byte_order" from:"byte_order"`
+	ScriptId      string `json:"script_id" csv:"script_id" from:"script_id"`
+	DataFactor    string `json:"data_factor" csv:"data_factor" form:"data_factor"`
+	ChannelStatus string `json:"channel_status" csv:"channel_status" form:"channel_status"`
+	Remark        string `json:"remark" csv:"remark" from:"remark"`
 }
 
 // Hj212Queue 212消息队列
@@ -153,6 +154,17 @@ type DeviceRtdData struct {
 	CreatedAt time.Time `json:"created_at"` // 创建时间
 }
 
+// ModbusSlaveReg modbus server 寄存器，系统启动时加载到内存
+type ModbusSlaveReg struct {
+	ID       string `json:"id" csv:"id" form:"id"`
+	Name     string `json:"name" csv:"name" form:"name"`
+	Register int    `json:"register" csv:"register" form:"register"`
+	RegType  string `json:"reg_type" csv:"reg_type" form:"reg_type"`
+	Length   int    `json:"length" csv:"length" form:"length"`
+	Value    string `json:"value" csv:"value" form:"value"`
+	Remark   string `json:"remark" csv:"remark" form:"remark"`
+}
+
 var Tables = []interface{}{
 	&SysConfig{},
 	&SysOpr{},
@@ -168,6 +180,7 @@ var Tables = []interface{}{
 	// iot device
 	&IotDevice{},
 	&DeviceRtdData{},
+	&ModbusSlaveReg{},
 }
 
 func (r *ModbusVar) GetByteOrder() string {

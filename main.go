@@ -16,6 +16,7 @@ import (
 	"github.com/toughstruct/peaedge/common/log"
 	"github.com/toughstruct/peaedge/config"
 	"github.com/toughstruct/peaedge/jobs"
+	"github.com/toughstruct/peaedge/mbslave"
 	"github.com/toughstruct/peaedge/mqttc"
 	"github.com/toughstruct/peaedge/webserver"
 	"golang.org/x/sync/errgroup"
@@ -116,7 +117,12 @@ func main() {
 	})
 
 	g.Go(func() error {
-		log.Info("Start matt client ...")
+		log.Info("Start Modbus server ...")
+		return mbslave.Listen()
+	})
+
+	g.Go(func() error {
+		log.Info("Start Matt client ...")
 		return mqttc.StartDaemon()
 	})
 

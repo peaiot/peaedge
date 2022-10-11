@@ -14,15 +14,23 @@ import (
 func main() {
 	app.Init(config.LoadConfig(""))
 	app.Initdb()
+
 	devs, err := readModbusDevice()
 	common.Must(err)
 	app.DB().Create(&devs)
+
 	vars, err := readModbusVar()
 	common.Must(err)
 	app.DB().Create(&vars)
+
 	regs, err := readModbusReg()
 	common.Must(err)
 	app.DB().Create(&regs)
+
+	msregs, err := readModbusSlaveReg()
+	common.Must(err)
+	app.DB().Create(&msregs)
+
 	oprs, err := readSysopr()
 	common.Must(err)
 	for _, opr := range oprs {
@@ -67,6 +75,18 @@ func readModbusVar() (data []*models.ModbusVar, err error) {
 
 func readModbusReg() (data []*models.ModbusReg, err error) {
 	f, err := assets.TestData.Open("testdata/modbus_reg.csv")
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+	if err := gocsv.Unmarshal(f, &data); err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
+func readModbusSlaveReg() (data []*models.ModbusSlaveReg, err error) {
+	f, err := assets.TestData.Open("testdata/modbus_slave_reg.csv")
 	if err != nil {
 		return nil, err
 	}

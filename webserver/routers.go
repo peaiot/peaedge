@@ -22,6 +22,7 @@ func (s *WebServer) initRouters() {
 	s.initModbusDevRouters()
 	s.initModbusRegRouters()
 	s.initModbusVarRouters()
+	s.initModbusSlaveRegRouters()
 	s.initDataScriptRouters()
 	s.initOprRouters()
 }

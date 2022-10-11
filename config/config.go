@@ -28,6 +28,17 @@ type WebConfig struct {
 	Debug   bool   `yaml:"debug"`
 }
 
+type ModbusConfig struct {
+	TcpAddr  string `yaml:"tcp_addr"`
+	RtuAddr  string `yaml:"rtu_addr"`
+	BaudRate int    `yaml:"baud_rate"`
+	DataBits int    `yaml:"data_bits"`
+	StopBits int    `yaml:"stop_bits"`
+	Parity   string `yaml:"parity"`
+	Timeout  int    `yaml:"timeout"`
+	Debug    bool   `yaml:"debug"`
+}
+
 type MqttConfig struct {
 	Broker   string `yaml:"broker"`
 	Username string `yaml:"username"`
@@ -40,10 +51,11 @@ type DataConfig struct {
 }
 
 type AppConfig struct {
-	System SysConfig  `yaml:"system"`
-	Mqtt   MqttConfig `yaml:"mqtt"`
-	Web    WebConfig  `yaml:"web"`
-	Data   DataConfig `yaml:"data"`
+	System SysConfig    `yaml:"system"`
+	Mqtt   MqttConfig   `yaml:"mqtt"`
+	Web    WebConfig    `yaml:"web"`
+	Modbus ModbusConfig `yaml:"modbus"`
+	Data   DataConfig   `yaml:"data"`
 }
 
 func (c *AppConfig) GetLogDir() string {
@@ -133,6 +145,11 @@ var DefaultBssConfig = &AppConfig{
 		Host:   "0.0.0.0",
 		Port:   1850,
 		Secret: "9b6de5cc-0731-edge-peax-0f568ac9da37",
+	},
+	Modbus: ModbusConfig{
+		TcpAddr: "0.0.0.0:1502",
+		RtuAddr: "/dev/null",
+		Debug:   true,
 	},
 	Data: DataConfig{
 		RtdSave: "60s",

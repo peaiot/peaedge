@@ -12,7 +12,8 @@ PeaEdge is an IoT edge node software that runs on various linux-enabled embedded
 ## Features
 
 - [x] Standard Modbus Device Access Management
-- Mqtt Protocol Support
+- [x] Implement modbus tcp slave and rtu slave
+- [x] Mqtt Protocol Support
 - Integrated LoraWan Protocol Support
 - Bluetooth terminal access support
 - Zigbee Protocol Support
