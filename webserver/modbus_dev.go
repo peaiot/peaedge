@@ -39,10 +39,10 @@ func (s *WebServer) ModbusDeviceSave(c echo.Context) error {
 	switch op {
 	case "insert":
 		form.Id = common.UUIDBase32()
-		common.Must(app.DB().Create(form).Error)
+		common.Must(app.DB().Create(&form).Error)
 		return c.JSON(200, map[string]interface{}{"id": form.Id})
 	case "update":
-		common.Must(app.DB().Updates(form).Error)
+		common.Must(app.DB().Updates(&form).Error)
 		return c.JSON(200, map[string]interface{}{"status": "updated"})
 	case "delete":
 		common.Must(app.DB().Delete(models.ModbusDevice{}, form.Id).Error)
