@@ -8,11 +8,12 @@ import (
 	"encoding/binary"
 	"fmt"
 	"io"
-	"log"
 	"net"
 	"sync"
 	"sync/atomic"
 	"time"
+
+	"github.com/peaiot/logging"
 )
 
 const (
@@ -135,7 +136,7 @@ type tcpTransporter struct {
 	// Idle timeout to close the connection
 	IdleTimeout time.Duration
 	// Transmission logger
-	Logger *log.Logger
+	Logger *logging.Logger
 
 	// TCP connection
 	mu           sync.Mutex
@@ -149,7 +150,7 @@ func (mb *tcpTransporter) Send(aduRequest []byte) (aduResponse []byte, err error
 	mb.mu.Lock()
 	defer mb.mu.Unlock()
 
-	mb.logf("modbus: sending % x", aduRequest)
+	mb.Logger.Infof("modbus: sending % x", aduRequest)
 	// Establish a new connection if not connected
 	if err = mb.connect(); err != nil {
 		return
@@ -193,7 +194,7 @@ func (mb *tcpTransporter) Send(aduRequest []byte) (aduResponse []byte, err error
 		return
 	}
 	aduResponse = data[:length]
-	mb.logf("modbus: received % x\n", aduResponse)
+	mb.Logger.Infof("modbus: received % x\n", aduResponse)
 	return
 }
 
@@ -269,11 +270,11 @@ func (mb *tcpTransporter) flush(b []byte) (err error) {
 	return
 }
 
-func (mb *tcpTransporter) logf(format string, v ...interface{}) {
-	if mb.Logger != nil {
-		mb.Logger.Printf(format, v...)
-	}
-}
+// func (mb *tcpTransporter) logf(format string, v ...interface{}) {
+// 	if mb.Logger != nil {
+// 		mb.Logger.Infof(format, v...)
+// 	}
+// }
 
 // closeLocked closes current connection. Caller must hold the mutex before calling this method.
 func (mb *tcpTransporter) close() (err error) {
@@ -294,7 +295,7 @@ func (mb *tcpTransporter) closeIdle() {
 	}
 	idle := time.Now().Sub(mb.lastActivity)
 	if idle >= mb.IdleTimeout {
-		mb.logf("modbus: closing connection due to idle timeout: %v", idle)
+		mb.Logger.Infof("modbus: closing connection due to idle timeout: %v", idle)
 		mb.close()
 	}
 }

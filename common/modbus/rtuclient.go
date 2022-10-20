@@ -133,7 +133,7 @@ type rtuSerialTransporter struct {
 
 func (mb *rtuSerialTransporter) Send(aduRequest []byte) (aduResponse []byte, err error) {
 	// Make sure port is connected
-	mb.serialPort.logf("modbus: sending % x\n", aduRequest)
+	mb.serialPort.Logger.Infof("modbus: sending % x\n", aduRequest)
 	if err = mb.serialPort.connect(); err != nil {
 		return
 	}
@@ -187,7 +187,7 @@ func (mb *rtuSerialTransporter) Send(aduRequest []byte) (aduResponse []byte, err
 		return
 	}
 	aduResponse = data[:n]
-	mb.serialPort.logf("modbus: received % x\n", aduResponse)
+	mb.serialPort.Logger.Infof("modbus: received % x\n", aduResponse)
 	return
 }
 

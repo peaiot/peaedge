@@ -3,7 +3,7 @@
 
 package log
 
-import "github.com/op/go-logging"
+import "github.com/peaiot/logging"
 
 func SetupSyslog(level logging.Level, syslogaddr string, module string) logging.LeveledBackend {
 	return nil

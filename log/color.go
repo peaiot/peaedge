@@ -3,7 +3,7 @@ package log
 import (
 	"strings"
 
-	"github.com/op/go-logging"
+	"github.com/peaiot/logging"
 )
 
 func Highlight(msg string, level logging.Level) string {

@@ -1,11 +1,14 @@
 package modbus_task
 
 import (
+	"fmt"
 	"time"
 
+	"github.com/nakabonne/tstorage"
+	"github.com/spf13/cast"
 	"github.com/toughstruct/peaedge/app"
 	"github.com/toughstruct/peaedge/common"
-	"github.com/toughstruct/peaedge/common/log"
+	"github.com/toughstruct/peaedge/log"
 	"github.com/toughstruct/peaedge/models"
 )
 
@@ -23,7 +26,7 @@ type Regdata struct {
 func RegisterSaveRtdTask() {
 	defer func() {
 		if err := recover(); err != nil {
-			log.Error(err)
+			log.Modbus.Error(err)
 		}
 	}()
 	var datas = make([]Regdata, 0)
@@ -32,7 +35,7 @@ func RegisterSaveRtdTask() {
 		       v.id           as var_id,
 		       d.mn           as mn,
 		       v.name         as name,
-		       v.hj212_factor as factor,
+		       v.data_factor  as factor,
 		       r.rtd          as value
 		from modbus_device d,
 		     modbus_reg r,
@@ -57,6 +60,20 @@ func RegisterSaveRtdTask() {
 			Value:     val.Value,
 			CreatedAt: time.Now(),
 		})
+
+		// insert timeseries data
+		err = app.TsDB().InsertRows([]tstorage.Row{
+			{
+				Metric: fmt.Sprintf("modbus_metrics_%s_%s", val.MN, val.RegId),
+				DataPoint: tstorage.DataPoint{
+					Value:     cast.ToFloat64(val.Value),
+					Timestamp: time.Now().Unix(),
+				},
+			},
+		})
+		if err != nil {
+			log.Error("add timeseries data error:", err.Error())
+		}
 	}
 
 	if len(rtds) > 0 {

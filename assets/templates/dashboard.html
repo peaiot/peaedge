@@ -7,13 +7,16 @@
 <body>
 <script>
     webix.ready(function () {
+        let mnid = webix.uid().toString();
+        let frameid = webix.uid().toString();
         webix.ui({
             padding: 10,
             rows: [
                 {
                     css: "mydashboard",
-                    height: 120,
-                    padding: 7,
+                    height: 95,
+                    paddingX: 6,
+                    paddingY: 3,
                     cols: [
                         {view: "mytemplate", src: "/admin/metrics/system/cpuusage", borderless: true}, {width: 7},
                         {view: "mytemplate", src: "/admin/metrics/system/memusage", borderless: true}, {width: 7},
@@ -21,10 +24,38 @@
                     ]
                 },
                 {
+                    css: "mydashboard",
+                    height: 95,
+                    paddingX: 6,
+                    paddingY: 3,
                     cols: [
-
+                        {view: "mytemplate", src: "/admin/metrics/modbus/device/count", borderless: true}, {width: 7},
+                        {view: "mytemplate", src: "/admin/metrics/modbus/reg/count", borderless: true}, {width: 7},
+                        {view: "mytemplate", src: "/admin/metrics/modbus/slavereg/count", borderless: true},
                     ]
-                }
+                },
+                {
+                    paddingX: 20,
+                    cols: [
+                        {
+                            view: "combo", id: mnid, name: "mn", label: tr("device", "查询设备"),
+                            options: "/admin/modbus/device/mn/options", css:"nborder-input",
+                        },
+                        {
+                            view: "button",
+                            label: "查询",
+                            css: "webix_transparent",
+                            type: "icon",
+                            icon: "mdi mdi-search-web",
+                            borderless: true,
+                            width: 70,
+                            click: function () {
+                                $$(frameid).load("/admin/metrics/modbus/line?mn=" + $$(mnid).getValue())
+                            }
+                        }, {}
+                    ]
+                },
+                {css: "iframe-page", id: frameid, view: "iframe", borderless: true, src: "/admin/metrics/modbus/line"},
             ]
         })
     })

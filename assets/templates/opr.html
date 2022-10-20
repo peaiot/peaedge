@@ -46,13 +46,15 @@
     webix.ready(function () {
         let tableid = webix.uid();
         let uploadid = webix.uid();
-        let reloadData = wxui.reloadDataFunc(tableid, "/admin/opr/query")
+        let reloadData = wxui.reloadDataFunc(tableid, "/admin/opr/query", null)
         webix.ui({
+            css: "main-panel",
+            padding: 7,
             rows: [
-                {
-                    css: "query-toolbar",
-                    paddingX: 10,
-                    cols: [{},
+                wxui.getPageToolbar({
+                    title: "操作员管理",
+                    icon: "mdi mdi-account",
+                    elements: [
                         wxui.getPrimaryButton("编辑", 90, false, function () {
                             let item = $$(tableid).getSelectedItem();
                             if (item) {
@@ -110,7 +112,7 @@
                             }
                         }),
                     ]
-                },
+                }),
                 wxui.getDatatable({
                     tableid: tableid,
                     url: '/admin/opr/query',

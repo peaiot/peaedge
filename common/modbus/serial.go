@@ -6,9 +6,10 @@ package modbus
 
 import (
 	"io"
-	"log"
 	"sync"
 	"time"
+
+	"github.com/peaiot/logging"
 
 	"github.com/goburrow/serial"
 )
@@ -26,7 +27,7 @@ type serialPort struct {
 
 	MsgDelay time.Duration
 
-	Logger      *log.Logger
+	Logger      *logging.Logger
 	IdleTimeout time.Duration
 
 	mu sync.Mutex
@@ -71,11 +72,11 @@ func (mb *serialPort) close() (err error) {
 	return
 }
 
-func (mb *serialPort) logf(format string, v ...interface{}) {
-	if mb.Logger != nil {
-		mb.Logger.Printf(format, v...)
-	}
-}
+// func (mb *serialPort) logf(format string, v ...interface{}) {
+// 	if mb.Logger != nil {
+// 		mb.Logger.Infof(format, v...)
+// 	}
+// }
 
 func (mb *serialPort) startCloseTimer() {
 	if mb.IdleTimeout <= 0 {
@@ -98,7 +99,7 @@ func (mb *serialPort) closeIdle() {
 	}
 	idle := time.Now().Sub(mb.lastActivity)
 	if idle >= mb.IdleTimeout {
-		mb.logf("modbus: closing connection due to idle timeout: %v", idle)
+		mb.Logger.Infof("modbus: closing connection due to idle timeout: %v", idle)
 		mb.close()
 	}
 }

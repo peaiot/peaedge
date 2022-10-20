@@ -16,8 +16,8 @@ import (
 	"github.com/toughstruct/peaedge/app"
 	"github.com/toughstruct/peaedge/assets"
 	"github.com/toughstruct/peaedge/common"
-	"github.com/toughstruct/peaedge/common/log"
 	"github.com/toughstruct/peaedge/common/tpl"
+	"github.com/toughstruct/peaedge/log"
 )
 
 var server *WebServer

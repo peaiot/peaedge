@@ -8,8 +8,8 @@ import (
 	"github.com/goburrow/serial"
 	"github.com/toughstruct/peaedge/app"
 	"github.com/toughstruct/peaedge/common"
-	"github.com/toughstruct/peaedge/common/log"
 	"github.com/toughstruct/peaedge/common/mbserver"
+	"github.com/toughstruct/peaedge/log"
 	"github.com/toughstruct/peaedge/models"
 )
 
@@ -33,7 +33,7 @@ func Listen() error {
 	if tcpAddr != "" {
 		err := slave.root.ListenTCP(tcpAddr)
 		if err != nil {
-			log.Error("modbus slave listen tcp %s error: %v", tcpAddr, err)
+			log.Modbus.Error("modbus slave listen tcp %s error: %v", tcpAddr, err)
 		}
 	}
 	rtuAddr := app.Config().Modbus.RtuAddr
@@ -54,13 +54,13 @@ func Listen() error {
 				RxDuringTx:         false,
 			}})
 		if err != nil {
-			log.Error("modbus slave listen rtu %s error: %v", rtuAddr, err)
+			log.Modbus.Error("modbus slave listen rtu %s error: %v", rtuAddr, err)
 		}
 	}
 
 	err := ReloadRegisterData()
 	if err != nil {
-		log.Error("modbus slave reload register data error: %v", err)
+		log.Modbus.Error("modbus slave reload register data error: %v", err)
 	}
 
 	return nil
@@ -75,7 +75,7 @@ func ReloadRegisterData() (err error) {
 	for _, data := range datas {
 		hbyte, err := hex.DecodeString(data.Value)
 		if err != nil {
-			log.Errorf("modbus slave reload register %s(%d) data (%s) error: %v",
+			log.Modbus.Errorf("modbus slave reload register %s(%d) data (%s) error: %v",
 				data.Name, data.Register, data.Value, err)
 			continue
 		}

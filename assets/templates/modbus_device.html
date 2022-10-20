@@ -151,6 +151,7 @@
                                 {
                                     view: "property", id: "device_attrs", height: 360, complexData: true,
                                     scroll: false,
+                                    editaction:"dblclick",
                                     elements: [
                                         {type: "hidden", id: "id", label: "设备id"},
                                         {type: "text", id: "name", label: "设备名称"},
@@ -180,6 +181,7 @@
                                 wxui.getDatatable({
                                     tableid: tableid,
                                     editable: true,
+                                    editaction:"dblclick",
                                     url: "/admin/modbus/reg/query",
                                     save: "/admin/modbus/reg/save",
                                     columns: [
@@ -221,6 +223,7 @@
                                             adjust: true,
                                             sort: "string"
                                         },
+                                        {id: "rtd", header: ["实时数据"], sort: "string", adjust: true},
                                         {id: "remark", header: ["备注"], editor: "text", sort: "string", hidden: true},
                                         {header: {content: "headerMenu"}, headermenu: false, width: 35}
                                     ],
