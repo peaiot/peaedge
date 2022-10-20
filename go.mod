@@ -12,7 +12,6 @@ require (
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/goburrow/modbus v0.1.0
 	github.com/goburrow/serial v0.1.0
-	github.com/gocarina/gocsv v0.0.0-20220927221512-ad3251f9fa25 // indirect
 	github.com/golang-jwt/jwt/v4 v4.4.2
 	github.com/goplus/igop v0.9.2
 	github.com/gorilla/sessions v1.2.1
@@ -22,9 +21,10 @@ require (
 	github.com/labstack/gommon v0.3.1
 	github.com/mitchellh/mapstructure v1.4.1
 	github.com/montanaflynn/stats v0.6.6
+	github.com/nakabonne/tstorage v0.3.5
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/olivere/elastic/v7 v7.0.24
-	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7
+	github.com/peaiot/logging v0.0.0-20221019130925-1de152764e1b
 	github.com/pkg/errors v0.9.1
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/shirou/gopsutil v3.21.11+incompatible

@@ -3,7 +3,7 @@ package app
 import (
 	"time"
 
-	"github.com/toughstruct/peaedge/common/log"
+	"github.com/toughstruct/peaedge/log"
 )
 
 // SaveModbusRegRtd 保存寄存器数据

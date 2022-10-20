@@ -16,8 +16,8 @@ import (
 	"github.com/toughstruct/peaedge/common"
 	"github.com/toughstruct/peaedge/common/golimit"
 	"github.com/toughstruct/peaedge/common/goscript"
-	"github.com/toughstruct/peaedge/common/log"
 	"github.com/toughstruct/peaedge/common/modbus"
+	"github.com/toughstruct/peaedge/log"
 	"github.com/toughstruct/peaedge/models"
 )
 
@@ -39,7 +39,7 @@ func init() {
 func StartModbusReadTask() {
 	defer func() {
 		if err := recover(); err != nil {
-			log.Error(err)
+			log.Modbus.Error(err)
 		}
 	}()
 
@@ -51,7 +51,7 @@ func StartModbusReadTask() {
 		err := app.DB().Find(&devices).Error
 		if err != nil {
 			emsg := fmt.Sprintf("读取设备列表失败... %s", err.Error())
-			log.Errorf(emsg)
+			log.Modbus.Errorf(emsg)
 			<-sleep5s.C
 			continue
 		}
@@ -88,7 +88,7 @@ func StartModbusReadTask() {
 func ReadModbusRtuRegData(dev models.ModbusDevice) {
 	defer func() {
 		if err := recover(); err != nil {
-			log.Errorf("%+v", err)
+			log.Modbus.Errorf("%+v", err)
 		}
 	}()
 	var modbusregs []models.ModbusReg
@@ -100,7 +100,7 @@ func ReadModbusRtuRegData(dev models.ModbusDevice) {
 
 	client, err := app.NewModbusRTUClient(dev.MbrtuAddr, dev.BaudRate, dev.PktDelay, dev.MbslaveId)
 	if err != nil {
-		log.Errorf("ModuBusRTU 设备[%s -> %s]连接失败 %s", dev.Name, dev.MbrtuAddr, err.Error())
+		log.Modbus.Errorf("ModuBusRTU 设备[%s -> %s]连接失败 %s", dev.Name, dev.MbrtuAddr, err.Error())
 		app.UpdateModbusDevConnStatus(dev.Id, err.Error())
 		return
 	}
@@ -114,7 +114,7 @@ func ReadModbusRtuRegData(dev models.ModbusDevice) {
 		}
 
 		if app.IsDebug() {
-			log.Debugf("正在读取设备 [%s]-[%s] 数据 ", dev.Name, reg.Name)
+			log.Modbus.Debugf("正在读取设备 [%s]-[%s] 数据 ", dev.Name, reg.Name)
 		}
 
 		switch reg.RegType {
@@ -151,7 +151,7 @@ func ReadModbusTcpRegData(dev models.ModbusDevice) {
 
 	client, err := app.GetModbusTCPClient(dev.MbtcpAddr, dev.MbtcpPort, dev.MbslaveId)
 	if err != nil {
-		log.Errorf("ModuBusTCP 设备[%s -> %s:%d]连接失败 %s", dev.Name, dev.MbtcpAddr, dev.MbtcpPort, err.Error())
+		log.Modbus.Errorf("ModuBusTCP 设备[%s -> %s:%d]连接失败 %s", dev.Name, dev.MbtcpAddr, dev.MbtcpPort, err.Error())
 		app.UpdateModbusDevConnStatus(dev.Id, err.Error())
 		return
 	}
@@ -163,7 +163,7 @@ func ReadModbusTcpRegData(dev models.ModbusDevice) {
 			continue
 		}
 		if log.IsDebug() {
-			log.Debugf("正在读取设备 [%s]-[%s] 数据 ", dev.Name, reg.Name)
+			log.Modbus.Debugf("正在读取设备 [%s]-[%s] 数据 ", dev.Name, reg.Name)
 		}
 		switch reg.RegType {
 		case "InputRegister":
@@ -186,13 +186,13 @@ func ReadModbusTcpRegData(dev models.ModbusDevice) {
 func _readCoilData(dev models.ModbusDevice, reg models.ModbusReg, client modbus.Client) {
 	defer func() {
 		if err := recover(); err != nil {
-			log.Error(err)
+			log.Modbus.Error(err)
 		}
 	}()
 	ret, err := client.ReadCoils(uint16(reg.StartAddr), 1)
 	if err != nil {
 		checkClientConn(err, client)
-		log.Errorf("读取设备[%s]寄存器[%s]失败 %s", dev.Name, reg.Name, err.Error())
+		log.Modbus.Errorf("读取设备[%s]寄存器[%s]失败 %s", dev.Name, reg.Name, err.Error())
 		app.SaveModbusRegRtd(reg.Id, common.NA, app.DataFlagFailure, err.Error())
 		return
 	}
@@ -201,7 +201,7 @@ func _readCoilData(dev models.ModbusDevice, reg models.ModbusReg, client modbus.
 	boolBuffer := bytes.NewReader(ret)
 	err = binary.Read(boolBuffer, binary.BigEndian, &val)
 	if err != nil {
-		log.Errorf("解析设备[%s]寄存器[%s]值失败 %s", dev.Name, reg.Name, err.Error())
+		log.Modbus.Errorf("解析设备[%s]寄存器[%s]值失败 %s", dev.Name, reg.Name, err.Error())
 		app.SaveModbusRegRtd(reg.Id, common.NA, app.DataFlagOver, err.Error())
 		return
 	}
@@ -212,13 +212,13 @@ func _readCoilData(dev models.ModbusDevice, reg models.ModbusReg, client modbus.
 func _readDiscreteInputData(dev models.ModbusDevice, reg models.ModbusReg, client modbus.Client) {
 	defer func() {
 		if err := recover(); err != nil {
-			log.Error(err)
+			log.Modbus.Error(err)
 		}
 	}()
 	ret, err := client.ReadDiscreteInputs(uint16(reg.StartAddr), 1)
 	if err != nil {
 		checkClientConn(err, client)
-		log.Errorf("读取设备[%s]寄存器[%s]失败 %s", dev.Name, reg.Name, err.Error())
+		log.Modbus.Errorf("读取设备[%s]寄存器[%s]失败 %s", dev.Name, reg.Name, err.Error())
 		app.SaveModbusRegRtd(reg.Id, common.NA, app.DataFlagFailure, err.Error())
 		return
 	}
@@ -227,7 +227,7 @@ func _readDiscreteInputData(dev models.ModbusDevice, reg models.ModbusReg, clien
 	boolBuffer := bytes.NewReader(ret)
 	err = binary.Read(boolBuffer, binary.BigEndian, &val)
 	if err != nil {
-		log.Errorf("解析设备[%s]寄存器[%s]值失败 %s", dev.Name, reg.Name, err.Error())
+		log.Modbus.Errorf("解析设备[%s]寄存器[%s]值失败 %s", dev.Name, reg.Name, err.Error())
 		app.SaveModbusRegRtd(reg.Id, common.NA, app.DataFlagOver, err.Error())
 		return
 	}
@@ -240,13 +240,13 @@ func _readDiscreteInputData(dev models.ModbusDevice, reg models.ModbusReg, clien
 func _read0304RegisterData(dev models.ModbusDevice, reg models.ModbusReg, client modbus.Client, regtype string) {
 	defer func() {
 		if err := recover(); err != nil {
-			log.Error(err)
+			log.Modbus.Error(err)
 		}
 	}()
 	var regvar models.ModbusVar
 	err := app.DB().Where("id = ?", reg.VarId).First(&regvar).Error
 	if err != nil {
-		log.Errorf("计算设备[%s]寄存器[%s]值失败, 未绑定变量", dev.Name, reg.Name)
+		log.Modbus.Errorf("计算设备[%s]寄存器[%s]值失败, 未绑定变量", dev.Name, reg.Name)
 		app.SaveModbusRegRtd(reg.Id, common.NA, app.DataFlagStop, err.Error())
 		return
 	}
@@ -264,7 +264,7 @@ func _read0304RegisterData(dev models.ModbusDevice, reg models.ModbusReg, client
 
 	if err != nil {
 		checkClientConn(err, client)
-		log.Errorf("读取设备[%s]寄存器[%s]失败 %s", dev.Name, reg.Name, err.Error())
+		log.Modbus.Errorf("读取设备[%s]寄存器[%s]失败 %s", dev.Name, reg.Name, err.Error())
 		app.SaveModbusRegRtd(reg.Id, common.NA, app.DataFlagFailure, err.Error())
 		return
 	}
@@ -273,7 +273,7 @@ func _read0304RegisterData(dev models.ModbusDevice, reg models.ModbusReg, client
 	var dataval = make([]uint16, reglen)
 	err = binary.Read(bytes.NewReader(ret), binary.BigEndian, &dataval)
 	if err != nil {
-		log.Errorf("解析设备[%s]寄存器[%s]值失败 %s", dev.Name, reg.Name, err.Error())
+		log.Modbus.Errorf("解析设备[%s]寄存器[%s]值失败 %s", dev.Name, reg.Name, err.Error())
 		app.SaveModbusRegRtd(reg.Id, common.NA, app.DataFlagOver, err.Error())
 		return
 	}
@@ -291,7 +291,7 @@ func _read0304RegisterData(dev models.ModbusDevice, reg models.ModbusReg, client
 	}
 
 	if result == common.NA {
-		log.Errorf("解析设备[%s]寄存器[%s]值失败 %s", dev.Name, reg.Name, "")
+		log.Modbus.Errorf("解析设备[%s]寄存器[%s]值失败 %s", dev.Name, reg.Name, "")
 		app.SaveModbusRegRtd(reg.Id, common.NA, app.DataFlagOver, "ERRORVALUE")
 		return
 	}
@@ -303,14 +303,14 @@ func _read0304RegisterData(dev models.ModbusDevice, reg models.ModbusReg, client
 		vret, err := goscript.RunFunc(script.Content, script.FuncName, cast.ToFloat64(result))
 		if err != nil {
 			app.SaveModbusRegRtd(reg.Id, common.NA, app.DataFlagOver, err.Error())
-			log.Errorf("计算设备[%s]寄存器[%s]值失败, 请检查参数, %v", dev.Name, reg.Name, err.Error())
+			log.Modbus.Errorf("计算设备[%s]寄存器[%s]值失败, 请检查参数, %v", dev.Name, reg.Name, err.Error())
 			return
 		}
 		result = cast.ToString(vret)
 	}
 
 	if result == "" || result == common.NA {
-		log.Errorf("计算设备[%s]寄存器[%s]值失败, 无结果, 请检查参数, %v", dev.Name, reg.Name, err)
+		log.Modbus.Errorf("计算设备[%s]寄存器[%s]值失败, 无结果, 请检查参数, %v", dev.Name, reg.Name, err)
 		app.SaveModbusRegRtd(reg.Id, common.NA, app.DataFlagStop, "NoResult")
 		return
 	}

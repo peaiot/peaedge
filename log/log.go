@@ -8,39 +8,55 @@ import (
 	"strings"
 	"time"
 
-	"github.com/op/go-logging"
+	"github.com/peaiot/logging"
 )
 
 const ModuleSystem = "System"
+const ModuleHj212 = "HjZIZ"
+const ModuleMqttc = "Mqttc"
+const ModuleModbus = "Modbus"
 
-var log = logging.MustGetLogger(ModuleSystem)
+var Default = logging.MustGetLogger(ModuleSystem)
+var Hj212 = logging.MustGetLogger(ModuleHj212)
+var Mqttc = logging.MustGetLogger(ModuleMqttc)
+var Modbus = logging.MustGetLogger(ModuleModbus)
 
-func SetupLog(level logging.Level, syslogaddr string, logdir string, module string) {
-
+func SetupLog(level logging.Level, syslogaddr string, logdir string) {
 	var format = logging.MustStringFormatter(
 		`%{color} %{time:15:04:05.000} %{pid} %{shortfile} %{shortfunc} > %{level:.4s} %{id:03x}%{color:reset} %{message}`,
 	)
 	Backends := make([]logging.Backend, 0)
 	Backends = append(Backends, logging.NewBackendFormatter(logging.NewLogBackend(os.Stderr, "", 0), format))
-	bs := SetupSyslog(level, syslogaddr, module)
-	bf := FileSyslog(level, logdir, module)
-
+	bs := SetupSyslog(level, syslogaddr, ModuleSystem)
+	bf := FileSyslog(level, logdir, ModuleSystem)
 	if bs != nil {
 		Backends = append(Backends, bs)
 	}
 	if bf != nil {
 		Backends = append(Backends, bf)
 	}
-
 	logging.SetBackend(Backends...)
-	logging.SetLevel(level, module)
-	log = logging.MustGetLogger(module)
+	logging.SetLevel(level, ModuleSystem)
+
+	hjbf := FileSyslog(level, logdir, ModuleHj212)
+	if hjbf != nil {
+		Hj212.SetBackend(hjbf)
+	}
+	mqbf := FileSyslog(level, logdir, ModuleMqttc)
+	if mqbf != nil {
+		Mqttc.SetBackend(mqbf)
+	}
+	mbbf := FileSyslog(level, logdir, ModuleModbus)
+	if mbbf != nil {
+		Modbus.SetBackend(mbbf)
+	}
+
 }
 
 func clearLogs(logsdir string, prefix string) {
 	daydirs, err := ioutil.ReadDir(logsdir)
 	if err != nil {
-		log.Errorf("read day logs dir error, %s", err.Error())
+		Default.Errorf("read day logs dir error, %s", err.Error())
 		return
 	}
 
@@ -49,7 +65,7 @@ func clearLogs(logsdir string, prefix string) {
 			fpath := filepath.Join(logsdir, item.Name())
 			err = os.Remove(fpath)
 			if err != nil {
-				log.Errorf("remove logfile %s error", fpath)
+				Default.Errorf("remove logfile %s error", fpath)
 			}
 		}
 	}
@@ -87,38 +103,17 @@ func FileSyslog(level logging.Level, logdir string, module string) logging.Level
 	return backend1Leveled
 }
 
-type Stdlog struct{}
-
-func (s Stdlog) Write(p []byte) (n int, err error) {
-	log.Info(string(p))
-	return len(p), nil
-}
-
-type Stderr struct{}
-
-func (s Stderr) Write(p []byte) (n int, err error) {
-	log.Info(string(p))
-	return len(p), nil
-}
-
 var (
-	Error   = log.Error
-	ErrorIf = func(err error) {
-		if err != nil {
-			log.Error(err)
-		}
-	}
-	Errorf   = log.Errorf
-	Info     = log.Info
-	Infof    = log.Infof
-	Warning  = log.Warning
-	Warningf = log.Warningf
-	Fatal    = log.Fatal
-	Fatalf   = log.Fatalf
-	Debug    = log.Debug
-	Debugf   = log.Debugf
+	Error  = Default.Error
+	Errorf = Default.Errorf
+	Info   = Default.Info
+	Infof  = Default.Infof
+	Fatal  = Default.Fatal
+	Fatalf = Default.Fatalf
+	Debug  = Default.Debug
+	Debugf = Default.Debugf
 
 	IsDebug = func() bool {
-		return log.IsEnabledFor(logging.DEBUG)
+		return Default.IsEnabledFor(logging.DEBUG)
 	}
 )

@@ -19,7 +19,7 @@ type SysConfig struct {
 }
 
 type SysOpr struct {
-	ID        int64     `json:"id,string" form:"id"  csv:"id"`
+	ID        string    `json:"id" form:"id"  csv:"id"`
 	Realname  string    `json:"realname" form:"realname" csv:"realname"`
 	Mobile    string    `json:"mobile" form:"mobile" csv:"mobile"`
 	Email     string    `json:"email" form:"email" csv:"email"`

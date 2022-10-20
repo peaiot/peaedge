@@ -11,7 +11,7 @@ import (
 	"text/template"
 
 	"github.com/labstack/echo/v4"
-	"github.com/toughstruct/peaedge/common/log"
+	"github.com/toughstruct/peaedge/log"
 )
 
 type CommonTemplate struct {

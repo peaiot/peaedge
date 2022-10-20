@@ -7,8 +7,8 @@ import (
 	"github.com/robfig/cron/v3"
 	_ "github.com/robfig/cron/v3"
 	"github.com/toughstruct/peaedge/app"
-	"github.com/toughstruct/peaedge/common/log"
 	"github.com/toughstruct/peaedge/jobs/modbus_task"
+	"github.com/toughstruct/peaedge/log"
 )
 
 // Sched 计划任务管理

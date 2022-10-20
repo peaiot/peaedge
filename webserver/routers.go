@@ -2,7 +2,7 @@ package webserver
 
 import (
 	"github.com/labstack/echo/v4"
-	"github.com/toughstruct/peaedge/common/log"
+	"github.com/toughstruct/peaedge/log"
 )
 
 func (s *WebServer) initRouters() {
@@ -13,11 +13,6 @@ func (s *WebServer) initRouters() {
 	s.get("/admin/menu.json", s.Menus)
 	s.get("/admin/dashboard", s.Dashboard)
 
-	// metrics
-	s.get("/admin/metrics/system/cpuusage", s.MetricsCpuusage)
-	s.get("/admin/metrics/system/memusage", s.MetricsMemusage)
-	s.get("/admin/metrics/system/uptime", s.MetricsUptime)
-
 	s.initOptionsRouters()
 	s.initModbusDevRouters()
 	s.initModbusRegRouters()
@@ -25,6 +20,7 @@ func (s *WebServer) initRouters() {
 	s.initModbusSlaveRegRouters()
 	s.initDataScriptRouters()
 	s.initOprRouters()
+	s.initMetricsRouters()
 }
 
 func (s *WebServer) get(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) *echo.Route {

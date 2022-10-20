@@ -32,7 +32,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/spf13/cast"
 	"github.com/toughstruct/peaedge/common"
-	"github.com/toughstruct/peaedge/common/log"
+	"github.com/toughstruct/peaedge/log"
 )
 
 type DateRange struct {

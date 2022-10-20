@@ -55,7 +55,7 @@ func (s *WebServer) SysOprQuery(c echo.Context) error {
 
 func (s *WebServer) SysOprAdd(c echo.Context) error {
 	form := new(models.SysOpr)
-	form.ID = common.UUIDint64()
+	form.ID = common.UUIDBase32()
 	common.Must(c.Bind(form))
 	common.CheckEmpty("Username", form.Username)
 	common.CheckEmpty("Realname", form.Realname)
@@ -82,7 +82,7 @@ func (s *WebServer) SysOprSave(c echo.Context) error {
 	common.Must(c.Bind(form))
 	switch op {
 	case "insert":
-		form.ID = common.UUIDint64()
+		form.ID = common.UUIDBase32()
 		common.Must(app.DB().Create(form).Error)
 		return c.JSON(200, map[string]interface{}{"id": form.ID})
 	case "update":

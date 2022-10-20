@@ -2,12 +2,11 @@ package app
 
 import (
 	"fmt"
-	slog "log"
 	"sync"
 	"time"
 
-	"github.com/toughstruct/peaedge/common/log"
 	"github.com/toughstruct/peaedge/common/modbus"
+	"github.com/toughstruct/peaedge/log"
 )
 
 // NewModbusRTUClient 创建新的 modbusrtu 客户端
@@ -22,7 +21,7 @@ func NewModbusRTUClient(rtuaddr string, baudRate int, pktDelay int, slaveId int)
 	handler.IdleTimeout = time.Second * 5
 	handler.Timeout = 1000 * time.Millisecond
 	if IsDebug() {
-		handler.Logger = slog.New(log.Stdlog{}, "Modbus-RTU", 0)
+		handler.Logger = log.Modbus
 	}
 	err := handler.Connect()
 	if err != nil {
@@ -52,7 +51,7 @@ func GetModbusTCPClient(devaddr string, port int, slaveid int) (modbus.Client, e
 	handler.Timeout = 1000 * time.Millisecond
 	handler.IdleTimeout = time.Hour * 24
 	if IsDebug() {
-		handler.Logger = slog.New(log.Stdlog{}, "Modbus-TCP", 0)
+		handler.Logger = log.Modbus
 	}
 	err := handler.Connect()
 	if err != nil {

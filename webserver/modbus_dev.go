@@ -14,6 +14,7 @@ import (
 func (s *WebServer) initModbusDevRouters() {
 	// modbus
 	s.get("/admin/modbus/proto/options", s.ModbusProtoOptions)
+	s.get("/admin/modbus/device/mn/options", s.ModbusDeviceMnOptions)
 	s.get("/admin/modbus/device", s.ModbusDevice)
 	s.get("/admin/modbus/device/query", s.ModbusDeviceQuery)
 	s.post("/admin/modbus/device/save", s.ModbusDeviceSave)
@@ -22,6 +23,20 @@ func (s *WebServer) initModbusDevRouters() {
 
 func (s *WebServer) ModbusDevice(c echo.Context) error {
 	return c.Render(http.StatusOK, "modbus_device", map[string]string{})
+}
+
+func (s *WebServer) ModbusDeviceMnOptions(c echo.Context) error {
+	var data []models.ModbusDevice
+	err := app.DB().Find(&data).Error
+	common.Must(err)
+	var options []*web.JsonOptions
+	for _, d := range data {
+		options = append(options, &web.JsonOptions{
+			Id:    d.MN,
+			Value: d.Name,
+		})
+	}
+	return c.JSON(http.StatusOK, options)
 }
 
 func (s *WebServer) ModbusDeviceQuery(c echo.Context) error {

@@ -7,15 +7,16 @@ import (
 	"net/http"
 	_ "net/http/pprof"
 	"os"
+	"os/exec"
 	"runtime"
 	_ "time/tzdata"
 
 	"github.com/toughstruct/peaedge/app"
 	"github.com/toughstruct/peaedge/assets"
 	"github.com/toughstruct/peaedge/common/installer"
-	"github.com/toughstruct/peaedge/common/log"
 	"github.com/toughstruct/peaedge/config"
 	"github.com/toughstruct/peaedge/jobs"
+	"github.com/toughstruct/peaedge/log"
 	"github.com/toughstruct/peaedge/mbslave"
 	"github.com/toughstruct/peaedge/mqttc"
 	"github.com/toughstruct/peaedge/webserver"
@@ -52,7 +53,25 @@ func printHelp() {
 	}
 }
 
+func open(url string) error {
+	var cmd string
+	var args []string
+
+	switch runtime.GOOS {
+	case "windows":
+		cmd = "cmd"
+		args = []string{"/c", "start"}
+	case "darwin":
+		cmd = "open"
+	default: // "linux", "freebsd", "openbsd", "netbsd"
+		cmd = "xdg-open"
+	}
+	args = append(args, url)
+	return exec.Command(cmd, args...).Start()
+}
+
 func main() {
+	// go open("http://127.0.0.1:1850")
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	flag.Parse()
 
