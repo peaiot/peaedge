@@ -24,7 +24,7 @@ func Init() {
 	Sched = cron.New(cron.WithLocation(loc))
 	go modbus_task.StartModbusReadTask()
 
-	_, _ = Sched.AddFunc(fmt.Sprintf("@every %s", app.Config().Data.RtdSave), func() {
+	_, _ = Sched.AddFunc(fmt.Sprintf("@every %ds", 60), func() {
 		modbus_task.RegisterSaveRtdTask()
 	})
 

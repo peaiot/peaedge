@@ -165,6 +165,24 @@ type ModbusSlaveReg struct {
 	Remark   string `json:"remark" csv:"remark" form:"remark"`
 }
 
+type MqttChannel struct {
+	ID              string `json:"id" csv:"id" form:"id"`
+	Server          string `json:"server" csv:"server" form:"server"`
+	ClientId        string `json:"client_id" csv:"client_id" form:"client_id"`
+	Username        string `json:"username" csv:"username" form:"username"`
+	Password        string `json:"password" csv:"password" form:"password"`
+	SubTopic        string `json:"sub_topic" csv:"sub_topic" form:"sub_topic"`
+	PubTopic        string `json:"pub_topic" csv:"pub_topic" form:"pub_topic"`
+	KeepAlive       int    `json:"keep_alive" csv:"keep_alive" form:"keep_alive"`
+	PingTimeout     int    `json:"ping_timeout" csv:"ping_timeout" form:"ping_timeout"`
+	RetryInterval   int    `json:"retry_interval" csv:"retry_interval" form:"retry_interval"`
+	CleanSession    int    `json:"clean_session" csv:"clean_session" form:"clean_session"`
+	ProtocolVersion int    `json:"protocol_version" csv:"protocol_version" form:"protocol_version"`
+	Retained        int    `json:"retained" csv:"retained" form:"retained"`
+	Status          int    `json:"status" csv:"status" form:"status"`
+	Remark          string `json:"remark" csv:"remark" form:"remark"`
+}
+
 var Tables = []interface{}{
 	&SysConfig{},
 	&SysOpr{},
@@ -181,6 +199,8 @@ var Tables = []interface{}{
 	&IotDevice{},
 	&DeviceRtdData{},
 	&ModbusSlaveReg{},
+	// channel
+	&MqttChannel{},
 }
 
 func (r *ModbusVar) GetByteOrder() string {

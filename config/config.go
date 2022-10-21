@@ -39,23 +39,14 @@ type ModbusConfig struct {
 	Debug    bool   `yaml:"debug"`
 }
 
-type MqttConfig struct {
-	Broker   string `yaml:"broker"`
-	Username string `yaml:"username"`
-	Password string `yaml:"password"`
-	Debug    bool   `yaml:"debug"`
-}
-
 type DataConfig struct {
 	RtdSave string `yaml:"rtd_save"`
 }
 
 type AppConfig struct {
 	System SysConfig    `yaml:"system"`
-	Mqtt   MqttConfig   `yaml:"mqtt"`
 	Web    WebConfig    `yaml:"web"`
 	Modbus ModbusConfig `yaml:"modbus"`
-	Data   DataConfig   `yaml:"data"`
 }
 
 func (c *AppConfig) GetLogDir() string {
@@ -74,10 +65,6 @@ func (c *AppConfig) GetPrivateDir() string {
 	return path.Join(c.System.Workdir, "private")
 }
 
-func (c *AppConfig) GetResourceDir() string {
-	return path.Join(c.System.Workdir, "resource")
-}
-
 func (c *AppConfig) GetBackupDir() string {
 	return path.Join(c.System.Workdir, "backup")
 }
@@ -87,7 +74,6 @@ func (c *AppConfig) InitDirs() {
 	os.MkdirAll(path.Join(c.System.Workdir, "data"), 0755)
 	os.MkdirAll(path.Join(c.System.Workdir, "public"), 0755)
 	os.MkdirAll(path.Join(c.System.Workdir, "private"), 0755)
-	os.MkdirAll(path.Join(c.System.Workdir, "resource"), 0755)
 	os.MkdirAll(path.Join(c.System.Workdir, "backup"), 0644)
 }
 
@@ -138,9 +124,6 @@ var DefaultBssConfig = &AppConfig{
 		Version:    "latest",
 		Debug:      true,
 	},
-	Mqtt: MqttConfig{
-		Broker: "tcp://",
-	},
 	Web: WebConfig{
 		Host:   "0.0.0.0",
 		Port:   1850,
@@ -150,9 +133,6 @@ var DefaultBssConfig = &AppConfig{
 		TcpAddr: "0.0.0.0:1502",
 		RtuAddr: "/dev/null",
 		Debug:   true,
-	},
-	Data: DataConfig{
-		RtdSave: "60s",
 	},
 }
 
@@ -173,11 +153,6 @@ func LoadConfig(cfile string) *AppConfig {
 	}
 	setEnvValue("PEAEDGE_SYSTEM_WORKER_DIR", &cfg.System.Workdir)
 	setEnvValue("PEAEDGE_SYSTEM_DBFILE", &cfg.System.DBFile)
-
-	setEnvValue("PEAEDGE_MQTT_BROKER", &cfg.Mqtt.Broker)
-	setEnvValue("PEAEDGE_MQTT_USERNAME", &cfg.Mqtt.Username)
-	setEnvValue("PEAEDGE_MQTT_PASSWORD", &cfg.Mqtt.Password)
-	setEnvBoolValue("PEAEDGE_MQTT_DEBUG", &cfg.Mqtt.Debug)
 
 	setEnvBoolValue("PEAEDGE_SYSTEM_DEBUG", &cfg.System.Debug)
 	setEnvValue("PEAEDGE_SYSLOG_HOST", &cfg.System.SyslogAddr)
