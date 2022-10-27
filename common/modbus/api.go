@@ -52,4 +52,6 @@ type Client interface {
 	Close() error
 
 	ReConnect() error
+
+	GetTransporter() Transporter
 }

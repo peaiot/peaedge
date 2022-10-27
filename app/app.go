@@ -7,10 +7,12 @@ import (
 	"runtime/debug"
 	"time"
 
+	evbus "github.com/asaskevich/EventBus"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/nakabonne/tstorage"
 	"github.com/peaiot/logging"
 	"github.com/toughstruct/peaedge/common"
+	"github.com/toughstruct/peaedge/common/modbus"
 	"github.com/toughstruct/peaedge/config"
 	"github.com/toughstruct/peaedge/log"
 	"github.com/toughstruct/peaedge/models"
@@ -25,12 +27,16 @@ var (
 	gormDB    *gorm.DB
 	tsdb      tstorage.Storage
 	isInit    bool
+	evBus     evbus.Bus
+	mbTcpPool *modbus.TcpTransporterPool
+	mbRtuPool *modbus.RtuTransporterPool
 	// cache  *freecache.Cache
 )
 
 // Init Global initialization call
 func Init(cfg *config.AppConfig) {
 	appConfig = cfg
+	evBus = evbus.New()
 	setupTimeZone()
 	setupLogger()
 	setupTsStorage()
@@ -38,6 +44,9 @@ func Init(cfg *config.AppConfig) {
 	var err error
 	gormDB, err = getGormDB()
 	common.Must(err)
+	setupSubscribers()
+	mbTcpPool = modbus.NewTcpTransporterPool(16)
+	mbRtuPool = modbus.NewRtuTransporterPool()
 	isInit = true
 	log.Infof("app init done")
 }
@@ -111,6 +120,12 @@ func OnExit() {
 	if tsdb != nil {
 		_ = tsdb.Close()
 	}
+	if mbTcpPool != nil {
+		mbTcpPool.Shutdown()
+	}
+	if mbRtuPool != nil {
+		mbRtuPool.Shutdown()
+	}
 }
 
 func Migrate(track bool) (err error) {
@@ -143,6 +158,10 @@ func Config() *config.AppConfig {
 }
 func DB() *gorm.DB {
 	return gormDB
+}
+
+func EvBUS() evbus.Bus {
+	return evBus
 }
 
 func TsDB() tstorage.Storage {

@@ -95,6 +95,28 @@ wxui.removeFromArray = function (arr, key) {
     }
 }
 
+
+markdown = new showdown.Converter()
+markdown.setOption('simplifiedAutoLink', true);
+markdown.setOption('rawPrefixHeaderId', true);
+markdown.setOption('rawHeaderId', true);
+markdown.setOption('parseImgDimensions', true);
+markdown.setOption('smoothLivePreview‎', true);
+markdown.setOption('smartIndentationFix‎', true);
+markdown.setOption('encodeEmails', true);
+markdown.setOption('emoji', true);
+markdown.setOption('tables', true);
+markdown.setOption('tablesHeaderId', true);
+markdown.setOption('tasklists', true);
+markdown.toHTML = function (src) {
+    let r = markdown.makeHtml(src)
+    setTimeout(function () {
+        window.mermaid.init(undefined, document.querySelectorAll('.language-mermaid'));
+    }, 1000)
+    return r
+}
+
+
 wxui.metricsColors = ["#f44336", "#9c27b0", "#3f51b5", "#0288d1", "#009688", "#558b2f", "#ffa000", "#ff5722", "#795548", "#546e7a", "#e91e63", "#1e88e5"]
 /**
  * 构造一个工具栏
@@ -825,7 +847,7 @@ wxui.openFormWindow = function (config) {
                     id: formid,
                     view: "form",
                     scroll: true,
-                    elementsConfig: config.elementsConfig || {labelWidth: 100},
+                    elementsConfig: config.elementsConfig || {labelWidth: 100,},
                     elements: config.elements,
                     data: config.data || {}
                 },
@@ -836,14 +858,14 @@ wxui.openFormWindow = function (config) {
                             view: "button",
                             name: "submit",
                             type: "form",
-                            value: tr("global", "Save"),
+                            value: tr("global", "提交"),
                             width: 120,
                             height: 36,
                             click: function () {
                                 if (!$$(formid).validate()) {
                                     webix.message({
                                         type: "error",
-                                        text: tr("global", "Please fill in the valid data."),
+                                        text: tr("global", "请填写有效数据"),
                                         expire: 1000
                                     });
                                     return false;
@@ -868,7 +890,7 @@ wxui.openFormWindow = function (config) {
                             css: "webix_transparent",
                             icon: "mdi mdi-close",
                             width: 70,
-                            label: tr("global", "Cancel"),
+                            label: tr("global", "取消"),
                             click: function () {
                                 $$(winid).close();
                             }
@@ -970,7 +992,7 @@ wxui.getForm = function (config) {
                                             text: tr("global", "Please fill in the valid data."),
                                             expire: 1000
                                         });
-                                        return false;
+                                        return;
                                     }
                                     let param = $$(formid).getValues();
                                     webix.ajax().post(config.post, param).then(function (result) {
@@ -1026,7 +1048,7 @@ wxui.getForm = function (config) {
  * body   窗口UI元素
  */
 wxui.openSideWindow = function (config) {
-    let sideid = config.winid;
+    let sideid = config.winid || webix.uid();
     if ($$(sideid) && $$(sideid).isVisible()) {
         $$(sideid).close();
         return;
@@ -1037,11 +1059,11 @@ wxui.openSideWindow = function (config) {
         width: config.width || 420,
         position: "right",
         // animate:false,
-        state: function (state) {
-            let toolbarHeight = $$(config.parentId).$height;
-            state.top = toolbarHeight;
-            state.height -= toolbarHeight;
-        },
+        // state: function (state) {
+        //     let toolbarHeight = $$(config.parentId).$height;
+        //     state.top = toolbarHeight;
+        //     state.height -= toolbarHeight;
+        // },
         body: {
             rows: [
                 {
@@ -1424,3 +1446,24 @@ wxui.displayTableMessage = function (node, width, height, message, mode) {
         }
     }).show(node)
 }
+
+wxui.statusOptions = [
+    {id: "0", value: "正常"},
+    {id: "1", value: "禁用"},
+]
+
+wxui.mqttQosOptions = [
+    {id: "0", value: "最多一次"},
+    {id: "1", value: "最少一次"},
+    {id: "2", value: "只有一次"},
+]
+
+wxui.mqttClearSessionOptions = [
+    {"id": "0", "value": "持久会话"}, // the initially selected item
+    {"id": "1", "value": "离线自动销毁"}
+]
+
+wxui.mqttRetainOptions = [
+    {"id": "0", "value": "不保留"}, // the initially selected item
+    {"id": "1", "value": "保留"}
+]

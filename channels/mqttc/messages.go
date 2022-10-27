@@ -39,7 +39,7 @@ func (m *Message[T]) Encode() ([]byte, error) {
 	if m.Command == "" {
 		return nil, errors.New("command is empty")
 	}
-	return json.Marshal(m)
+	return json.MarshalIndent(m, "", "  ")
 }
 
 func DecodeMessage[T any](data []byte) (*Message[T], error) {

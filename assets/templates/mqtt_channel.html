@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {{template "header"}}
+</head>
+<body>
+<script>
+    let getColumns = function () {
+        return [
+            {
+                cols: [
+                    {view: "text", name: "name", label: "名称", required: true, css: "nborder-input",},
+                    {
+                        view: "combo", name: "status", label: "启用", value: 1, options: wxui.statusOptions, required: true, css: "nborder-input",
+                    },
+                ]
+            },
+            {
+                cols: [
+                    {view: "text", name: "server", label: "地址", css: "nborder-input", required: true,},
+                    {view: "text", name: "client_id", label: "客户端ID", css: "nborder-input", required: true,},
+                ]
+            },
+            {
+                cols: [
+                    {view: "text", name: "username", label: "服务器用户名", css: "nborder-input", required: true,},
+                    {view: "text", name: "password", label: "服务器密码", css: "nborder-input", required: true,},
+                ]
+            },
+            {
+                cols: [
+                    {view: "text", name: "sub_topic", label: "订阅主题", value: "peaedge/subscribe", css: "nborder-input", required: true,},
+                    {view: "text", name: "pub_topic", label: "发布主题", value: "peaedge/publish", css: "nborder-input", required: true,},
+                ]
+            },
+            {
+                cols: [
+                    {view: "counter", name: "keep_alive", label: "链接超时", value: 60, css: "nborder-input",},
+                    {view: "counter", name: "ping_timeout", label: "ping超时", value: 10, css: "nborder-input",},
+                ]
+            },
+            {
+                cols: [
+                    {view: "counter", name: "protocol_version", value: "5", label: "协议版本"},
+                    {view: "text", name: "will", label: "遗嘱的主题", css: "nborder-input",},
+                ]
+            },
+            {
+                cols: [
+                    {view: "counter", name: "retry_interval", value: 60, label: "重连间隔-秒", css: "nborder-input",},
+                    {
+                        view: "combo", name: "clear_session", label: "保存会话标志", value: 1, options: wxui.mqttClearSessionOptions, required: true, css: "nborder-input",
+                    },
+                ]
+            },
+            {
+                cols: [
+                    {
+                        view: "combo", name: "qos", label: "MQTT消息质量", value: 1, options: wxui.mqttQosOptions, css: "nborder-input",
+                    },
+                    {
+                        view: "combo", name: "retained", label: "消息保留标志", value: 1, options: wxui.mqttRetainOptions, required: true, css: "nborder-input",
+                    },
+                ]
+            },
+            {view: "label", label: "备注",},
+            {name: "remark", view: "codemirror-editor", mode: "markdown"},
+        ]
+    }
+
+    let deleteItem = function (ids, callback) {
+        webix.confirm({
+            title: "Operation confirmation",
+            ok: "Yes", cancel: "No",
+            text: "Confirm to delete? This operation is irreversible.",
+            callback: function (ev) {
+                if (ev) {
+                    webix.ajax().get('/admin/channel/mqtt/delete', {ids: ids}).then(function (result) {
+                        let resp = result.json();
+                        webix.message({type: resp.msgtype, text: resp.msg, expire: 2000});
+                        if (callback)
+                            callback()
+                    }).fail(function (xhr) {
+                        webix.message({type: 'error', text: "Delete Failure:" + xhr.statusText, expire: 2000});
+                    });
+                }
+            }
+        });
+    }
+
+    let openDetail = function (item) {
+        let valitem = webix.copy(item)
+        let detailid = webix.uid()
+        wxui.openSideWindow({
+            width: 480,
+            title: "MQTT 通道",
+            body: {
+                view: "form",
+                paddingX: 20,
+                elementsConfig: {
+                    labelWidth: 120,
+                },
+                data: valitem,
+                css: "detail-form",
+                elements: [
+                    {view: "text", name: "name", label: "名称", readonly: true,},
+                    {view: "text", name: "server", label: "地址",  readonly: true,},
+                    {view: "text", name: "client_id", label: "客户端ID",  readonly: true,},
+                    {view: "text", name: "username", label: "服务器用户名",  readonly: true,},
+                    {view: "text", name: "password", label: "服务器密码",  readonly: true,},
+                    {view: "text", name: "sub_topic", label: "订阅主题", value: "peaedge/subscribe",  readonly: true,},
+                    {view: "text", name: "pub_topic", label: "发布主题", value: "peaedge/publish",  readonly: true,},
+                    {view: "counter", name: "keep_alive", label: "链接超时", readonly: true},
+                    {view: "counter", name: "ping_timeout", label: "ping超时", readonly: true},
+                    {view: "counter", name: "protocol_version", value: "5", label: "协议版本", readonly: true},
+                    {view: "text", name: "will", label: "遗嘱的主题",readonly: true},
+                    {view: "counter", name: "retry_interval", value: 60, label: "重连间隔-秒", readonly: true},
+                    {
+                        view: "combo", name: "clear_session", label: "保存会话标志", options: wxui.mqttClearSessionOptions,  readonly: true
+                    },
+                    {
+                        view: "combo", name: "qos", label: "MQTT消息质量", value: 1, options: wxui.mqttQosOptions, readonly: true
+                    },
+                    {
+                        view: "combo", name: "retained", label: "消息保留标志", value: 1, options: wxui.mqttRetainOptions,  readonly: true
+                    },
+                    {view: "text", name: "created_at", label: gtr("创建时间"), readonly: true,},
+                    {view: "text", name: "updated_at", label: gtr("更新时间"), readonly: true,},
+                    {id: detailid, view: "template", css: "data-remark", template: markdown.toHTML(valitem.remark), borderless: true, scroll: "auto"},
+                ]
+            }
+        })
+    }
+
+    webix.ready(function () {
+        let tableid = webix.uid();
+        let reloadData = wxui.reloadDataFunc(tableid, "/admin/channel/mqtt/query", null)
+        webix.ui({
+            css: "main-panel",
+            padding: 10,
+            rows: [
+                wxui.getPageToolbar({
+                    title: "MQTT 通道管理",
+                    icon: "mdi mdi-link",
+                    elements: [
+                        wxui.getPrimaryButton("编辑", 90, false, function () {
+                            let item = $$(tableid).getSelectedItem();
+                            if (item) {
+                                let vitem = webix.copy(item)
+                                wxui.openFormWindow({
+                                    fullscreen: true,
+                                    width: 640,
+                                    height: 720,
+                                    title: "修改 MQTT 通道",
+                                    data: vitem,
+                                    post: "/admin/channel/mqtt/update",
+                                    callback: reloadData,
+                                    elements: getColumns()
+                                }).show();
+                            } else {
+                                webix.message({type: 'error', text: "Please select one", expire: 1500});
+                            }
+                        }),
+                        wxui.getPrimaryButton("克隆", 90, false, function () {
+                            let item = $$(tableid).getSelectedItem();
+                            if (item) {
+                                let vitem = webix.copy(item)
+                                vitem._id = ""
+                                vitem.id = ""
+                                wxui.openFormWindow({
+                                    fullscreen: true,
+                                    width: 640,
+                                    height: 720,
+                                    title: "克隆 MQTT 通道",
+                                    data: vitem,
+                                    post: "/admin/channel/mqtt/add",
+                                    callback: reloadData,
+                                    elements: getColumns()
+                                }).show();
+                            } else {
+                                webix.message({type: 'error', text: "Please select one", expire: 1500});
+                            }
+                        }),
+                        wxui.getPrimaryButton("创建", 90, false, function () {
+                            wxui.openFormWindow({
+                                fullscreen: true,
+                                width: 640,
+                                height: 720,
+                                title: "创建 MQTT 通道",
+                                post: "/admin/channel/mqtt/add",
+                                callback: reloadData,
+                                data: {
+                                    clear_session: 1,
+                                    ping_timeout: 10,
+                                    keep_alive: 60,
+                                    protocol_version: 5,
+                                    retry_interval: 60,
+                                    sub_topic: "peaedge/subscribe",
+                                    pub_topic: "peaedge/publish",
+                                    qos: 1,
+                                    retained: 1,
+                                },
+                                elements: getColumns()
+                            }).show();
+                        }),
+                        wxui.getDangerButton("删除", 90, false, function () {
+                            let rows = wxui.getTableCheckedIds(tableid);
+                            if (rows.length === 0) {
+                                webix.message({type: 'error', text: "Please select one", expire: 1500});
+                            } else {
+                                deleteItem(rows.join(","), reloadData);
+                            }
+                        }),
+                    ],
+                }),
+                wxui.getDatatable({
+                    tableid: tableid,
+                    url: '/admin/channel/mqtt/query',
+                    columns: [
+                        {
+                            id: "state",
+                            header: {content: "masterCheckbox", css: "center"},
+                            headermenu: false,
+                            adjust: true,
+                            css: "center",
+                            template: "{common.checkbox()}"
+                        },
+                        {
+                            id: "name", header: ["名称"], adjust: true, sort: "server",
+                            template: "<a class='do_detail' href='javascript:void(0)'>#name#</a>"
+                        },
+                        {id: "protocol_version", header: ["协议版本"], adjust: true, sort: "server",},
+                        {id: "client_id", header: ["地址"], adjust: true, sort: "server",},
+                        {id: "server", header: ["地址"], fillspace: true, sort: "server",},
+                        {id: "qos", header: ["质量"], options:wxui.mqttQosOptions, adjust: true, sort: "server",},
+                        {id: "status", header: ["状态"], options:wxui.statusOptions, adjust: true, sort: "server",},
+                        {header: {content: "headerMenu"}, headermenu: false, width: 35}
+                    ],
+                    rightSplit: 1,
+                    pager: true,
+                    on: {
+                        onItemDblClick: function (id, e, node) {
+                            openDetail(this.getItem(id))
+                        }
+                    },
+                    onClick: {
+                        do_detail: function (e, id) {
+                            openDetail(this.getItem(id))
+                        },
+                    },
+                }),
+                wxui.getTableFooterBar({
+                    tableid: tableid,
+                    callback: reloadData,
+                    actions: [],
+                }),
+            ]
+        })
+    })
+</script>
+</body>
+</html>

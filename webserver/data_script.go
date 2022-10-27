@@ -1,6 +1,7 @@
 package webserver
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -8,8 +9,8 @@ import (
 	"github.com/spf13/cast"
 	"github.com/toughstruct/peaedge/app"
 	"github.com/toughstruct/peaedge/common"
-	"github.com/toughstruct/peaedge/common/goscript"
 	"github.com/toughstruct/peaedge/common/web"
+	"github.com/toughstruct/peaedge/golua"
 	"github.com/toughstruct/peaedge/models"
 )
 
@@ -57,8 +58,8 @@ func (s *WebServer) DataScriptQuery(c echo.Context) error {
 
 func (s *WebServer) DataScriptAdd(c echo.Context) error {
 	form := new(models.DataScript)
-	form.ID = common.UUIDBase32()
 	common.Must(c.Bind(form))
+	form.ID = common.UUIDBase32()
 	common.CheckEmpty("name", form.Name)
 	common.CheckEmpty("func_name", form.FuncName)
 	common.Must(app.DB().Create(form).Error)
@@ -70,7 +71,7 @@ func (s *WebServer) DataScriptUpdate(c echo.Context) error {
 	common.Must(c.Bind(form))
 	common.CheckEmpty("name", form.Name)
 	common.CheckEmpty("func_name", form.FuncName)
-	common.Must(app.DB().Updates(form).Error)
+	common.Must(app.DB().Save(form).Error)
 	return c.JSON(http.StatusOK, web.RestSucc("success"))
 }
 
@@ -78,11 +79,16 @@ func (s *WebServer) DataScriptTest(c echo.Context) error {
 	args := c.FormValue("args")
 	src := c.FormValue("src")
 	fname := c.FormValue("func")
-	ret, err := goscript.RunFunc(src, fname, cast.ToFloat64(args))
-	if err != nil {
-		return c.JSON(http.StatusOK, web.RestError(err.Error()))
+	switch fname {
+	case "HandlerModbusRtd":
+		ret, err := golua.HandlerModbusRtd(src, cast.ToInt(args))
+		if err != nil {
+			return c.JSON(http.StatusOK, web.RestError(err.Error()))
+		}
+		return c.JSON(http.StatusOK, web.RestSucc("Result = "+cast.ToString(ret)))
+	default:
+		return c.JSON(http.StatusOK, web.RestError(fmt.Sprintf("func %s not found", fname)))
 	}
-	return c.JSON(http.StatusOK, web.RestSucc("Result = "+cast.ToString(ret)))
 }
 
 func (s *WebServer) DataScriptSave(c echo.Context) error {

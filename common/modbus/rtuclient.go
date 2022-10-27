@@ -24,7 +24,7 @@ type RTUClientHandler struct {
 	rtuSerialTransporter
 }
 
-type RTUClientTransport struct {
+type RTUClientTransporter struct {
 	rtuSerialTransporter
 }
 
@@ -32,13 +32,14 @@ type RTUClientPackager struct {
 	rtuPackager
 }
 
-func NewRTUClientPackager() *RTUClientPackager {
+func NewRTUClientPackager(slaveid int) *RTUClientPackager {
 	handler := &RTUClientPackager{}
+	handler.SlaveId = byte(slaveid)
 	return handler
 }
 
-func NewRTUClientTransport(address string) *RTUClientTransport {
-	handler := &RTUClientTransport{}
+func NewRTUClientTransporter(address string) *RTUClientTransporter {
+	handler := &RTUClientTransporter{}
 	handler.Address = address
 	handler.Timeout = serialTimeout
 	handler.IdleTimeout = serialIdleTimeout
@@ -66,10 +67,11 @@ type rtuPackager struct {
 }
 
 // Encode encodes PDU in a RTU frame:
-//  Slave Address   : 1 byte
-//  Function        : 1 byte
-//  Data            : 0 up to 252 bytes
-//  CRC             : 2 byte
+//
+//	Slave Address   : 1 byte
+//	Function        : 1 byte
+//	Data            : 0 up to 252 bytes
+//	CRC             : 2 byte
 func (mb *rtuPackager) Encode(pdu *ProtocolDataUnit) (adu []byte, err error) {
 	length := len(pdu.Data) + 4
 	if length > rtuMaxSize {

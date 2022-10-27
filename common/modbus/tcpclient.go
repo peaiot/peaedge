@@ -33,6 +33,28 @@ type TCPClientHandler struct {
 	tcpTransporter
 }
 
+type TCPClientTransporter struct {
+	tcpTransporter
+}
+
+func NewTCPClientTransporter(address string) *TCPClientTransporter {
+	h := &TCPClientTransporter{}
+	h.Address = address
+	h.Timeout = tcpTimeout
+	h.IdleTimeout = tcpIdleTimeout
+	return h
+}
+
+type TCPClientPackager struct {
+	tcpPackager
+}
+
+func NewTCPClientPackager(slaveid int) *TCPClientPackager {
+	p := &TCPClientPackager{}
+	p.SlaveId = byte(slaveid)
+	return p
+}
+
 // NewTCPClientHandler allocates a new TCPClientHandler.
 func NewTCPClientHandler(address string) *TCPClientHandler {
 	h := &TCPClientHandler{}
@@ -40,12 +62,6 @@ func NewTCPClientHandler(address string) *TCPClientHandler {
 	h.Timeout = tcpTimeout
 	h.IdleTimeout = tcpIdleTimeout
 	return h
-}
-
-// TCPClient creates TCP client with default handler and given connect string.
-func TCPClient(address string) Client {
-	handler := NewTCPClientHandler(address)
-	return NewClient(handler)
 }
 
 // tcpPackager implements Packager interface.
@@ -57,12 +73,13 @@ type tcpPackager struct {
 }
 
 // Encode adds modbus application protocol header:
-//  Transaction identifier: 2 bytes
-//  Protocol identifier: 2 bytes
-//  Length: 2 bytes
-//  Unit identifier: 1 byte
-//  Function code: 1 byte
-//  Data: n bytes
+//
+//	Transaction identifier: 2 bytes
+//	Protocol identifier: 2 bytes
+//	Length: 2 bytes
+//	Unit identifier: 1 byte
+//	Function code: 1 byte
+//	Data: n bytes
 func (mb *tcpPackager) Encode(pdu *ProtocolDataUnit) (adu []byte, err error) {
 	adu = make([]byte, tcpHeaderSize+1+len(pdu.Data))
 
@@ -108,10 +125,11 @@ func (mb *tcpPackager) Verify(aduRequest []byte, aduResponse []byte) (err error)
 }
 
 // Decode extracts PDU from TCP frame:
-//  Transaction identifier: 2 bytes
-//  Protocol identifier: 2 bytes
-//  Length: 2 bytes
-//  Unit identifier: 1 byte
+//
+//	Transaction identifier: 2 bytes
+//	Protocol identifier: 2 bytes
+//	Length: 2 bytes
+//	Unit identifier: 1 byte
 func (mb *tcpPackager) Decode(adu []byte) (pdu *ProtocolDataUnit, err error) {
 	// Read length value in the header
 	length := binary.BigEndian.Uint16(adu[4:])

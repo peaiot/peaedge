@@ -28,13 +28,13 @@
     webix.ready(function () {
         let importUrl = '/admin/modbus/slavereg/import'
         let exportUrl = '/admin/modbus/slavereg/export'
-        let tableid = webix.uid();
-        let uploadid = webix.uid();
+        let tableid = webix.uid().toString();
+        let uploadid = webix.uid().toString();
         let reloadData = wxui.reloadDataFunc(tableid, "/admin/modbus/slavereg/query", null)
         wxui.initUploadApi(uploadid, importUrl, reloadData);
         webix.ui({
             css: "main-panel",
-            padding: 7,
+            padding: 10,
             rows: [
                 wxui.getPageToolbar({
                     title: "Slave 寄存器",

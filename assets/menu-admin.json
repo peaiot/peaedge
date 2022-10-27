@@ -1,17 +1,19 @@
 [
   {"id": "100", "value": "系统状态", "icon": "mdi mdi-monitor-dashboard", "url": "/admin/dashboard"},
   {
-    "id": "120", "value": "Modbus", "icon": "mdi mdi-lan", "data": [
+    "id": "120", "value": "设备管理", "icon": "mdi mdi-lan", "data": [
       {"id": "1200", "value": "设备管理", "icon": "mdi mdi-server", "url": "/admin/modbus/device"},
       {"id": "1201", "value": "变量管理", "icon": "mdi mdi-code-tags", "url": "/admin/modbus/var"},
-      {"id": "1202", "value": "Slave 寄存器", "icon": "mdi mdi-memory", "url": "/admin/modbus/slavereg"}
+      {"id": "1202", "value": "控制指令", "icon": "mdi mdi-cogs", "url": "/admin/modbus/command"},
+      {"id": "1203", "value": "Slave 寄存器", "icon": "mdi mdi-memory", "url": "/admin/modbus/slavereg"}
     ]
   },
   {
     "id": "150", "value": "通道管理", "icon": "mdi mdi-cloud-upload", "data": [
-      {"id": "1500", "value": "MQTT", "icon": "mdi mdi-link", "url": "/admin/channel/mqtt"},
-      {"id": "1501", "value": "HJ212", "icon": "mdi mdi-link", "url": "/admin/channel/hj212"},
-      {"id": "1502", "value": "HTTP", "icon": "mdi mdi-link", "url": "/admin/channel/http"}
+      {"id": "1500", "value": "MQTT 通道", "icon": "mdi mdi-radio-tower", "url": "/admin/channel/mqtt"},
+      {"id": "1501", "value": "TCP 通道", "icon": "mdi mdi-network", "url": "/admin/channel/tcp"},
+      {"id": "1502", "value": "HTTP 通道", "icon": "mdi mdi-web", "url": "/admin/channel/http"},
+      {"id": "1503", "value": "数据流管理", "icon": "mdi mdi-progress-upload", "url": "/admin/datastream"}
     ]
   },
   {
