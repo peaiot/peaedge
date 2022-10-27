@@ -81,6 +81,8 @@ func (s *WebServer) ModbusCounter(c echo.Context) error {
 	case "device":
 		title = "设备数"
 		app.DB().Model(&models.ModbusDevice{}).Count(&count)
+		return c.Render(http.StatusOK, "metrics",
+			NewMetrics("mdi mdi-switch", count, title))
 	case "slavereg":
 		title = "从机寄存器"
 		app.DB().Model(&models.ModbusSlaveReg{}).Count(&count)
@@ -89,7 +91,7 @@ func (s *WebServer) ModbusCounter(c echo.Context) error {
 		app.DB().Model(&models.ModbusReg{}).Count(&count)
 	}
 	return c.Render(http.StatusOK, "metrics",
-		NewMetrics("mdi mdi-memory", count, title))
+		NewMetrics("mdi mdi-link", count, title))
 }
 
 func (s *WebServer) ModbusMetricsLine(c echo.Context) error {

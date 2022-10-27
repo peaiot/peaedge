@@ -4,6 +4,7 @@ go 1.19
 
 require (
 	github.com/360EntSecGroup-Skylar/excelize v1.4.1
+	github.com/asaskevich/EventBus v0.0.0-20200907212545-49d423059eef
 	github.com/bwmarrin/snowflake v0.3.0
 	github.com/denisbrodbeck/machineid v1.0.1
 	github.com/dpapathanasiou/go-modbus v0.0.0-20200626124227-44739634e73d
@@ -15,6 +16,7 @@ require (
 	github.com/golang-jwt/jwt/v4 v4.4.2
 	github.com/goplus/igop v0.9.2
 	github.com/gorilla/sessions v1.2.1
+	github.com/guonaihong/gout v0.3.1
 	github.com/json-iterator/go v1.1.12
 	github.com/labstack/echo-contrib v0.13.0
 	github.com/labstack/echo/v4 v4.9.0
@@ -33,6 +35,7 @@ require (
 	github.com/stretchr/testify v1.7.0
 	github.com/talkincode/gocron v1.6.3
 	github.com/tbrandon/mbserver v0.0.0-20211210035124-daf3c8c4269f
+	github.com/yuin/gopher-lua v0.0.0-20220504180219-658193537a64
 	golang.org/x/image v0.0.0-20220722155232-062f8c9fd539
 	golang.org/x/sync v0.0.0-20220722155255-886fb9371eb4
 	golang.org/x/text v0.3.7
@@ -47,6 +50,9 @@ require (
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
+	github.com/go-playground/locales v0.13.0 // indirect
+	github.com/go-playground/universal-translator v0.17.0 // indirect
+	github.com/go-playground/validator/v10 v10.4.1 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/goplus/gop v1.1.3 // indirect
@@ -59,6 +65,7 @@ require (
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
+	github.com/leodido/go-urn v1.2.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect

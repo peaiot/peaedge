@@ -5,43 +5,30 @@
 </head>
 <body>
 <script>
-    let tableid = webix.uid()
-    let funcId = webix.uid()
-    let srcid = webix.uid()
-    let argid = webix.uid()
     let getColumns = function () {
         return [
-            {view: "text", name: "name", label: "名称", css: "nborder-input",},
+            {view: "text", name: "name", label: "名称", required: true, css: "nborder-input",},
             {
-                view: "combo", id: funcId, name: "func_name", label: "功能函数", css: "nborder-input",
-                options: "/admin/luafunc/options"
+                cols: [
+                    {view: "text", name: "oid", label: "OID", required: true, css: "nborder-input",},
+                    {view: "text", name: "group", label: "分组", required: true, css: "nborder-input",},
+                ]
             },
             {
                 cols: [
-                    {view: "text", id: argid, name: "args", label: "测试参数", css: "nborder-input",},
-                    {
-                        view: "button",
-                        name: "submit",
-                        type: "form",
-                        value: "测试",
-                        width: 120,
-                        height: 36,
-                        click: function () {
-                            let params = {
-                                "args": $$(argid).getValue(),
-                                "func": $$(funcId).getValue(),
-                                "src": $$(srcid).getValue()
-                            }
-                            webix.ajax().post("/admin/datascript/test", params).then(function (result) {
-                                let resp = result.json();
-                                webix.message({type: resp.msgtype, text: resp.msg, expire: 5000});
-                            })
-                        }
-                    },
+                    {view: "combo", name: "device_id", label: "设备", options:"/admin/modbus/device/options", required: true, css: "nborder-input",},
+                    {view: "combo", name: "command_type", label: "指令类型",options:["data","script"], required: true, css: "nborder-input",},
                 ]
             },
-            {view: "label", label: "脚本内容",},
-            {name: "content", id: srcid, view: "codemirror-editor", mode: "lua"},
+            {
+                cols: [
+                    {view: "combo", name: "reg_type", label: "寄存器类型", options: "/admin/regtype/options", css: "nborder-input", required: true,},
+                    {view: "counter", name: "start_addr", label: "起始地址", css: "nborder-input", required: true,},
+                ]
+            },
+            {view: "text", name: "command_param", label: "函数参数描述", css: "nborder-input",},
+            {view: "label", label: "HEX数据或Lua脚本",},
+            {name: "command_data", view: "codemirror-editor", mode: "lua"},
         ]
     }
 
@@ -52,7 +39,7 @@
             text: "Confirm to delete? This operation is irreversible.",
             callback: function (ev) {
                 if (ev) {
-                    webix.ajax().get('/admin/datascript/delete', {ids: ids}).then(function (result) {
+                    webix.ajax().get('/admin/modbus/command/delete', {ids: ids}).then(function (result) {
                         let resp = result.json();
                         webix.message({type: resp.msgtype, text: resp.msg, expire: 2000});
                         if (callback)
@@ -65,29 +52,57 @@
         });
     }
 
+    let openDetail = function (item) {
+        let valitem = webix.copy(item)
+        let detailid = webix.uid()
+        wxui.openSideWindow({
+            width: 480,
+            title: "Modbus 指令",
+            body: {
+                view: "form",
+                paddingX: 20,
+                elementsConfig: {
+                    labelWidth: 120,
+                },
+                data: valitem,
+                css: "detail-form",
+                elements: [
+                    {view: "text", name: "name", label: "名称", readonly: true,},
+                    {view: "text", name: "group", label: "地址", readonly: true,},
+                    {view: "combo", name: "device_id", label: "设备",options:"/admin/modbus/device/options", readonly: true,},
+                    {view: "text", name: "command_type", label: "指令类型", readonly: true,},
+                    {view: "text", name: "reg_type", label: "寄存器类型",  readonly: true,},
+                    {view: "text", name: "start_addr", label: "起始地址",  readonly: true,},
+                    {view: "text", name: "created_at", label: gtr("创建时间"), readonly: true,},
+                    {view: "text", name: "updated_at", label: gtr("更新时间"), readonly: true,},
+                ]
+            }
+        })
+    }
 
     webix.ready(function () {
-        let tableid = webix.uid();
-        let reloadData = wxui.reloadDataFunc(tableid, "/admin/datascript/query", null)
+        let tableid = webix.uid().toString();
+        let reloadData = wxui.reloadDataFunc(tableid, "/admin/modbus/command/query", null)
         webix.ui({
             css: "main-panel",
             padding: 10,
             rows: [
                 wxui.getPageToolbar({
-                    title: "数据脚本管理",
-                    icon: "mdi mdi-document",
+                    title: "Modbus 指令",
+                    icon: "mdi mdi-code-braces",
                     elements: [
                         wxui.getPrimaryButton("编辑", 90, false, function () {
                             let item = $$(tableid).getSelectedItem();
                             if (item) {
                                 let vitem = webix.copy(item)
+                                console.log(vitem)
                                 wxui.openFormWindow({
                                     fullscreen: true,
                                     width: 640,
                                     height: 720,
-                                    title: "修改脚本",
+                                    title: "修改 Modbus 指令",
                                     data: vitem,
-                                    post: "/admin/datascript/update",
+                                    post: "/admin/modbus/command/update",
                                     callback: reloadData,
                                     elements: getColumns()
                                 }).show();
@@ -99,15 +114,14 @@
                             let item = $$(tableid).getSelectedItem();
                             if (item) {
                                 let vitem = webix.copy(item)
-                                vitem._id = ""
                                 vitem.id = ""
                                 wxui.openFormWindow({
                                     fullscreen: true,
                                     width: 640,
                                     height: 720,
-                                    title: "克隆脚本",
+                                    title: "克隆 Modbus 指令",
                                     data: vitem,
-                                    post: "/admin/datascript/add",
+                                    post: "/admin/modbus/command/add",
                                     callback: reloadData,
                                     elements: getColumns()
                                 }).show();
@@ -120,9 +134,10 @@
                                 fullscreen: true,
                                 width: 640,
                                 height: 720,
-                                title: "创建脚本",
-                                post: "/admin/datascript/add",
+                                title: "创建 Modbus 指令",
+                                post: "/admin/modbus/command/add",
                                 callback: reloadData,
+                                data: {},
                                 elements: getColumns()
                             }).show();
                         }),
@@ -138,7 +153,7 @@
                 }),
                 wxui.getDatatable({
                     tableid: tableid,
-                    url: '/admin/datascript/query',
+                    url: '/admin/modbus/command/query',
                     columns: [
                         {
                             id: "state",
@@ -149,21 +164,28 @@
                             template: "{common.checkbox()}"
                         },
                         {
-                            id: "name",
-                            header: ["名称"],
-                            fillspace: true,
-                            sort: "server",
+                            id: "name", header: ["名称"], fillspace: true, sort: "server",
+                            template: "<a class='do_detail' href='javascript:void(0)'>#name#</a>"
                         },
-                        {
-                            id: "func_name",
-                            header: ["函数名"],
-                            fillspace: true,
-                            sort: "server",
-                        },
+                        {id: "oid", header: ["OID"], adjust: true, sort: "server",},
+                        {id: "group", header: ["分组"], adjust: true, sort: "server",},
+                        {id: "device_id", header: ["设备"], options:"/admin/modbus/device/options", adjust: true, sort: "server",},
+                        {id: "reg_type", header: ["寄存器类型"], adjust: true, sort: "server",},
+                        {id: "start_addr", header: ["起始地址"], adjust: true, sort: "server",},
                         {header: {content: "headerMenu"}, headermenu: false, width: 35}
                     ],
                     rightSplit: 1,
                     pager: true,
+                    on: {
+                        onItemDblClick: function (id, e, node) {
+                            openDetail(this.getItem(id))
+                        }
+                    },
+                    onClick: {
+                        do_detail: function (e, id) {
+                            openDetail(this.getItem(id))
+                        },
+                    },
                 }),
                 wxui.getTableFooterBar({
                     tableid: tableid,

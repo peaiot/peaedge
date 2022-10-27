@@ -2,7 +2,6 @@
 <html>
 <head>
     {{template "header"}}
-    <title>PeaEdge</title>
 </head>
 <body>
 <script>
@@ -55,7 +54,7 @@
         wxui.initUploadApi(uploadid, importUrl, reloadData);
         webix.ui({
             css: "main-panel",
-            padding: 7,
+            padding: 10,
             rows: [
                 wxui.getPageToolbar({
                     title: "Modbus 设备",
@@ -155,6 +154,7 @@
                                     elements: [
                                         {type: "hidden", id: "id", label: "设备id"},
                                         {type: "text", id: "name", label: "设备名称"},
+                                        {type: "text", id: "oid", label: "OID"},
                                         {type: "select", id: "proto_type", label: "协议类型", options: "/admin/modbus/proto/options"},
                                         {type: "select", id: "mbrtu_addr", label: "mbrtu 地址", options: "/admin/device/ports"},
                                         {type: "text", id: "mbtcp_addr", label: "mbtcp 地址"},
@@ -192,6 +192,9 @@
                                             adjust: true,
                                             css: "center",
                                             template: "{common.checkbox()}"
+                                        },
+                                        {
+                                            id: "oid", header: ["OID"], adjust: true, editor:"text", sort: "string"
                                         },
                                         {
                                             id: "name", header: ["名称"], fillspace: true, editor: "text", sort: "string"

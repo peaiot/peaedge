@@ -2,24 +2,33 @@
 <html>
 <head>
     {{template "header"}}
-    <title>PeaEdge</title>
 </head>
 <body>
 <script>
-    let tableid = webix.uid()
     let getColumns = function () {
         return [
-            {view: "text", name: "realname", label: "姓名", css: "nborder-input",},
-            {view: "text", name: "username", label: "名称", css: "nborder-input",},
-            {view: "text", name: "password", label: "密码", css: "nborder-input",},
             {
-                view: "combo", name: "level", label: "类型", css: "nborder-input", options: [
-                    {id: "super", value: "管理员"},
-                    {id: "opr", value: "操作员"},
-                    {id: "api", value: "API用户"},
+                cols: [
+                    {view: "text", name: "name", label: "名称", required: true, css: "nborder-input",},
+                    {
+                        view: "combo", name: "status", label: "启用", value: 1, options: wxui.statusOptions, required: true, css: "nborder-input",
+                    },
                 ]
             },
-            {view: "textarea", name: "remark", label: "备注"},
+            {
+                cols: [
+                    {view: "text", name: "server", label: "地址", css: "nborder-input", required: true,},
+                    {view: "text", name: "port", label: "端口", css: "nborder-input", required: true,},
+                ]
+            },
+            {
+                cols: [
+                    {view: "combo", name: "channel_type", label: "类型", options: ["normal", "hj212"], css: "nborder-input", required: true,},
+                    {view: "counter", name: "timeout", label: "超时时间-秒", css: "nborder-input", required: true,},
+                ]
+            },
+            {view: "label", label: "备注",},
+            {name: "remark", view: "codemirror-editor", mode: "markdown"},
         ]
     }
 
@@ -30,7 +39,7 @@
             text: "Confirm to delete? This operation is irreversible.",
             callback: function (ev) {
                 if (ev) {
-                    webix.ajax().get('/admin/opr/delete', {ids: ids}).then(function (result) {
+                    webix.ajax().get('/admin/channel/tcp/delete', {ids: ids}).then(function (result) {
                         let resp = result.json();
                         webix.message({type: resp.msgtype, text: resp.msg, expire: 2000});
                         if (callback)
@@ -43,29 +52,56 @@
         });
     }
 
+    let openDetail = function (item) {
+        let valitem = webix.copy(item)
+        let detailid = webix.uid()
+        wxui.openSideWindow({
+            width: 480,
+            title: "HTTP 通道",
+            body: {
+                view: "form",
+                paddingX: 20,
+                elementsConfig: {
+                    labelWidth: 120,
+                },
+                data: valitem,
+                css: "detail-form",
+                elements: [
+                    {view: "text", name: "name", label: "名称", readonly: true,},
+                    {view: "text", name: "server", label: "地址", readonly: true,},
+                    {view: "text", name: "port", label: "端口", readonly: true,},
+                    {view: "text", name: "channel_type", label: "类型", readonly: true,},
+                    {view: "text", name: "timeout", label: "超时-秒", value: "peaedge/subscribe", readonly: true,},
+                    {view: "text", name: "created_at", label: gtr("创建时间"), readonly: true,},
+                    {view: "text", name: "updated_at", label: gtr("更新时间"), readonly: true,},
+                    {id: detailid, view: "template", css: "data-remark", template: markdown.toHTML(valitem.remark), borderless: true, scroll: "auto"},
+                ]
+            }
+        })
+    }
+
     webix.ready(function () {
         let tableid = webix.uid();
-        let uploadid = webix.uid();
-        let reloadData = wxui.reloadDataFunc(tableid, "/admin/opr/query", null)
+        let reloadData = wxui.reloadDataFunc(tableid, "/admin/channel/tcp/query", null)
         webix.ui({
             css: "main-panel",
             padding: 10,
             rows: [
                 wxui.getPageToolbar({
-                    title: "操作员管理",
-                    icon: "mdi mdi-account",
+                    title: "HTTP 通道管理",
+                    icon: "mdi mdi-link",
                     elements: [
                         wxui.getPrimaryButton("编辑", 90, false, function () {
                             let item = $$(tableid).getSelectedItem();
                             if (item) {
                                 let vitem = webix.copy(item)
-                                vitem.password = ""
                                 wxui.openFormWindow({
+                                    fullscreen: true,
                                     width: 640,
                                     height: 720,
-                                    title: "操作员修改",
+                                    title: "修改 HTTP 通道",
                                     data: vitem,
-                                    post: "/admin/opr/update",
+                                    post: "/admin/channel/tcp/update",
                                     callback: reloadData,
                                     elements: getColumns()
                                 }).show();
@@ -79,13 +115,13 @@
                                 let vitem = webix.copy(item)
                                 vitem._id = ""
                                 vitem.id = ""
-                                vitem.password = ""
                                 wxui.openFormWindow({
+                                    fullscreen: true,
                                     width: 640,
                                     height: 720,
-                                    title: "操作员克隆",
+                                    title: "克隆 HTTP 通道",
                                     data: vitem,
-                                    post: "/admin/opr/add",
+                                    post: "/admin/channel/tcp/add",
                                     callback: reloadData,
                                     elements: getColumns()
                                 }).show();
@@ -95,11 +131,16 @@
                         }),
                         wxui.getPrimaryButton("创建", 90, false, function () {
                             wxui.openFormWindow({
+                                fullscreen: true,
                                 width: 640,
                                 height: 720,
-                                title: "操作员创建",
-                                post: "/admin/opr/add",
+                                title: "创建 HTTP 通道",
+                                post: "/admin/channel/tcp/add",
                                 callback: reloadData,
+                                data: {
+                                    timeout: 10,
+                                    keep_alive: 60,
+                                },
                                 elements: getColumns()
                             }).show();
                         }),
@@ -111,11 +152,11 @@
                                 deleteItem(rows.join(","), reloadData);
                             }
                         }),
-                    ]
+                    ],
                 }),
                 wxui.getDatatable({
                     tableid: tableid,
-                    url: '/admin/opr/query',
+                    url: '/admin/channel/tcp/query',
                     columns: [
                         {
                             id: "state",
@@ -126,39 +167,28 @@
                             template: "{common.checkbox()}"
                         },
                         {
-                            id: "username",
-                            header: ["名称", {content: "serverFilter"}],
-                            adjust: true,
-                            sort: "server",
+                            id: "name", header: ["名称"], adjust: true, sort: "server",
+                            template: "<a class='do_detail' href='javascript:void(0)'>#name#</a>"
                         },
-                        {
-                            id: "realname",
-                            header: ["姓名", {content: "serverFilter"}],
-                            adjust: true,
-                            sort: "server",
-                        },
-                        {
-                            id: "level",
-                            header: ["类型", {content: "serverFilter"}],
-                            adjust: true,
-                            sort: "server",
-                        },
-                        {
-                            id: "status",
-                            header: ["状态", {content: "serverFilter"}],
-                            adjust: true,
-                            sort: "server",
-                        },
-                        {
-                            id: "remark",
-                            header: ["备注", {content: "serverFilter"}],
-                            sort: "server",
-                            fillspace: true
-                        },
+                        {id: "server", header: ["地址"], fillspace: true, sort: "server",},
+                        {id: "port", header: ["端口"], adjust: true, sort: "server",},
+                        {id: "channel_type", header: ["类型"], adjust: true, sort: "server",},
+                        {id: "timeout", header: ["超时-秒"],  adjust: true, sort: "server",},
+                        {id: "status", header: ["状态"], options: wxui.statusOptions, adjust: true, sort: "server",},
                         {header: {content: "headerMenu"}, headermenu: false, width: 35}
                     ],
                     rightSplit: 1,
                     pager: true,
+                    on: {
+                        onItemDblClick: function (id, e, node) {
+                            openDetail(this.getItem(id))
+                        }
+                    },
+                    onClick: {
+                        do_detail: function (e, id) {
+                            openDetail(this.getItem(id))
+                        },
+                    },
                 }),
                 wxui.getTableFooterBar({
                     tableid: tableid,

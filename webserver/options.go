@@ -11,6 +11,7 @@ import (
 func (s *WebServer) initOptionsRouters() {
 	// options
 	s.get("/admin/status/options", s.StatusOptions)
+	s.get("/admin/luafunc/options", s.LuaFuncOptions)
 	s.get("/admin/regtype/options", s.RegisterTypeOptions)
 	s.get("/admin/datatype/options", s.DatatypeOptions)
 	s.get("/admin/device/ports", s.PortOptions)
@@ -30,12 +31,23 @@ func (s *WebServer) StatusOptions(c echo.Context) error {
 		{Id: "disabled", Value: "停用"},
 	})
 }
+
+func (s *WebServer) LuaFuncOptions(c echo.Context) error {
+	return c.JSON(200, []web.JsonOptions{
+		{Id: "HandlerModbusRtd", Value: "HandlerModbusRtd - 常规 Modbus 实时值计算"},
+		{Id: "HandlerModbusCommand", Value: "HandlerModbusCommand - Modbus 操作指令数据处理"},
+		{Id: "HandlerMixedRegister", Value: "HandlerMixedRegister - 混合寄存器计算"},
+		{Id: "HandlerDataStream", Value: "HandlerDataStream - 数据流封装处理"},
+	})
+}
+
 func (s *WebServer) RegisterTypeOptions(c echo.Context) error {
 	return c.JSON(200, []web.JsonOptions{
 		{Id: "InputRegister", Value: "InputRegister"},
 		{Id: "HoldingRegister", Value: "HoldingRegister"},
 		{Id: "DiscreteInput", Value: "DiscreteInput"},
 		{Id: "Coil", Value: "Coil"},
+		{Id: "MixedRegister", Value: "MixedRegister"},
 	})
 }
 

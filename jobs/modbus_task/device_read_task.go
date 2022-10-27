@@ -15,8 +15,8 @@ import (
 	"github.com/toughstruct/peaedge/app"
 	"github.com/toughstruct/peaedge/common"
 	"github.com/toughstruct/peaedge/common/golimit"
-	"github.com/toughstruct/peaedge/common/goscript"
 	"github.com/toughstruct/peaedge/common/modbus"
+	"github.com/toughstruct/peaedge/golua"
 	"github.com/toughstruct/peaedge/log"
 	"github.com/toughstruct/peaedge/models"
 )
@@ -98,14 +98,14 @@ func ReadModbusRtuRegData(dev models.ModbusDevice) {
 		return
 	}
 
-	client, err := app.NewModbusRTUClient(dev.MbrtuAddr, dev.BaudRate, dev.PktDelay, dev.MbslaveId)
+	client, err := app.GetModbusRTUClient(dev.MbrtuAddr, dev.BaudRate, dev.PktDelay, dev.MbslaveId)
 	if err != nil {
 		log.Modbus.Errorf("ModuBusRTU 设备[%s -> %s]连接失败 %s", dev.Name, dev.MbrtuAddr, err.Error())
 		app.UpdateModbusDevConnStatus(dev.Id, err.Error())
 		return
 	}
+	defer app.ReleaseModbusRTUClient(dev.MbrtuAddr, client)
 	app.UpdateModbusDevConnStatus(dev.Id, "success")
-	defer client.Close()
 
 	for _, reg := range modbusregs {
 		if reg.Status == "disabled" {
@@ -155,6 +155,7 @@ func ReadModbusTcpRegData(dev models.ModbusDevice) {
 		app.UpdateModbusDevConnStatus(dev.Id, err.Error())
 		return
 	}
+	defer app.ReleaseModbusTCPClient(fmt.Sprintf("%s:%d", dev.MbtcpAddr, dev.MbtcpPort), client)
 	app.UpdateModbusDevConnStatus(dev.Id, "success")
 
 	for _, reg := range modbusregs {
@@ -298,9 +299,9 @@ func _read0304RegisterData(dev models.ModbusDevice, reg models.ModbusReg, client
 
 	// 数值计算
 	var script models.DataScript
-	err = app.DB().Where("id = ?", regvar.ScriptId).First(&script).Error
+	err = app.DB().Where("id = ? and func_name = ?", regvar.ScriptId, app.LuaFuncHandlerModbusRtd).First(&script).Error
 	if err == nil {
-		vret, err := goscript.RunFunc(script.Content, script.FuncName, cast.ToFloat64(result))
+		vret, err := golua.HandlerModbusRtd(script.Content, cast.ToInt(result))
 		if err != nil {
 			app.SaveModbusRegRtd(reg.Id, common.NA, app.DataFlagOver, err.Error())
 			log.Modbus.Errorf("计算设备[%s]寄存器[%s]值失败, 请检查参数, %v", dev.Name, reg.Name, err.Error())

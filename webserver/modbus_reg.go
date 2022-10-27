@@ -41,7 +41,7 @@ func (s *WebServer) ModbusRegSave(c echo.Context) error {
 		return c.JSON(200, map[string]interface{}{"id": form.Id})
 	case "update":
 		common.Must(app.DB().Select(
-			"name", "reg_type", "start_addr",
+			"name", "reg_type", "start_addr", "oid",
 			"data_len", "access_type", "var_id", "status",
 		).Updates(&form).Error)
 		return c.JSON(200, map[string]interface{}{"status": "updated"})

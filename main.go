@@ -13,12 +13,14 @@ import (
 
 	"github.com/toughstruct/peaedge/app"
 	"github.com/toughstruct/peaedge/assets"
+	"github.com/toughstruct/peaedge/channels/httpc"
+	"github.com/toughstruct/peaedge/channels/mqttc"
+	"github.com/toughstruct/peaedge/channels/tcpc"
 	"github.com/toughstruct/peaedge/common/installer"
 	"github.com/toughstruct/peaedge/config"
 	"github.com/toughstruct/peaedge/jobs"
 	"github.com/toughstruct/peaedge/log"
 	"github.com/toughstruct/peaedge/mbslave"
-	"github.com/toughstruct/peaedge/mqttc"
 	"github.com/toughstruct/peaedge/webserver"
 	"golang.org/x/sync/errgroup"
 )
@@ -129,6 +131,18 @@ func main() {
 	// 2-任务调度初始化
 	jobs.Init()
 	defer app.OnExit()
+	
+	if err := mqttc.StartAll(); err != nil {
+		log.Error(err)
+	}
+
+	if err := httpc.StartAll(); err != nil {
+		log.Error(err)
+	}
+
+	if err := tcpc.StartAll(); err != nil {
+		log.Error(err)
+	}
 
 	g.Go(func() error {
 		log.Info("Start Web server ...")
@@ -138,11 +152,6 @@ func main() {
 	g.Go(func() error {
 		log.Info("Start Modbus server ...")
 		return mbslave.Listen()
-	})
-
-	g.Go(func() error {
-		log.Info("Start Matt client ...")
-		return mqttc.StartDaemon()
 	})
 
 	if err := g.Wait(); err != nil {

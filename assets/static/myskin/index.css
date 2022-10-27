@@ -2,7 +2,7 @@ body {
     font-family: "Microsoft Yahei", "Hiragino Sans GB", Arial, Lucida, Verdana, SimSun, Helvetica, sans-serif !important;
     /*font-size : 62.5%; px数值除以10，然后换上em作为单位*/
     /*min-width:980px;*/
-    font-size: 13px !important;
+    /*font-size: 13px !important;*/
 }
 
 .toolbar-icon .webix_icon_button .webix_icon {
@@ -171,7 +171,7 @@ button {
 .win-body {
     border-radius: 7px;
     border-top: 1px solid #d6d6d6 !important;
-    border-left: 1px solid #d6d6d6 !important;
+    border-left: 1px solid #ffffff !important;
     border-right: 1px solid #d6d6d6 !important;
     border-bottom: 1px solid #d6d6d6 !important;
     outline: none !important;
@@ -184,7 +184,7 @@ button {
 
 
 .main-panel {
-    background: #ebedf0;
+    background: #ffffff;
     border-radius: 2px;
     box-shadow: inset -3px -1px 6px 0px rgb(106 106 106 / 70%);
     box-shadow: 0px 1px 5px 1px rgba(186, 186, 186, 0.24);
@@ -701,8 +701,8 @@ button {
 
 .sidebar-title .webix_el_box {
     color: gray;
-    font-weight: 800;
-    font-size: 1em;
+    font-weight: 800!important;
+    font-size: 14px!important;
     padding-top: 5px;
 }
 
@@ -909,8 +909,8 @@ button {
 }
 
 .webix_property_label {
-    font-size: 14px;
-    font-weight: 600;
+    /*font-size: 14px;*/
+    /*font-weight: 600;*/
     color: #8b8b8b !important;
     height: 32px;
 }
@@ -971,3 +971,4 @@ button {
 .loglevel-error {
     color: red !important;
 }
+

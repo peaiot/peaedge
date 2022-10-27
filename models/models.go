@@ -2,9 +2,6 @@ package models
 
 import (
 	"time"
-
-	"github.com/toughstruct/peaedge/common"
-	"github.com/toughstruct/peaedge/common/modbus"
 )
 
 // SysConfig 系统配置
@@ -45,6 +42,7 @@ type DataScript struct {
 // ModbusDevice Modbus 设备
 type ModbusDevice struct {
 	Id            string    `json:"id" csv:"id" form:"id"`
+	Oid           string    `json:"oid" csv:"oid" form:"oid"`
 	Name          string    `json:"name" csv:"name" form:"name"`
 	MN            string    `json:"mn" csv:"mn" form:"mn"`
 	ProtoType     string    `json:"proto_type" csv:"proto_type" form:"proto_type"`
@@ -66,6 +64,7 @@ type ModbusDevice struct {
 type ModbusReg struct {
 	Id         string    `json:"id" csv:"id" form:"id"`
 	DeviceId   string    `json:"device_id" csv:"device_id" form:"device_id"`
+	Oid        string    `json:"oid" csv:"oid" form:"oid"`
 	Name       string    `json:"name" csv:"name" form:"name"`
 	RegType    string    `json:"reg_type" csv:"reg_type" form:"reg_type"`
 	StartAddr  int       `json:"start_addr" csv:"start_addr" form:"start_addr"`
@@ -87,6 +86,7 @@ type ModbusReg struct {
 type ModbusVar struct {
 	Id            string    `json:"id" csv:"id" form:"id"`
 	Name          string    `json:"name" csv:"name" form:"name"`
+	Oid           string    `json:"oid" csv:"oid" form:"oid"`
 	DataType      string    `json:"data_type" csv:"data_type" form:"data_type"`
 	Unit          string    `json:"unit" csv:"unit" form:"unit"`
 	ByteOrder     string    `json:"byte_order" csv:"byte_order" form:"byte_order"`
@@ -99,15 +99,32 @@ type ModbusVar struct {
 }
 
 type ModbusVarTpl struct {
-	Id            string `json:"id" csv:"id" from:"id"`
-	Name          string `json:"name" csv:"name" from:"name"`
-	DataType      string `json:"data_type" csv:"data_type" from:"data_type"`
-	Unit          string `json:"unit" csv:"unit" from:"unit"`
-	ByteOrder     string `json:"byte_order" csv:"byte_order" from:"byte_order"`
-	ScriptId      string `json:"script_id" csv:"script_id" from:"script_id"`
+	Id            string `json:"id" csv:"id" form:"id"`
+	Name          string `json:"name" csv:"name" form:"name"`
+	DataType      string `json:"data_type" csv:"data_type" form:"data_type"`
+	Unit          string `json:"unit" csv:"unit" form:"unit"`
+	ByteOrder     string `json:"byte_order" csv:"byte_order" form:"byte_order"`
+	ScriptId      string `json:"script_id" csv:"script_id" form:"script_id"`
 	DataFactor    string `json:"data_factor" csv:"data_factor" form:"data_factor"`
 	ChannelStatus string `json:"channel_status" csv:"channel_status" form:"channel_status"`
-	Remark        string `json:"remark" csv:"remark" from:"remark"`
+	Remark        string `json:"remark" csv:"remark" form:"remark"`
+}
+
+// ModbusCommand modbus 指令
+type ModbusCommand struct {
+	Id           string    `json:"id" csv:"id" form:"id"`
+	Group        string    `json:"group" csv:"group" form:"group"` // 指令组
+	Oid          string    `json:"oid" csv:"oid" form:"oid"`
+	Name         string    `json:"name" csv:"name" form:"name"`                            // 指令名称
+	Order        int       `json:"order" csv:"order" form:"order"`                         // 指令顺序
+	DeviceId     string    `json:"device_id" csv:"device_id" form:"device_id"`             // 设备ID
+	CommandType  string    `json:"command_type" csv:"command_type" form:"command_type"`    // 指令类型 data or script
+	RegType      string    `json:"reg_type" csv:"reg_type" form:"reg_type"`                // 寄存器类型
+	StartAddr    int       `json:"start_addr" csv:"start_addr" form:"start_addr"`          // 寄存器起始地址
+	CommandParam string    `json:"command_param" csv:"command_param" form:"command_param"` // 参数 script类型有效
+	CommandData  string    `json:"command_data" csv:"command_data" form:"command_data"`    // 16进制字符串或者lua函数脚本
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
 }
 
 // Hj212Queue 212消息队列
@@ -120,17 +137,6 @@ type Hj212Queue struct {
 	SendTimes  int       `json:"send_times"`
 	CreateTime time.Time `json:"create_time"`
 	LastSend   time.Time `json:"last_send"`
-}
-
-// Hj212Serv 212服务器
-type Hj212Serv struct {
-	Id        int64     `json:"id"`
-	Name      string    `json:"name"`
-	Server    string    `json:"server"`
-	Status    string    `json:"status"`
-	Remark    string    `json:"remark"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
 }
 
 // IotDevice 通用物联网设备
@@ -158,6 +164,7 @@ type DeviceRtdData struct {
 type ModbusSlaveReg struct {
 	ID       string `json:"id" csv:"id" form:"id"`
 	Name     string `json:"name" csv:"name" form:"name"`
+	Oid      string `json:"oid" csv:"oid" form:"oid"`
 	Register int    `json:"register" csv:"register" form:"register"`
 	RegType  string `json:"reg_type" csv:"reg_type" form:"reg_type"`
 	Length   int    `json:"length" csv:"length" form:"length"`
@@ -166,21 +173,67 @@ type ModbusSlaveReg struct {
 }
 
 type MqttChannel struct {
-	ID              string `json:"id" csv:"id" form:"id"`
-	Server          string `json:"server" csv:"server" form:"server"`
-	ClientId        string `json:"client_id" csv:"client_id" form:"client_id"`
-	Username        string `json:"username" csv:"username" form:"username"`
-	Password        string `json:"password" csv:"password" form:"password"`
-	SubTopic        string `json:"sub_topic" csv:"sub_topic" form:"sub_topic"`
-	PubTopic        string `json:"pub_topic" csv:"pub_topic" form:"pub_topic"`
-	KeepAlive       int    `json:"keep_alive" csv:"keep_alive" form:"keep_alive"`
-	PingTimeout     int    `json:"ping_timeout" csv:"ping_timeout" form:"ping_timeout"`
-	RetryInterval   int    `json:"retry_interval" csv:"retry_interval" form:"retry_interval"`
-	CleanSession    int    `json:"clean_session" csv:"clean_session" form:"clean_session"`
-	ProtocolVersion int    `json:"protocol_version" csv:"protocol_version" form:"protocol_version"`
-	Retained        int    `json:"retained" csv:"retained" form:"retained"`
-	Status          int    `json:"status" csv:"status" form:"status"`
-	Remark          string `json:"remark" csv:"remark" form:"remark"`
+	ID              string    `json:"id" csv:"id" form:"id"`
+	Name            string    `json:"name" csv:"name" form:"name"`
+	Server          string    `json:"server" csv:"server" form:"server"`
+	ClientId        string    `json:"client_id" csv:"client_id" form:"client_id"`
+	Username        string    `json:"username" csv:"username" form:"username"`
+	Password        string    `json:"password" csv:"password" form:"password"`
+	SubTopic        string    `json:"sub_topic" csv:"sub_topic" form:"sub_topic"`
+	PubTopic        string    `json:"pub_topic" csv:"pub_topic" form:"pub_topic"`
+	Will            string    `json:"will" csv:"will" form:"will"`
+	Qos             int       `json:"qos" csv:"qos" form:"qos"`
+	KeepAlive       int       `json:"keep_alive" csv:"keep_alive" form:"keep_alive"`
+	PingTimeout     int       `json:"ping_timeout" csv:"ping_timeout" form:"ping_timeout"`
+	RetryInterval   int       `json:"retry_interval" csv:"retry_interval" form:"retry_interval"`
+	ClearSession    int       `json:"clear_session" csv:"clear_session" form:"clear_session"`
+	ProtocolVersion int       `json:"protocol_version" csv:"protocol_version" form:"protocol_version"`
+	Retained        int       `json:"retained" csv:"retained" form:"retained"`
+	Status          int       `json:"status" csv:"status" form:"status"`
+	Remark          string    `json:"remark" csv:"remark" form:"remark"`
+	LastBoot        time.Time `json:"last_boot" csv:"last_boot"`
+	CreatedAt       time.Time `json:"created_at" csv:"created_at"`
+	UpdatedAt       time.Time `json:"updated_at"`
+}
+
+type TcpChannel struct {
+	ID          string    `json:"id" csv:"id" form:"id"`
+	Name        string    `json:"name" csv:"name" form:"name"`
+	Server      string    `json:"server" csv:"server" form:"server"`
+	ChannelType string    `json:"channel_type" csv:"channel_type" form:"channel_type"`
+	Port        int       `json:"port" csv:"port" form:"port"`
+	Timeout     int       `json:"timeout" csv:"timeout" form:"timeout"`
+	Status      int       `json:"status" csv:"status" form:"status"`
+	Remark      string    `json:"remark" csv:"remark" form:"remark"`
+	CreatedAt   time.Time `json:"created_at" csv:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
+}
+
+type HttpChannel struct {
+	ID        string    `json:"id" csv:"id" form:"id"`
+	Name      string    `json:"name" csv:"name" form:"name"`
+	Url       string    `json:"url" csv:"url" form:"url"`
+	Format    string    `json:"format" csv:"format" form:"format"`
+	Header    string    `json:"header" csv:"header" form:"header"`
+	Timeout   int       `json:"timeout" csv:"timeout" form:"timeout"`
+	Status    int       `json:"status" csv:"status" form:"status"`
+	Remark    string    `json:"remark" csv:"remark" form:"remark"`
+	CreatedAt time.Time `json:"created_at" csv:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+type DataStream struct {
+	ID        string    `json:"id" csv:"id" form:"id"`
+	Name      string    `json:"name" csv:"name" form:"name"`
+	Interval  int       `json:"interval" csv:"interval" form:"interval"`       // 运行间隔
+	DeviceId  string    `json:"device_id" csv:"device_id" form:"device_id"`    // 关联设备 ID
+	ScriptId  string    `json:"script_id" csv:"script_id" form:"script_id"`    // 数据脚本 ID
+	MqttChids string    `json:"mqtt_chids" csv:"mqtt_chids" form:"mqtt_chids"` // MQTT 通道 ID
+	TcpChids  string    `json:"tcp_chids" csv:"tcp_chids" form:"tcp_chids"`    // TCP 通道 ID
+	HttpChids string    `json:"http_chids" csv:"http_chids" form:"http_chids"` // HTTP 通道 ID
+	Remark    string    `json:"remark" csv:"remark" form:"remark"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 var Tables = []interface{}{
@@ -188,24 +241,20 @@ var Tables = []interface{}{
 	&SysOpr{},
 	&DataScript{},
 	// hj212
-	&Hj212Serv{},
 	&Hj212Queue{},
 	// modbus
 	&ModbusDevice{},
 	&ModbusReg{},
 	&ModbusVar{},
 	&ModbusVarTpl{},
+	&ModbusCommand{},
 	// iot device
 	&IotDevice{},
 	&DeviceRtdData{},
 	&ModbusSlaveReg{},
 	// channel
 	&MqttChannel{},
-}
-
-func (r *ModbusVar) GetByteOrder() string {
-	if !common.InSlice(r.ByteOrder, []string{modbus.BigEndian, modbus.BigEndianSwap, modbus.LittleEndian, modbus.LittleEndianSwap}) {
-		return modbus.BigEndian
-	}
-	return r.ByteOrder
+	&TcpChannel{},
+	&HttpChannel{},
+	&DataStream{},
 }
