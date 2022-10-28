@@ -10,5 +10,6 @@ const (
 	DataFlagOver        = "T" //  在线监控(监测)仪器仪表采样数值超过测量上限
 	DataFlagNetBreak    = "B" //  在线监控(监测)仪器仪表与数采仪通讯异常
 
-	LuaFuncHandlerModbusRtd = "HandlerModbusRtd"
+	LuaFuncHandlerModbusRtd  = "HandlerModbusRtd"
+	LuaFuncHandlerDataStream = "HandlerDataStream"
 )

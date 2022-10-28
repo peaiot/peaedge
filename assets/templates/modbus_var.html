@@ -75,7 +75,7 @@
                 wxui.getDatatable({
                     tableid: tableid,
                     editable: true,
-                    editaction:"dblclick",
+                    editaction: "dblclick",
                     url: "/admin/modbus/var/query",
                     save: "/admin/modbus/var/save",
                     columns: [
@@ -86,6 +86,10 @@
                             adjust: true,
                             css: "center",
                             template: "{common.checkbox()}"
+                        },
+                        {
+                            id: "detail", header: [""], adjust: true,
+                            template: "<a class='do_detail' href='javascript:void(0)'>详情</a>"
                         },
                         {
                             id: "name", header: ["名称"], fillspace: true, editor: "text", sort: "string"

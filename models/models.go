@@ -189,6 +189,7 @@ type MqttChannel struct {
 	ClearSession    int       `json:"clear_session" csv:"clear_session" form:"clear_session"`
 	ProtocolVersion int       `json:"protocol_version" csv:"protocol_version" form:"protocol_version"`
 	Retained        int       `json:"retained" csv:"retained" form:"retained"`
+	Debug           int       `json:"debug" csv:"debug" form:"debug"`
 	Status          int       `json:"status" csv:"status" form:"status"`
 	Remark          string    `json:"remark" csv:"remark" form:"remark"`
 	LastBoot        time.Time `json:"last_boot" csv:"last_boot"`
@@ -203,6 +204,7 @@ type TcpChannel struct {
 	ChannelType string    `json:"channel_type" csv:"channel_type" form:"channel_type"`
 	Port        int       `json:"port" csv:"port" form:"port"`
 	Timeout     int       `json:"timeout" csv:"timeout" form:"timeout"`
+	Debug       int       `json:"debug" csv:"debug" form:"debug"`
 	Status      int       `json:"status" csv:"status" form:"status"`
 	Remark      string    `json:"remark" csv:"remark" form:"remark"`
 	CreatedAt   time.Time `json:"created_at" csv:"created_at"`
@@ -216,6 +218,7 @@ type HttpChannel struct {
 	Format    string    `json:"format" csv:"format" form:"format"`
 	Header    string    `json:"header" csv:"header" form:"header"`
 	Timeout   int       `json:"timeout" csv:"timeout" form:"timeout"`
+	Debug     int       `json:"debug" csv:"debug" form:"debug"`
 	Status    int       `json:"status" csv:"status" form:"status"`
 	Remark    string    `json:"remark" csv:"remark" form:"remark"`
 	CreatedAt time.Time `json:"created_at" csv:"created_at"`
@@ -223,17 +226,17 @@ type HttpChannel struct {
 }
 
 type DataStream struct {
-	ID        string    `json:"id" csv:"id" form:"id"`
-	Name      string    `json:"name" csv:"name" form:"name"`
-	Interval  int       `json:"interval" csv:"interval" form:"interval"`       // 运行间隔
-	DeviceId  string    `json:"device_id" csv:"device_id" form:"device_id"`    // 关联设备 ID
-	ScriptId  string    `json:"script_id" csv:"script_id" form:"script_id"`    // 数据脚本 ID
-	MqttChids string    `json:"mqtt_chids" csv:"mqtt_chids" form:"mqtt_chids"` // MQTT 通道 ID
-	TcpChids  string    `json:"tcp_chids" csv:"tcp_chids" form:"tcp_chids"`    // TCP 通道 ID
-	HttpChids string    `json:"http_chids" csv:"http_chids" form:"http_chids"` // HTTP 通道 ID
-	Remark    string    `json:"remark" csv:"remark" form:"remark"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID          string    `json:"id" csv:"id" form:"id"`
+	Name        string    `json:"name" csv:"name" form:"name"`
+	SchedPolicy string    `json:"sched_policy" csv:"sched_policy" form:"sched_policy"` // 运行间隔
+	MN          string    `json:"mn" csv:"mn" form:"mn"`                               // 关联设备 mn
+	ScriptId    string    `json:"script_id" csv:"script_id" form:"script_id"`          // 数据脚本 ID
+	MqttChids   string    `json:"mqtt_chids" csv:"mqtt_chids" form:"mqtt_chids"`       // MQTT 通道 ID
+	TcpChids    string    `json:"tcp_chids" csv:"tcp_chids" form:"tcp_chids"`          // TCP 通道 ID
+	HttpChids   string    `json:"http_chids" csv:"http_chids" form:"http_chids"`       // HTTP 通道 ID
+	Remark      string    `json:"remark" csv:"remark" form:"remark"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 var Tables = []interface{}{

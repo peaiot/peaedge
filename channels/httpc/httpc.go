@@ -15,6 +15,7 @@ import (
 
 type HttpClient struct {
 	sync.Mutex
+	Sid     string
 	Debug   bool
 	Url     string
 	Format  string
@@ -50,16 +51,33 @@ func StartAll() error {
 		clients = append(clients, client)
 		log.Infof("restart http client -> %s success", chl.Url)
 	}
+
+	// 订阅消息
+	_ = app.EvBUS().SubscribeAsync(app.EventChannelMessagePublish, func(chlType string, sid string, msg string) {
+		for _, client := range clients {
+			if chlType != "http" || client.Sid != sid {
+				continue
+			}
+			r, err := client.SendBody(msg)
+			if err != nil {
+				log.Sched.Errorf("send http message error: %s", err)
+				continue
+			}
+			log.Sched.Infof("send http message result: %v", r)
+		}
+	}, false)
 	return nil
 }
 
 func newHttpClient(chl models.HttpChannel) (*HttpClient, error) {
 	h := &HttpClient{
+		Sid:     chl.ID,
 		Url:     chl.Url,
 		Format:  chl.Format,
 		Header:  chl.Header,
 		Timeout: chl.Timeout,
 		Enabled: chl.Status == 1,
+		Debug:   chl.Debug == 1,
 	}
 	return h, nil
 }
@@ -83,6 +101,23 @@ func RestartAll() error {
 		log.Infof("restart http client -> %s success", chl.Url)
 	}
 	return nil
+}
+
+func (h *HttpClient) SendBody(msg string) (*BaseResult, error) {
+	resp := new(BaseResult)
+	err := gout.
+		POST(common.UrlJoin(h.Url)).
+		SetHeader(gout.H{"Content-Type": "application/json"}).
+		Debug(h.Debug).
+		SetBody(msg).
+		SetTimeout(time.Second * time.Duration(h.Timeout)).
+		BindJSON(resp).
+		Do()
+
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (h *HttpClient) SendJsonData(msg models.DeviceMessage) (*BaseResult, error) {

@@ -19,3 +19,5 @@ function HandlerModbusData(src)
 
 	return result*100 / 100
 end
+
+-- print(HandlerModbusData(1819))

@@ -2,6 +2,9 @@ package golua
 
 import (
 	"testing"
+
+	"github.com/toughstruct/peaedge/app"
+	"github.com/toughstruct/peaedge/config"
 )
 
 func TestRunLuaScript(t *testing.T) {
@@ -61,5 +64,60 @@ end
 `
 	for i := 0; i < b.N; i++ {
 		_, _ = HandlerModbusRtd(s, 1111)
+	}
+}
+
+func TestHandlerDataStream(t *testing.T) {
+	app.Init(config.LoadConfig(""))
+	s := `
+json = require("json")
+appx = require("appx")
+
+function HandlerDataStream(mn)
+	local regs, err = appx.getRegisters(mn)
+	if err ~= nil then
+		error(err)
+	end
+    local data = {}
+    for i, v in ipairs(regs) do
+        data.factor = v.factor
+		data.value = v.value
+    end
+    return json.encode({ data = data, mn = mn})
+end
+`
+	v, err := HandlerDataStream(s, "MN20220101")
+	if err != nil {
+		t.Error(err)
+	} else {
+		t.Log(v)
+	}
+
+}
+
+func BenchmarkDataStream(b *testing.B) {
+	app.Init(config.LoadConfig(""))
+	for i := 0; i < b.N; i++ {
+		s := `
+json = require("json")
+appx = require("appx")
+
+function HandlerDataStream(mn)
+	local regs, err = appx.getRegisters(mn)
+	if err ~= nil then
+		error(err)
+	end
+    local data = {}
+    for i, v in ipairs(regs) do
+        data.factor = v.factor
+		data.value = v.value
+    end
+    return json.encode({ data = data, mn = mn})
+end
+`
+		_, err := HandlerDataStream(s, "MN20220101")
+		if err != nil {
+			b.Error(err)
+		}
 	}
 }
