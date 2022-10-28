@@ -1448,8 +1448,8 @@ wxui.displayTableMessage = function (node, width, height, message, mode) {
 }
 
 wxui.statusOptions = [
-    {id: "0", value: "正常"},
-    {id: "1", value: "禁用"},
+    {id: "1", value: "正常"},
+    {id: "0", value: "禁用"},
 ]
 
 wxui.mqttQosOptions = [

@@ -16,6 +16,7 @@ func (s *WebServer) initOptionsRouters() {
 	s.get("/admin/datatype/options", s.DatatypeOptions)
 	s.get("/admin/device/ports", s.PortOptions)
 	s.get("/admin/byteorder/options", s.ByteOrderOptions)
+	s.get("/admin/sched/options", s.SchedOptions)
 }
 
 func (s *WebServer) ModbusProtoOptions(c echo.Context) error {
@@ -71,4 +72,14 @@ func (s *WebServer) ByteOrderOptions(c echo.Context) error {
 func (s *WebServer) PortOptions(c echo.Context) error {
 	ports := modbus.ScanPorts()
 	return c.JSON(http.StatusOK, ports)
+}
+
+func (s *WebServer) SchedOptions(c echo.Context) error {
+	var opts = make([]web.JsonOptions, 0)
+	opts = append(opts, web.JsonOptions{Id: "minute", Value: "每1分钟执行一次"})
+	opts = append(opts, web.JsonOptions{Id: "5minute", Value: "每5分钟执行一次"})
+	opts = append(opts, web.JsonOptions{Id: "10minute", Value: "每10分钟执行一次"})
+	opts = append(opts, web.JsonOptions{Id: "hour", Value: "每小时执行一次"})
+	opts = append(opts, web.JsonOptions{Id: "daily", Value: "每日执行一次"})
+	return c.JSON(http.StatusOK, opts)
 }

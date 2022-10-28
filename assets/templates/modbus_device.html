@@ -99,7 +99,7 @@
                 {
                     cols: [
                         {
-                            width: 280,
+                            width: 240,
                             rows: [
                                 {view: "template", template: "<b>设备列表</b>", type: "header", css: "webix_header"},
                                 {
@@ -121,7 +121,7 @@
                                 {
                                     bloderless: false,
                                     cols: [
-                                        wxui.getIconButton("添加", 70, "plus", false, function () {
+                                        wxui.getIconButton("添加", 60, "plus", false, function () {
                                             webix.ajax().post("/admin/modbus/device/save", {
                                                 webix_operation: "insert",
                                                 name: "新设备"
@@ -129,10 +129,10 @@
                                                 wxui.reloadDataFunc(devListid, '/admin/modbus/device/query', null)()
                                             })
                                         }),
-                                        wxui.getIconButton("导入", 70, "import", false, function () {
+                                        wxui.getIconButton("导入", 60, "import", false, function () {
                                             $$(devuploadid).fileDialog({});
                                         }),
-                                        wxui.getIconButton("删除", 70, "delete", false, function () {
+                                        wxui.getIconButton("删除", 60, "delete", false, function () {
                                             let citem = $$(devListid).getSelectedItem()
                                             if (!citem) {
                                                 webix.message({type: 'error', text: "请选择设备", expire: 1500});
@@ -141,7 +141,7 @@
                                                 wxui.reloadDataFunc(devListid, '/admin/modbus/device/query', null)()
                                             })
                                         }),
-                                        wxui.getIconButton("刷新", 70, "refresh", false, function () {
+                                        wxui.getIconButton("刷新", 60, "refresh", false, function () {
                                             wxui.reloadDataFunc(devListid, '/admin/modbus/device/query', null)()
                                         }),
                                     ]
@@ -150,11 +150,11 @@
                                 {
                                     view: "property", id: "device_attrs", height: 360, complexData: true,
                                     scroll: false,
-                                    editaction:"dblclick",
+                                    editaction: "dblclick",
                                     elements: [
                                         {type: "hidden", id: "id", label: "设备id"},
                                         {type: "text", id: "name", label: "设备名称"},
-                                        {type: "text", id: "oid", label: "OID"},
+                                        {type: "text", id: "mn", label: "MN"},
                                         {type: "select", id: "proto_type", label: "协议类型", options: "/admin/modbus/proto/options"},
                                         {type: "select", id: "mbrtu_addr", label: "mbrtu 地址", options: "/admin/device/ports"},
                                         {type: "text", id: "mbtcp_addr", label: "mbtcp 地址"},
@@ -181,7 +181,7 @@
                                 wxui.getDatatable({
                                     tableid: tableid,
                                     editable: true,
-                                    editaction:"dblclick",
+                                    editaction: "dblclick",
                                     url: "/admin/modbus/reg/query",
                                     save: "/admin/modbus/reg/save",
                                     columns: [
@@ -194,7 +194,8 @@
                                             template: "{common.checkbox()}"
                                         },
                                         {
-                                            id: "oid", header: ["OID"], adjust: true, editor:"text", sort: "string"
+                                            id: "detail", header: [""], adjust: true,
+                                            template: "<a class='do_detail' href='javascript:void(0)'>详情</a>"
                                         },
                                         {
                                             id: "name", header: ["名称"], fillspace: true, editor: "text", sort: "string"

@@ -17,6 +17,7 @@ import (
 func (s *WebServer) initDataScriptRouters() {
 	s.get("/admin/datascript", s.DataScript)
 	s.get("/admin/datascript/options", s.DataScriptOptions)
+	s.get("/admin/datascript/:funcname/options", s.DataScriptOptions)
 	s.get("/admin/datascript/query", s.DataScriptQuery)
 	s.post("/admin/datascript/save", s.DataScriptSave)
 	s.post("/admin/datascript/add", s.DataScriptAdd)
@@ -31,8 +32,13 @@ func (s *WebServer) DataScript(c echo.Context) error {
 }
 
 func (s *WebServer) DataScriptOptions(c echo.Context) error {
+	stype := c.Param("funcname")
 	var data []models.DataScript
-	err := app.DB().Find(&data).Error
+	query := app.DB()
+	if stype != "" {
+		query = query.Where("func_name = ?", stype)
+	}
+	err := query.Find(&data).Error
 	common.Must(err)
 	var options []*web.JsonOptions
 	options = append(options, &web.JsonOptions{
@@ -86,8 +92,14 @@ func (s *WebServer) DataScriptTest(c echo.Context) error {
 			return c.JSON(http.StatusOK, web.RestError(err.Error()))
 		}
 		return c.JSON(http.StatusOK, web.RestSucc("Result = "+cast.ToString(ret)))
+	case "HandlerDataStream":
+		ret, err := golua.HandlerDataStream(src, args)
+		if err != nil {
+			return c.JSON(http.StatusOK, web.RestError(err.Error()))
+		}
+		return c.JSON(http.StatusOK, web.RestSucc("Result = "+cast.ToString(ret)))
 	default:
-		return c.JSON(http.StatusOK, web.RestError(fmt.Sprintf("func %s not found", fname)))
+		return c.JSON(http.StatusOK, web.RestError(fmt.Sprintf("func %s not support", fname)))
 	}
 }
 

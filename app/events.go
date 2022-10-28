@@ -19,6 +19,9 @@ func setupSubscribers() {
 }
 
 // PubChannelMessage 发布通道消息
-func PubChannelMessage(msgType string, msg any) {
-	evBus.Publish(EventChannelMessagePublish, msgType, msg)
+func PubChannelMessage(chlType string, sid string, msg string) {
+	if sid == "" || msg == "" {
+		return
+	}
+	evBus.Publish(EventChannelMessagePublish, chlType, sid, msg)
 }

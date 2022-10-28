@@ -34,6 +34,21 @@ func StartAll() error {
 		daemons = append(daemons, daemon)
 		log.Infof("start mqtt client %s success", chl.ClientId)
 	}
+
+	// 订阅消息
+	_ = app.EvBUS().SubscribeAsync(app.EventChannelMessagePublish, func(chlType string, sid string, msg string) {
+		for _, client := range daemons {
+			if chlType != "mqtt" || client.Sid != sid {
+				continue
+			}
+			err := client.Publish(client.Qos, msg)
+			if err != nil {
+				log.Mqttc.Errorf("Publish mqtt message error: %s", err)
+				continue
+			}
+		}
+	}, false)
+
 	return nil
 }
 
@@ -77,6 +92,7 @@ type MqttDaemon struct {
 	Retained        bool
 	Qos             int
 	Will            string
+	Debug           bool
 	Enabled         bool
 	Mqttc           mqtt.Client
 }
@@ -153,6 +169,7 @@ func newMqttDaemon(mc models.MqttChannel) (*MqttDaemon, error) {
 		Qos:             mc.Qos,
 		Will:            mc.Will,
 		Enabled:         mc.Status == 1,
+		Debug:           mc.Debug == 1,
 		Mqttc:           nil,
 	}
 	opts := mqtt.NewClientOptions().

@@ -15,11 +15,13 @@ const ModuleSystem = "System"
 const ModuleHj212 = "HjZIZ"
 const ModuleMqttc = "Mqttc"
 const ModuleModbus = "Modbus"
+const ModuleSched = "Sched"
 
 var Default = logging.MustGetLogger(ModuleSystem)
 var Hj212 = logging.MustGetLogger(ModuleHj212)
 var Mqttc = logging.MustGetLogger(ModuleMqttc)
 var Modbus = logging.MustGetLogger(ModuleModbus)
+var Sched = logging.MustGetLogger(ModuleSched)
 
 func SetupLog(level logging.Level, syslogaddr string, logdir string) {
 	var format = logging.MustStringFormatter(
@@ -49,6 +51,10 @@ func SetupLog(level logging.Level, syslogaddr string, logdir string) {
 	mbbf := FileSyslog(level, logdir, ModuleModbus)
 	if mbbf != nil {
 		Modbus.SetBackend(mbbf)
+	}
+	schbf := FileSyslog(level, logdir, ModuleSched)
+	if schbf != nil {
+		Sched.SetBackend(schbf)
 	}
 
 }

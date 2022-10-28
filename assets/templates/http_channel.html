@@ -15,7 +15,14 @@
                     },
                 ]
             },
-            {view: "text", name: "url", label: "地址", css: "nborder-input", required: true,},
+            {
+                cols: [
+                    {view: "text", name: "url", label: "地址", css: "nborder-input", required: true,},
+                    {
+                        view: "combo", name: "debug", label: "DEBUG", value: 1, options: wxui.statusOptions, required: true, css: "nborder-input",
+                    },
+                ]
+            },
             {
                 cols: [
                     {view: "combo", name: "format", label: "数据格式", options: ["json", "param"], css: "nborder-input", required: true,},
@@ -167,7 +174,7 @@
                         },
                         {id: "url", header: ["地址"], fillspace: true, sort: "server",},
                         {id: "format", header: ["数据格式"], adjust: true, sort: "server",},
-                        {id: "timeout", header: ["超时-秒"],  adjust: true, sort: "server",},
+                        {id: "timeout", header: ["超时-秒"], adjust: true, sort: "server",},
                         {id: "status", header: ["状态"], options: wxui.statusOptions, adjust: true, sort: "server",},
                         {header: {content: "headerMenu"}, headermenu: false, width: 35}
                     ],

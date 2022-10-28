@@ -26,6 +26,7 @@ type TcpClient struct {
 	Enabled     bool
 	Conn        *net.TCPConn
 	rw          *bufio.ReadWriter
+	Debug       bool
 	isStop      bool
 }
 
@@ -49,6 +50,21 @@ func StartAll() error {
 		clients = append(clients, client)
 		log.Infof("restart tcp client -> %s success", chl.Server)
 	}
+
+	// 订阅消息
+	_ = app.EvBUS().SubscribeAsync(app.EventChannelMessagePublish, func(chlType string, sid string, msg string) {
+		for _, client := range clients {
+			if chlType != "tcp" || client.Sid != sid {
+				continue
+			}
+			err := client.SendMessage([]byte(msg))
+			if err != nil {
+				log.Sched.Errorf("send tcp message error: %s", err)
+				continue
+			}
+		}
+	}, false)
+
 	return nil
 }
 
@@ -83,6 +99,7 @@ func newTcpClient(chl models.TcpChannel) (*TcpClient, error) {
 		ChannelType: chl.ChannelType,
 		Timeout:     chl.Timeout,
 		Enabled:     chl.Status == 1,
+		Debug:       chl.Debug == 1,
 	}
 	go t.checkConn()
 	return t, nil

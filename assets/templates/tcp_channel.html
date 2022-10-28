@@ -27,6 +27,9 @@
                     {view: "counter", name: "timeout", label: "超时时间-秒", css: "nborder-input", required: true,},
                 ]
             },
+            {
+                view: "combo", name: "debug", label: "DEBUG", value: 1, options: wxui.statusOptions, required: true, css: "nborder-input",
+            },
             {view: "label", label: "备注",},
             {name: "remark", view: "codemirror-editor", mode: "markdown"},
         ]
@@ -173,7 +176,7 @@
                         {id: "server", header: ["地址"], fillspace: true, sort: "server",},
                         {id: "port", header: ["端口"], adjust: true, sort: "server",},
                         {id: "channel_type", header: ["类型"], adjust: true, sort: "server",},
-                        {id: "timeout", header: ["超时-秒"],  adjust: true, sort: "server",},
+                        {id: "timeout", header: ["超时-秒"], adjust: true, sort: "server",},
                         {id: "status", header: ["状态"], options: wxui.statusOptions, adjust: true, sort: "server",},
                         {header: {content: "headerMenu"}, headermenu: false, width: 35}
                     ],

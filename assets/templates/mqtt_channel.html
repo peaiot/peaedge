@@ -49,7 +49,13 @@
                 cols: [
                     {view: "counter", name: "retry_interval", value: 60, label: "重连间隔-秒", css: "nborder-input",},
                     {
-                        view: "combo", name: "clear_session", label: "保存会话标志", value: 1, options: wxui.mqttClearSessionOptions, required: true, css: "nborder-input",
+                        view: "combo",
+                        name: "clear_session",
+                        label: "保存会话标志",
+                        value: 1,
+                        options: wxui.mqttClearSessionOptions,
+                        required: true,
+                        css: "nborder-input",
                     },
                 ]
             },
@@ -59,9 +65,18 @@
                         view: "combo", name: "qos", label: "MQTT消息质量", value: 1, options: wxui.mqttQosOptions, css: "nborder-input",
                     },
                     {
-                        view: "combo", name: "retained", label: "消息保留标志", value: 1, options: wxui.mqttRetainOptions, required: true, css: "nborder-input",
+                        view: "combo",
+                        name: "retained",
+                        label: "消息保留标志",
+                        value: 1,
+                        options: wxui.mqttRetainOptions,
+                        required: true,
+                        css: "nborder-input",
                     },
                 ]
+            },
+            {
+                view: "combo", name: "debug", label: "DEBUG", value: 1, options: wxui.statusOptions, required: true, css: "nborder-input",
             },
             {view: "label", label: "备注",},
             {name: "remark", view: "codemirror-editor", mode: "markdown"},
@@ -104,25 +119,25 @@
                 css: "detail-form",
                 elements: [
                     {view: "text", name: "name", label: "名称", readonly: true,},
-                    {view: "text", name: "server", label: "地址",  readonly: true,},
-                    {view: "text", name: "client_id", label: "客户端ID",  readonly: true,},
-                    {view: "text", name: "username", label: "服务器用户名",  readonly: true,},
-                    {view: "text", name: "password", label: "服务器密码",  readonly: true,},
-                    {view: "text", name: "sub_topic", label: "订阅主题", value: "peaedge/subscribe",  readonly: true,},
-                    {view: "text", name: "pub_topic", label: "发布主题", value: "peaedge/publish",  readonly: true,},
+                    {view: "text", name: "server", label: "地址", readonly: true,},
+                    {view: "text", name: "client_id", label: "客户端ID", readonly: true,},
+                    {view: "text", name: "username", label: "服务器用户名", readonly: true,},
+                    {view: "text", name: "password", label: "服务器密码", readonly: true,},
+                    {view: "text", name: "sub_topic", label: "订阅主题", value: "peaedge/subscribe", readonly: true,},
+                    {view: "text", name: "pub_topic", label: "发布主题", value: "peaedge/publish", readonly: true,},
                     {view: "counter", name: "keep_alive", label: "链接超时", readonly: true},
                     {view: "counter", name: "ping_timeout", label: "ping超时", readonly: true},
                     {view: "counter", name: "protocol_version", value: "5", label: "协议版本", readonly: true},
-                    {view: "text", name: "will", label: "遗嘱的主题",readonly: true},
+                    {view: "text", name: "will", label: "遗嘱的主题", readonly: true},
                     {view: "counter", name: "retry_interval", value: 60, label: "重连间隔-秒", readonly: true},
                     {
-                        view: "combo", name: "clear_session", label: "保存会话标志", options: wxui.mqttClearSessionOptions,  readonly: true
+                        view: "combo", name: "clear_session", label: "保存会话标志", options: wxui.mqttClearSessionOptions, readonly: true
                     },
                     {
                         view: "combo", name: "qos", label: "MQTT消息质量", value: 1, options: wxui.mqttQosOptions, readonly: true
                     },
                     {
-                        view: "combo", name: "retained", label: "消息保留标志", value: 1, options: wxui.mqttRetainOptions,  readonly: true
+                        view: "combo", name: "retained", label: "消息保留标志", value: 1, options: wxui.mqttRetainOptions, readonly: true
                     },
                     {view: "text", name: "created_at", label: gtr("创建时间"), readonly: true,},
                     {view: "text", name: "updated_at", label: gtr("更新时间"), readonly: true,},
@@ -232,8 +247,8 @@
                         {id: "protocol_version", header: ["协议版本"], adjust: true, sort: "server",},
                         {id: "client_id", header: ["地址"], adjust: true, sort: "server",},
                         {id: "server", header: ["地址"], fillspace: true, sort: "server",},
-                        {id: "qos", header: ["质量"], options:wxui.mqttQosOptions, adjust: true, sort: "server",},
-                        {id: "status", header: ["状态"], options:wxui.statusOptions, adjust: true, sort: "server",},
+                        {id: "qos", header: ["质量"], options: wxui.mqttQosOptions, adjust: true, sort: "server",},
+                        {id: "status", header: ["状态"], options: wxui.statusOptions, adjust: true, sort: "server",},
                         {header: {content: "headerMenu"}, headermenu: false, width: 35}
                     ],
                     rightSplit: 1,
