@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {{template "header"}}
+</head>
+<body>
+<script>
+    let getColumns = function () {
+        return [
+
+            {
+                cols: [
+                    {view: "text", name: "name", label: "名称", required: true, css: "nborder-input",},
+                    {view: "combo", name: "mn", label: "设备", options:"/admin/modbus/device/mn/options", required: true, css: "nborder-input",},
+                ]
+            },
+            {
+                cols: [
+                    {view: "combo", name: "script_id", label: "数据脚本", options: "/admin/datascript/HandlerDataStream/options", css: "nborder-input", required: true,},
+                    {view: "combo", name: "sched_policy", label: "运行间隔",options:"/admin/sched/options", css: "nborder-input", required: true,},
+                ]
+            },
+            {view: "multicombo", name: "mqtt_chids", label: "MQTT 通道", options:"/admin/channel/mqtt/options", css: "nborder-input",},
+            {view: "multicombo", name: "tcp_chids", label: "TCP 通道", options:"/admin/channel/tcp/options", css: "nborder-input",},
+            {view: "multicombo", name: "http_chids", label: "HTTP 通道", options:"/admin/channel/http/options", css: "nborder-input",},
+            {view: "label", label: "备注",},
+            {name: "remark", view: "codemirror-editor", mode: "markdown"},
+        ]
+    }
+
+    let deleteItem = function (ids, callback) {
+        webix.confirm({
+            title: "Operation confirmation",
+            ok: "Yes", cancel: "No",
+            text: "Confirm to delete? This operation is irreversible.",
+            callback: function (ev) {
+                if (ev) {
+                    webix.ajax().get('/admin/datastream/delete', {ids: ids}).then(function (result) {
+                        let resp = result.json();
+                        webix.message({type: resp.msgtype, text: resp.msg, expire: 2000});
+                        if (callback)
+                            callback()
+                    }).fail(function (xhr) {
+                        webix.message({type: 'error', text: "Delete Failure:" + xhr.statusText, expire: 2000});
+                    });
+                }
+            }
+        });
+    }
+
+    let openDetail = function (item) {
+        let valitem = webix.copy(item)
+        let detailid = webix.uid().toString()
+        wxui.openSideWindow({
+            width: 480,
+            title: "数据流",
+            body: {
+                view: "form",
+                paddingX: 20,
+                elementsConfig: {
+                    labelWidth: 120,
+                },
+                data: valitem,
+                css: "detail-form",
+                elements: [
+                    {view: "text", name: "name", label: "名称", readonly: true,},
+                    {view: "combo", name: "sched_policy", label: "运行间隔",options:"/admin/sched/options", readonly: true,},
+                    {view: "combo", name: "mn", label: "设备",options:"/admin/modbus/device/mn/options", readonly: true,},
+                    {view: "combo", name: "script_id", label: "数据脚本", options: "/admin/datascript/HandlerDataStream/options", readonly: true,},
+                    {view: "multicombo", name: "mqtt_chids", label: "MQTT 通道", options:"/admin/channel/mqtt/options", readonly: true},
+                    {view: "multicombo", name: "tcp_chids", label: "TCP 通道", options:"/admin/channel/tcp/options", readonly: true},
+                    {view: "multicombo", name: "http_chids", label: "HTTP 通道", options:"/admin/channel/http/options", readonly: true},
+                    {id: detailid, view: "template", css: "data-remark", template: markdown.toHTML(valitem.remark), borderless: true, scroll: "auto"},
+                ]
+            }
+        })
+    }
+
+    webix.ready(function () {
+        let tableid = webix.uid().toString();
+        let reloadData = wxui.reloadDataFunc(tableid, "/admin/datastream/query", null)
+        webix.ui({
+            css: "main-panel",
+            padding: 10,
+            rows: [
+                wxui.getPageToolbar({
+                    title: "数据流",
+                    icon: "mdi mdi-code-braces",
+                    elements: [
+                        wxui.getPrimaryButton("编辑", 90, false, function () {
+                            let item = $$(tableid).getSelectedItem();
+                            if (item) {
+                                let vitem = webix.copy(item)
+                                console.log(vitem)
+                                wxui.openFormWindow({
+                                    fullscreen: true,
+                                    width: 640,
+                                    height: 720,
+                                    title: "修改数据流",
+                                    data: vitem,
+                                    post: "/admin/datastream/update",
+                                    callback: reloadData,
+                                    elements: getColumns()
+                                }).show();
+                            } else {
+                                webix.message({type: 'error', text: "Please select one", expire: 1500});
+                            }
+                        }),
+                        wxui.getPrimaryButton("克隆", 90, false, function () {
+                            let item = $$(tableid).getSelectedItem();
+                            if (item) {
+                                let vitem = webix.copy(item)
+                                vitem.id = ""
+                                wxui.openFormWindow({
+                                    fullscreen: true,
+                                    width: 640,
+                                    height: 720,
+                                    title: "克隆数据流",
+                                    data: vitem,
+                                    post: "/admin/datastream/add",
+                                    callback: reloadData,
+                                    elements: getColumns()
+                                }).show();
+                            } else {
+                                webix.message({type: 'error', text: "Please select one", expire: 1500});
+                            }
+                        }),
+                        wxui.getPrimaryButton("创建", 90, false, function () {
+                            wxui.openFormWindow({
+                                fullscreen: true,
+                                width: 640,
+                                height: 720,
+                                title: "创建数据流",
+                                post: "/admin/datastream/add",
+                                callback: reloadData,
+                                data: {},
+                                elements: getColumns()
+                            }).show();
+                        }),
+                        wxui.getDangerButton("删除", 90, false, function () {
+                            let rows = wxui.getTableCheckedIds(tableid);
+                            if (rows.length === 0) {
+                                webix.message({type: 'error', text: "Please select one", expire: 1500});
+                            } else {
+                                deleteItem(rows.join(","), reloadData);
+                            }
+                        }),
+                    ],
+                }),
+                wxui.getDatatable({
+                    tableid: tableid,
+                    url: '/admin/datastream/query',
+                    columns: [
+                        {
+                            id: "state",
+                            header: {content: "masterCheckbox", css: "center"},
+                            headermenu: false,
+                            adjust: true,
+                            css: "center",
+                            template: "{common.checkbox()}"
+                        },
+                        {
+                            id: "name", header: ["名称"], adjust: true, sort: "server",
+                            template: "<a class='do_detail' href='javascript:void(0)'>#name#</a>"
+                        },
+                        {id: "mn", header: ["设备"], options:"/admin/modbus/device/mn/options", adjust: true, sort: "server",},
+                        {id: "script_id", header: ["数据脚本"],options: "/admin/datascript/options", adjust: true, sort: "server",},
+                        {id: "sched_policy", header: ["运行间隔"], options:"/admin/sched/options", adjust: true, sort: "server",},
+                        {id: "reamrk", header: ["备注"], fillspace: true, sort: "server",},
+                        {header: {content: "headerMenu"}, headermenu: false, width: 35}
+                    ],
+                    rightSplit: 1,
+                    pager: true,
+                    on: {
+                        onItemDblClick: function (id, e, node) {
+                            openDetail(this.getItem(id))
+                        }
+                    },
+                    onClick: {
+                        do_detail: function (e, id) {
+                            openDetail(this.getItem(id))
+                        },
+                    },
+                }),
+                wxui.getTableFooterBar({
+                    tableid: tableid,
+                    callback: reloadData,
+                    actions: [],
+                }),
+            ]
+        })
+    })
+</script>
+</body>
+</html>
