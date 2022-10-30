@@ -57,25 +57,6 @@ webix.protoUI({
 }, webix.ui.template);
 
 
-webix.protoUI({
-    name: "echarts",
-    $init: function (config) {
-        this.$view.innerHTML = "<div style='width:100%; height:100%;'></div>";
-        this._initChart(config);
-    },
-    $setSize: function (x, y) {
-        if (webix.ui.view.prototype.$setSize.call(this, x, y))
-            this.getChart().resize();
-    },
-    _initChart: function (config) {
-        this._chart = echarts.init(this.$view.firstChild);
-        this._chart.setOption(config.option);
-    },
-    getChart: function () {
-        return this._chart;
-    }
-}, webix.ui.view);
-
 
 webix.attachEvent("onAjaxError", function (xhr) {
         let result = /.*?message=(.*),\sinternal.*/.exec(xhr.responseText)
@@ -115,26 +96,6 @@ wxui.removeFromArray = function (arr, key) {
     }
 }
 
-
-markdown = new showdown.Converter()
-markdown.setOption('simplifiedAutoLink', true);
-markdown.setOption('rawPrefixHeaderId', true);
-markdown.setOption('rawHeaderId', true);
-markdown.setOption('parseImgDimensions', true);
-markdown.setOption('smoothLivePreview‎', true);
-markdown.setOption('smartIndentationFix‎', true);
-markdown.setOption('encodeEmails', true);
-markdown.setOption('emoji', true);
-markdown.setOption('tables', true);
-markdown.setOption('tablesHeaderId', true);
-markdown.setOption('tasklists', true);
-markdown.toHTML = function (src) {
-    let r = markdown.makeHtml(src)
-    setTimeout(function () {
-        window.mermaid.init(undefined, document.querySelectorAll('.language-mermaid'));
-    }, 1000)
-    return r
-}
 
 
 wxui.metricsColors = ["#f44336", "#9c27b0", "#3f51b5", "#0288d1", "#009688", "#558b2f", "#ffa000", "#ff5722", "#795548", "#546e7a", "#e91e63", "#1e88e5"]

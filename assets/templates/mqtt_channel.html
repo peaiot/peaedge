@@ -141,7 +141,7 @@
                     },
                     {view: "text", name: "created_at", label: gtr("创建时间"), readonly: true,},
                     {view: "text", name: "updated_at", label: gtr("更新时间"), readonly: true,},
-                    {id: detailid, view: "template", css: "data-remark", template: markdown.toHTML(valitem.remark), borderless: true, scroll: "auto"},
+                    {id: detailid, view: "template", css: "data-remark", template: valitem.remark, borderless: true, scroll: "auto"},
                 ]
             }
         })

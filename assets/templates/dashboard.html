@@ -36,12 +36,14 @@
                 {
                     paddingX: 6,
                     rows: [
-                        {view: "template", template: "【15分钟】主程序 CPU 使用率统计 (%)", type: "header"},
+                        {view: "template", template: "主程序 CPU 使用率统计 (%)", type: "header"},
                         {
                             view: "chart",
                             type: "splineArea",
                             value: "#value#",
                             color: "#04b75e",
+                            dynamic: true,
+                            cellWidth: 50,
                             alpha: 0.6,
                             xAxis: {
                                 template: "#time#"
@@ -56,15 +58,18 @@
                             },
                             url: "/admin/metrics/cpuuse/line"
                         },
-                        {view: "template", template: "【15分钟】主程序物理内存使用统计 (MB)", type: "header"},
+                        {view: "template", template: "主程序物理内存使用统计 (MB)", type: "header"},
                         {
                             view: "chart",
                             type: "splineArea",
                             value: "#value#",
                             color: "#1891e3",
+                            dynamic: true,
+                            cellWidth: 50,
                             alpha: 0.6,
                             xAxis: {
-                                template: "#time#"
+                                template: "#time#",
+                                lines: true,
                             },
                             yAxis: {
                                 start: 0,
