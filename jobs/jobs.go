@@ -9,6 +9,7 @@ import (
 	"github.com/toughstruct/peaedge/app"
 	"github.com/toughstruct/peaedge/jobs/datastream"
 	"github.com/toughstruct/peaedge/jobs/modbus_task"
+	"github.com/toughstruct/peaedge/jobs/monitor"
 	"github.com/toughstruct/peaedge/log"
 )
 
@@ -27,6 +28,10 @@ func Init() {
 
 	_, _ = Sched.AddFunc(fmt.Sprintf("@every %ds", 60), func() {
 		modbus_task.RegisterSaveRtdTask()
+	})
+
+	_, _ = Sched.AddFunc("@every 5s", func() {
+		monitor.ProcessMonitorTask()
 	})
 
 	// 每分钟执行一次

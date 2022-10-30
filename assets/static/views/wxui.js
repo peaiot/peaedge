@@ -57,6 +57,26 @@ webix.protoUI({
 }, webix.ui.template);
 
 
+webix.protoUI({
+    name: "echarts",
+    $init: function (config) {
+        this.$view.innerHTML = "<div style='width:100%; height:100%;'></div>";
+        this._initChart(config);
+    },
+    $setSize: function (x, y) {
+        if (webix.ui.view.prototype.$setSize.call(this, x, y))
+            this.getChart().resize();
+    },
+    _initChart: function (config) {
+        this._chart = echarts.init(this.$view.firstChild);
+        this._chart.setOption(config.option);
+    },
+    getChart: function () {
+        return this._chart;
+    }
+}, webix.ui.view);
+
+
 webix.attachEvent("onAjaxError", function (xhr) {
         let result = /.*?message=(.*),\sinternal.*/.exec(xhr.responseText)
         if (result) {

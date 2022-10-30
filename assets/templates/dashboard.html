@@ -2,13 +2,12 @@
 <html>
 <head>
     {{template "header"}}
-    <title>PeaEdge</title>
+    <script src="/static/echarts/echarts.min.js"></script>
+    <script src="/static/echarts/echarts-utils.min.js"></script>
 </head>
 <body>
 <script>
     webix.ready(function () {
-        let mnid = webix.uid().toString();
-        let frameid = webix.uid().toString();
         webix.ui({
             padding: 10,
             rows: [
@@ -35,29 +34,78 @@
                     ]
                 },
                 {
-                    paddingX: 20,
-                    cols: [
+                    paddingX: 6,
+                    rows: [
+                        {view: "template", template: "【15分钟】主程序 CPU 使用率统计 (%)", type: "header"},
                         {
-                            view: "combo", id: mnid, name: "mn", label: tr("device", "查询设备"),
-                            options: "/admin/modbus/device/mn/options", css:"nborder-input",
+                            view: "chart",
+                            type: "splineArea",
+                            value: "#value#",
+                            color: "#04b75e",
+                            alpha: 0.6,
+                            xAxis: {
+                                template: "#time#"
+                            },
+                            yAxis: {
+                                start: 0,
+                                step: 25,
+                                title: "CPU 使用率 (%)",
+                            },
+                            tooltip: {
+                                template: "#value#"
+                            },
+                            url: "/admin/metrics/cpuuse/line"
                         },
+                        {view: "template", template: "【15分钟】主程序物理内存使用统计 (MB)", type: "header"},
                         {
-                            view: "button",
-                            label: "查询",
-                            css: "webix_transparent",
-                            type: "icon",
-                            icon: "mdi mdi-search-web",
-                            borderless: true,
-                            width: 70,
-                            click: function () {
-                                $$(frameid).load("/admin/metrics/modbus/line?mn=" + $$(mnid).getValue())
-                            }
-                        }, {}
+                            view: "chart",
+                            type: "splineArea",
+                            value: "#value#",
+                            color: "#1891e3",
+                            alpha: 0.6,
+                            xAxis: {
+                                template: "#time#"
+                            },
+                            yAxis: {
+                                start: 0,
+                                step: 25,
+                                title: "内存使用 (MB)"
+                            },
+                            tooltip: {
+                                template: "#value#"
+                            },
+                            url: "/admin/metrics/memuse/line"
+                        }
                     ]
-                },
-                {css: "iframe-page", id: frameid, view: "iframe", borderless: true, src: "/admin/metrics/modbus/line"},
+                }
+
+
+
+                // {
+                //     paddingX: 20,
+                //     cols: [
+                //         {
+                //             view: "combo", id: mnid, name: "mn", label: tr("device", "查询设备"),
+                //             options: "/admin/modbus/device/mn/options", css:"nborder-input",
+                //         },
+                //         {
+                //             view: "button",
+                //             label: "查询",
+                //             css: "webix_transparent",
+                //             type: "icon",
+                //             icon: "mdi mdi-search-web",
+                //             borderless: true,
+                //             width: 70,
+                //             click: function () {
+                //                 $$(frameid).load("/admin/metrics/modbus/line?mn=" + $$(mnid).getValue())
+                //             }
+                //         }, {}
+                //     ]
+                // },
+                // {css: "iframe-page", id: frameid, view: "iframe", borderless: true, src: "/admin/metrics/modbus/line"},
             ]
         })
+
     })
 </script>
 </body>

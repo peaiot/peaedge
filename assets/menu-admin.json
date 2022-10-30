@@ -13,7 +13,8 @@
       {"id": "1500", "value": "MQTT 通道", "icon": "mdi mdi-radio-tower", "url": "/admin/channel/mqtt"},
       {"id": "1501", "value": "TCP 通道", "icon": "mdi mdi-network", "url": "/admin/channel/tcp"},
       {"id": "1502", "value": "HTTP 通道", "icon": "mdi mdi-web", "url": "/admin/channel/http"},
-      {"id": "1503", "value": "数据流管理", "icon": "mdi mdi-progress-upload", "url": "/admin/datastream"}
+      {"id": "1503", "value": "数据流管理", "icon": "mdi mdi-progress-upload", "url": "/admin/datastream"},
+      {"id": "1504", "value": "控制流管理", "icon": "mdi mdi-progress-download", "url": "/admin/controlstream"}
     ]
   },
   {
