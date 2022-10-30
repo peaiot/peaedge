@@ -20,7 +20,7 @@ func (s *WebServer) MonitorCpuMetricsLineData(c echo.Context) error {
 	var items []processMetricLineItem
 
 	points, _ := app.TsDB().Select("peaedge_cpuuse", nil,
-		time.Now().Add(-15*time.Minute).Unix(), time.Now().Unix())
+		time.Now().Add(-1*time.Hour).Unix(), time.Now().Unix())
 	for i, p := range points {
 		items = append(items, processMetricLineItem{
 			Id:    i + 1,
@@ -39,7 +39,7 @@ func (s *WebServer) MonitorMemMetricsLineData(c echo.Context) error {
 	var items []processMetricLineItem
 
 	points, _ := app.TsDB().Select("peaedge_memuse", nil,
-		time.Now().Add(-15*time.Minute).Unix(), time.Now().Unix())
+		time.Now().Add(-1*time.Hour).Unix(), time.Now().Unix())
 	for i, p := range points {
 		items = append(items, processMetricLineItem{
 			Id:    i + 1,

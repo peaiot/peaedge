@@ -70,7 +70,7 @@
                     {view: "multicombo", name: "mqtt_chids", label: "MQTT 通道", options:"/admin/channel/mqtt/options", readonly: true},
                     {view: "multicombo", name: "tcp_chids", label: "TCP 通道", options:"/admin/channel/tcp/options", readonly: true},
                     {view: "multicombo", name: "http_chids", label: "HTTP 通道", options:"/admin/channel/http/options", readonly: true},
-                    {id: detailid, view: "template", css: "data-remark", template: markdown.toHTML(valitem.remark), borderless: true, scroll: "auto"},
+                    {id: detailid, view: "template", css: "data-remark", template: valitem.remark, borderless: true, scroll: "auto"},
                 ]
             }
         })

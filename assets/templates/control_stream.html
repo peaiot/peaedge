@@ -64,7 +64,7 @@
                     {view: "text", name: "event", label: "事件", readonly: true,},
                     {view: "text", name: "param", label: "参数模板", readonly: true,},
                     {view: "combo", name: "command_id", label: "控制指令", options: "/admin/modbus/command/options", readonly: true,},
-                    {id: detailid, view: "template", css: "data-remark", template: markdown.toHTML(valitem.remark), borderless: true, scroll: "auto"},
+                    {id: detailid, view: "template", css: "data-remark", template: valitem.remark, borderless: true, scroll: "auto"},
                 ]
             }
         })
