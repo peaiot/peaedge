@@ -112,19 +112,18 @@ type ModbusVarTpl struct {
 
 // ModbusCommand modbus 指令
 type ModbusCommand struct {
-	Id           string    `json:"id" csv:"id" form:"id"`
-	Group        string    `json:"group" csv:"group" form:"group"` // 指令组
-	Oid          string    `json:"oid" csv:"oid" form:"oid"`
-	Name         string    `json:"name" csv:"name" form:"name"`                            // 指令名称
-	Order        int       `json:"order" csv:"order" form:"order"`                         // 指令顺序
-	DeviceId     string    `json:"device_id" csv:"device_id" form:"device_id"`             // 设备ID
-	CommandType  string    `json:"command_type" csv:"command_type" form:"command_type"`    // 指令类型 data or script
-	RegType      string    `json:"reg_type" csv:"reg_type" form:"reg_type"`                // 寄存器类型
-	StartAddr    int       `json:"start_addr" csv:"start_addr" form:"start_addr"`          // 寄存器起始地址
-	CommandParam string    `json:"command_param" csv:"command_param" form:"command_param"` // 参数 script类型有效
-	CommandData  string    `json:"command_data" csv:"command_data" form:"command_data"`    // 16进制字符串或者lua函数脚本
-	CreatedAt    time.Time `json:"created_at"`
-	UpdatedAt    time.Time `json:"updated_at"`
+	Id          string    `json:"id" csv:"id" form:"id"`
+	Group       string    `json:"group" csv:"group" form:"group"` // 指令组
+	Oid         string    `json:"oid" csv:"oid" form:"oid"`
+	Name        string    `json:"name" csv:"name" form:"name"`                         // 指令名称
+	Order       int       `json:"order" csv:"order" form:"order"`                      // 指令顺序
+	DeviceId    string    `json:"device_id" csv:"device_id" form:"device_id"`          // 设备ID
+	CommandType string    `json:"command_type" csv:"command_type" form:"command_type"` // 指令类型 data or script
+	RegType     string    `json:"reg_type" csv:"reg_type" form:"reg_type"`             // 寄存器类型
+	StartAddr   int       `json:"start_addr" csv:"start_addr" form:"start_addr"`       // 寄存器起始地址
+	CommandData string    `json:"command_data" csv:"command_data" form:"command_data"` // 16进制字符串或者lua函数脚本
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 // Hj212Queue 212消息队列
@@ -239,6 +238,17 @@ type DataStream struct {
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 
+type ControlStream struct {
+	ID        string    `json:"id" csv:"id" form:"id"`
+	Name      string    `json:"name" csv:"name" form:"name"`
+	Event     string    `json:"event" csv:"event" form:"event"`
+	CommandId string    `json:"command_id" csv:"command_id" form:"command_id"`
+	Param     string    `json:"param" csv:"param" form:"param"`
+	Remark    string    `json:"remark" csv:"remark" form:"remark"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
 var Tables = []interface{}{
 	&SysConfig{},
 	&SysOpr{},
@@ -260,4 +270,5 @@ var Tables = []interface{}{
 	&TcpChannel{},
 	&HttpChannel{},
 	&DataStream{},
+	&ControlStream{},
 }

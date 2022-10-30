@@ -31,6 +31,8 @@ func (s *WebServer) initMetricsRouters() {
 	s.get("/admin/metrics/modbus/:name/count", s.ModbusCounter)
 	s.get("/admin/metrics/modbus/line", s.ModbusMetricsLine)
 	s.get("/admin/metrics/modbus/linedata", s.ModbusMetricsLineData)
+	s.get("/admin/metrics/cpuuse/line", s.MonitorCpuMetricsLineData)
+	s.get("/admin/metrics/memuse/line", s.MonitorMemMetricsLineData)
 }
 
 // MetricsCpuusage /admin/metrics/system/cpuusage

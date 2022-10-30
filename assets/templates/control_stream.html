@@ -7,27 +7,21 @@
 <script>
     let getColumns = function () {
         return [
-            {view: "text", name: "name", label: "名称", required: true, css: "nborder-input",},
+
             {
                 cols: [
-                    {view: "text", name: "oid", label: "OID", required: true, css: "nborder-input",},
-                    {view: "text", name: "group", label: "分组", required: true, css: "nborder-input",},
+                    {view: "text", name: "name", label: "名称", required: true, css: "nborder-input",},
+                    {view: "text", name: "event", label: "事件", required: true, css: "nborder-input",},
                 ]
             },
             {
                 cols: [
-                    {view: "combo", name: "device_id", label: "设备", options:"/admin/modbus/device/options", required: true, css: "nborder-input",},
-                    {view: "combo", name: "command_type", label: "指令类型",options:["data","script"], required: true, css: "nborder-input",},
+                    {view: "combo", name: "command_id", label: "控制指令", options: "/admin/modbus/command/options", css: "nborder-input", required: true,},
+                    {view: "text", name: "param", label: "参数模板", required: true, css: "nborder-input",},
                 ]
             },
-            {
-                cols: [
-                    {view: "combo", name: "reg_type", label: "寄存器类型", options: "/admin/regtype/options", css: "nborder-input", required: true,},
-                    {view: "counter", name: "start_addr", label: "起始地址", css: "nborder-input", required: true,},
-                ]
-            },
-            {view: "label", label: "HEX数据或Lua脚本",},
-            {name: "command_data", view: "codemirror-editor", mode: "lua"},
+            {view: "label", label: "备注",},
+            {name: "remark", view: "codemirror-editor", mode: "markdown"},
         ]
     }
 
@@ -38,7 +32,7 @@
             text: "Confirm to delete? This operation is irreversible.",
             callback: function (ev) {
                 if (ev) {
-                    webix.ajax().get('/admin/modbus/command/delete', {ids: ids}).then(function (result) {
+                    webix.ajax().get('/admin/controlstream/delete', {ids: ids}).then(function (result) {
                         let resp = result.json();
                         webix.message({type: resp.msgtype, text: resp.msg, expire: 2000});
                         if (callback)
@@ -53,10 +47,10 @@
 
     let openDetail = function (item) {
         let valitem = webix.copy(item)
-        let detailid = webix.uid()
+        let detailid = webix.uid().toString()
         wxui.openSideWindow({
             width: 480,
-            title: "控制指令",
+            title: "控制流",
             body: {
                 view: "form",
                 paddingX: 20,
@@ -67,13 +61,10 @@
                 css: "detail-form",
                 elements: [
                     {view: "text", name: "name", label: "名称", readonly: true,},
-                    {view: "text", name: "group", label: "地址", readonly: true,},
-                    {view: "combo", name: "device_id", label: "设备",options:"/admin/modbus/device/options", readonly: true,},
-                    {view: "text", name: "command_type", label: "指令类型", readonly: true,},
-                    {view: "text", name: "reg_type", label: "寄存器类型",  readonly: true,},
-                    {view: "text", name: "start_addr", label: "起始地址",  readonly: true,},
-                    {view: "text", name: "created_at", label: gtr("创建时间"), readonly: true,},
-                    {view: "text", name: "updated_at", label: gtr("更新时间"), readonly: true,},
+                    {view: "text", name: "event", label: "事件", readonly: true,},
+                    {view: "text", name: "param", label: "参数模板", readonly: true,},
+                    {view: "combo", name: "command_id", label: "控制指令", options: "/admin/modbus/command/options", readonly: true,},
+                    {id: detailid, view: "template", css: "data-remark", template: markdown.toHTML(valitem.remark), borderless: true, scroll: "auto"},
                 ]
             }
         })
@@ -81,13 +72,13 @@
 
     webix.ready(function () {
         let tableid = webix.uid().toString();
-        let reloadData = wxui.reloadDataFunc(tableid, "/admin/modbus/command/query", null)
+        let reloadData = wxui.reloadDataFunc(tableid, "/admin/controlstream/query", null)
         webix.ui({
             css: "main-panel",
             padding: 5,
             rows: [
                 wxui.getPageToolbar({
-                    title: "控制指令",
+                    title: "控制流",
                     icon: "mdi mdi-code-braces",
                     elements: [
                         wxui.getPrimaryButton("编辑", 90, false, function () {
@@ -99,9 +90,9 @@
                                     fullscreen: true,
                                     width: 640,
                                     height: 720,
-                                    title: "修改控制指令",
+                                    title: "修改控制流",
                                     data: vitem,
-                                    post: "/admin/modbus/command/update",
+                                    post: "/admin/controlstream/update",
                                     callback: reloadData,
                                     elements: getColumns()
                                 }).show();
@@ -118,9 +109,9 @@
                                     fullscreen: true,
                                     width: 640,
                                     height: 720,
-                                    title: "克隆控制指令",
+                                    title: "克隆控制流",
                                     data: vitem,
-                                    post: "/admin/modbus/command/add",
+                                    post: "/admin/controlstream/add",
                                     callback: reloadData,
                                     elements: getColumns()
                                 }).show();
@@ -133,8 +124,8 @@
                                 fullscreen: true,
                                 width: 640,
                                 height: 720,
-                                title: "创建控制指令",
-                                post: "/admin/modbus/command/add",
+                                title: "创建控制流",
+                                post: "/admin/controlstream/add",
                                 callback: reloadData,
                                 data: {},
                                 elements: getColumns()
@@ -152,7 +143,7 @@
                 }),
                 wxui.getDatatable({
                     tableid: tableid,
-                    url: '/admin/modbus/command/query',
+                    url: '/admin/controlstream/query',
                     columns: [
                         {
                             id: "state",
@@ -163,14 +154,13 @@
                             template: "{common.checkbox()}"
                         },
                         {
-                            id: "name", header: ["名称"], fillspace: true, sort: "server",
+                            id: "name", header: ["名称"], adjust: true, sort: "server",
                             template: "<a class='do_detail' href='javascript:void(0)'>#name#</a>"
                         },
-                        {id: "oid", header: ["OID"], adjust: true, sort: "server",},
-                        {id: "group", header: ["分组"], adjust: true, sort: "server",},
-                        {id: "device_id", header: ["设备"], options:"/admin/modbus/device/options", adjust: true, sort: "server",},
-                        {id: "reg_type", header: ["寄存器类型"], adjust: true, sort: "server",},
-                        {id: "start_addr", header: ["起始地址"], adjust: true, sort: "server",},
+                        {id: "event", header: ["事件"], adjust: true, sort: "server",},
+                        {id: "param", header: ["参数模板"], adjust: true, sort: "server",},
+                        {id: "command_id", header: ["控制指令"],options: "/admin/modbus/command/options", adjust: true, sort: "server",},
+                        {id: "reamrk", header: ["备注"], fillspace: true, sort: "server",},
                         {header: {content: "headerMenu"}, headermenu: false, width: 35}
                     ],
                     rightSplit: 1,

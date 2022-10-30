@@ -26,6 +26,7 @@ func (s *WebServer) initRouters() {
 	s.initTcpChannelRouters()
 	s.initModbusCommandRouters()
 	s.initDataStreamRouters()
+	s.initControlStreamRouters()
 }
 
 func (s *WebServer) get(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) *echo.Route {
