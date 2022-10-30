@@ -2,7 +2,7 @@
 <html>
 <head>
     {{template "header"}}
-    <title>PeaEdge</title>
+    <title>豌豆物联边缘网关</title>
 </head>
 <body>
 <script>
@@ -70,15 +70,17 @@
                                 {
                                     rows: [
                                         {
+                                            css: "main-sidebar-head",
+                                            borderless: true,
                                             height: 40,
                                             cols: [
                                                 {width: 8},
                                                 {
-                                                    view: "button", type: "icon", icon: "mdi mdi-apps", width: 36, align: "left", click: function () {
+                                                    view: "button", css:"toggle",type: "icon", icon: "mdi mdi-apps", width: 36, align: "left", click: function () {
                                                         $$("main-sidebar").toggle()
                                                     }
                                                 }, {width: 10},
-                                                {view: "label", css: "sidebar-title", label: "豌豆物联"},
+                                                {view: "label", css: "sidebar-title", label: "豌豆物联边缘网关"},
                                             ]
                                         },
                                         {

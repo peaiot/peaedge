@@ -45,11 +45,11 @@ func StartAll() error {
 	for _, chl := range chls {
 		client, err := newHttpClient(chl)
 		if err != nil {
-			log.Errorf("restart http client -> %s error: %s", chl.Url, err)
+			log.Errorf("start http client -> %s error: %s", chl.Url, err)
 			continue
 		}
 		clients = append(clients, client)
-		log.Infof("restart http client -> %s success", chl.Url)
+		log.Infof("start http client -> %s success", chl.Url)
 	}
 
 	// 订阅消息
@@ -63,7 +63,7 @@ func StartAll() error {
 				log.Sched.Errorf("send http message error: %s", err)
 				continue
 			}
-			log.Sched.Infof("send http message result: %v", r)
+			log.Sched.Infof("send http message to %s,  result: %v", client.Url, r)
 		}
 	}, false)
 	return nil

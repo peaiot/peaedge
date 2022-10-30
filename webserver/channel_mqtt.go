@@ -54,8 +54,8 @@ func (s *WebServer) MqttChannelQuery(c echo.Context) error {
 
 func (s *WebServer) MqttChannelAdd(c echo.Context) error {
 	form := new(models.MqttChannel)
-	form.ID = common.UUIDBase32()
 	common.Must(c.Bind(form))
+	form.ID = common.UUIDBase32()
 	common.CheckEmpty("name", form.Name)
 	common.CheckEmpty("server", form.Server)
 	common.Must(app.DB().Create(form).Error)

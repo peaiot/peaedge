@@ -164,7 +164,7 @@ button {
 .win-toolbar {
     height: 40px;
     background-color: #d0d0d0;
-    background: linear-gradient(#f4f5f9,#f2f2f2)!important;
+    background: linear-gradient(#f4f5f9, #f2f2f2) !important;
     border-bottom: 1px solid #d6d6d6;
 }
 
@@ -701,8 +701,8 @@ button {
 
 .sidebar-title .webix_el_box {
     color: gray;
-    font-weight: 800!important;
-    font-size: 14px!important;
+    font-weight: 800 !important;
+    font-size: 14px !important;
     padding-top: 5px;
 }
 
@@ -721,7 +721,7 @@ button {
 }
 
 .form-desc .webix_template {
-     font-size: 11px!important;
+    font-size: 11px !important;
 }
 
 .web-console {
@@ -752,7 +752,7 @@ button {
 }
 
 .mymetrics {
-    background: #58677f !important;
+    background: #137ec7 !important;
     border-radius: 5px;
 }
 
@@ -776,12 +776,12 @@ button {
 }
 
 .webix_template .widget-metrics .value {
-    font-size: 1.4em;
+    font-size: 16px;
     color: #eeeeee;
 }
 
 .webix_template .widget-metrics .title {
-    font-size: 1em;
+    font-size: 14px;
     color: #eeeeee;
     padding-top: 5px;
 }
@@ -861,16 +861,23 @@ button {
     color: #696969;
 }
 
-.webix_sidebar .webix_tree_branch_1 > .webix_tree_item,
-.webix_sidebar .webix_tree_item {
-    color: #2d2d2d;
-    cursor: pointer;
-    /* background: #fefefe; */
-    border-bottom: 1px solid #ebebeb !important;
+.main-sidebar-head  {
+    background: #2a2a2a !important;
 }
 
-.webix_sidebar {
-    background: linear-gradient(45deg, #f3f3f3, #ffffff) !important;
+.main-sidebar-head {
+    border-color: #e7e7e700 !important;
+    font-weight: 400;
+    font-size: 13px;
+}
+
+.main-sidebar-head  .webix_secondary .webix_button {
+    background: #f4f5f900;
+    color: #727272;
+}
+
+.main-sidebar-head .toggle {
+   padding-top: 4px;
 }
 
 
@@ -931,30 +938,35 @@ button {
     color: #f2f2f2;
     line-height: 180%;
 }
+
 .web-console .log-debug {
     color: #00ffd8;
     line-height: 180%;
 }
+
 .web-console .log-warning {
     color: #ff8e00;
     line-height: 180%;
 }
+
 .web-console .log-error {
     color: #ff5757;
     line-height: 180%;
 }
 
 .snmp-status_error {
-    color: red!important;
+    color: red !important;
 }
+
 .snmp-status_success {
     color: green !important;
 }
 
 
 .statuscss_error, .statuscss_failure {
-    color: red!important;
+    color: red !important;
 }
+
 .statuscss_success {
     color: green !important;
 }

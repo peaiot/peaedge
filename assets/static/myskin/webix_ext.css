@@ -61,3 +61,53 @@
     font-size: 13px !important;
     color: #3f3f3f !important;
 }
+
+.webix_sidebar .webix_sidebar_icon {
+    width: 20px;
+    vertical-align: middle;
+    color: #8f8f8f;
+    font-size: 16px;
+}
+
+
+.webix_sidebar .webix_tree_branch_1 > .webix_tree_item,
+.webix_sidebar .webix_tree_item {
+    /*color: #2d2d2d;*/
+    /*cursor: pointer;*/
+    /*!* background: #fefefe; *!*/
+    /*border-bottom: 1px solid #ebebeb !important;*/
+    color: #dedede;
+    cursor: pointer;
+    border-bottom: 1px solid #ebebeb0a !important;
+}
+
+.webix_sidebar {
+    /*background: linear-gradient(45deg, #f3f3f3, #ffffff) !important;*/
+    border-color: rgba(231, 231, 231, 0.07) !important;
+    background: linear-gradient(45deg, #2f2f2f, #252525) !important;
+}
+
+.webix_sidebar .webix_tree_item:hover,
+.webix_sidebar.webix_sidebar_expanded .webix_tree_item.webix_sidebar_selected:hover {
+    background-color: #373737!important;
+}
+
+.webix_sidebar .webix_tree_item.webix_selected,
+.webix_sidebar .webix_tree_item.webix_sidebar_selected {
+    color: #b2b2b2 !important;
+    background-color: #2d2d2d!important;
+    font-weight: 500;
+}
+
+.webix_sidebar .webix_tree_item.webix_selected span {
+    background-color: #9b9b9b00!important;
+    color: #bbbbbb;
+    font-weight: 600;
+}
+
+.webix_sidebar .webix_tree_item.webix_selected .webix_sidebar_dir_icon,
+.webix_sidebar .webix_tree_item.webix_selected .webix_sidebar_icon,
+.webix_sidebar .webix_tree_item.webix_sidebar_selected .webix_sidebar_dir_icon,
+.webix_sidebar .webix_tree_item.webix_sidebar_selected .webix_sidebar_icon {
+    color: #ffffff;
+}
