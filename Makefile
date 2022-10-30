@@ -57,13 +57,39 @@ build-linux:
 	-X "main.CommitSubject=${COMMIT_SUBJECT}"\
 	-s -w -extldflags "-static" -linkmode "external" \
 	' \
-    -o ${RELEASE_DIR}/${BUILD_NAME} ${SOURCE}
+    -o ${RELEASE_DIR}/${BUILD_NAME}-x86_64 ${SOURCE}
+
+build-linux-arm64:
+	go generate
+	make buildpre
+	CC=aarch64-linux-musl-gcc CXX=aarch64-linux-musl-g++ \
+	CGO_ENABLED=1 GOOS=linux GOARCH=arm64 go build -a -ldflags \
+	'\
+	-X "main.BuildVersion=${BUILD_VERSION}"\
+	-X "main.ReleaseVersion=${RELEASE_VERSION}"\
+	-X "main.BuildTime=${BUILD_TIME}"\
+	-X "main.BuildName=${BUILD_NAME}"\
+	-X "main.CommitID=${COMMIT_SHA1}"\
+	-X "main.CommitDate=${COMMIT_DATE}"\
+	-X "main.CommitUser=${COMMIT_USER}"\
+	-X "main.CommitSubject=${COMMIT_SUBJECT}"\
+	-s -w -extldflags "-static" -linkmode "external" \
+	' \
+    -o ${RELEASE_DIR}/${BUILD_NAME}-arm64 ${SOURCE}
 
 
 ci:
 	@read -p "type commit message: " cimsg; \
 	git ci -am "$(shell date "+%F %T") $${cimsg}"
 
+pub:
+	make build-linux
+	make build-linux-arm64
+	upx ./release/peaedge-x86_64
+	upx ./release/peaedge-arm64
+	./peapub -put -m peaedge -i  ./release/peaedge-x86_64  -v latest
+	./peapub -put -m peaedge-x86_64 -i  ./release/peaedge-x86_64  -v latest
+	./peapub -put -m peaedge-arm64 -i  ./release/peaedge-arm64  -v latest
 
 syncwjt:
 	@read -p "提示:同步操作尽量在完成一个完整功能特性后进行，请输入提交描述 (wjt):  " cimsg; \

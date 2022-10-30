@@ -54,8 +54,8 @@ func (s *WebServer) HttpChannelQuery(c echo.Context) error {
 
 func (s *WebServer) HttpChannelAdd(c echo.Context) error {
 	form := new(models.HttpChannel)
-	form.ID = common.UUIDBase32()
 	common.Must(c.Bind(form))
+	form.ID = common.UUIDBase32()
 	common.CheckEmpty("name", form.Name)
 	common.CheckEmpty("url", form.Url)
 	common.Must(app.DB().Create(form).Error)
