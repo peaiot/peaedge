@@ -91,25 +91,17 @@
                             id: "detail", header: [""], adjust: true,
                             template: "<a class='do_detail' href='javascript:void(0)'>详情</a>"
                         },
-                        {
-                            id: "name", header: ["名称"], fillspace: true, editor: "text", sort: "string"
-                        },
-                        {id: "data_type", header: "数据类型", editor: "select", options: "/admin/datatype/options", adjust: true, sort: "string"},
-                        {id: "unit", header: "数据单位", editor: "text", adjust: true, sort: "int"},
-                        {id: "byte_order", header: "字节序", editor: "select", options: "/admin/byteorder/options", adjust: true, sort: "string"},
-                        {id: "script_id", editor: "select", options: "/admin/datascript/options", header: "函数脚本", adjust: true, sort: "string"},
                         {id: "data_factor", header: "环境因子", editor: "text", adjust: true, sort: "string"},
-                        {id: "channel_status", editor: "select", options: "/admin/status/options", header: "通道启用", adjust: true, sort: "string"},
-                        {id: "remark", header: ["备注"], editor: "text", sort: "string", hidden: true},
+                        {
+                            id: "name", header: ["名称"], adjust: true, editor: "text", sort: "string"
+                        },
+                        {id: "unit", header: "数据单位", editor: "text", adjust: true, sort: "int"},
+                        {id: "script_id", editor: "select", options: "/admin/datascript/options", header: "函数脚本", adjust: true, sort: "string"},
+                        {id: "remark", header: ["备注"], editor: "text", sort: "string", fillspace: true},
                         {header: {content: "headerMenu"}, headermenu: false, width: 35}
                     ],
                     rightSplit: 1,
-                    pager: true
-                }),
-                wxui.getTableFooterBar({
-                    tableid: tableid,
-                    actions: [],
-                    callback: reloadData
+                    pager: false
                 }),
             ]
         })

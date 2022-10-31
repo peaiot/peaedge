@@ -65,14 +65,14 @@ type ModbusReg struct {
 	Id         string    `json:"id" csv:"id" form:"id"`
 	DeviceId   string    `json:"device_id" csv:"device_id" form:"device_id"`
 	Oid        string    `json:"oid" csv:"oid" form:"oid"`
-	Name       string    `json:"name" csv:"name" form:"name"`
 	RegType    string    `json:"reg_type" csv:"reg_type" form:"reg_type"`
 	StartAddr  int       `json:"start_addr" csv:"start_addr" form:"start_addr"`
-	DataLen    int       `json:"data_len" csv:"data_len" form:"data_len"`
 	AccessType string    `json:"access_type" csv:"access_type" form:"access_type"`
 	Rtd        string    `json:"rtd" csv:"rtd" form:"rtd"`
 	Flag       string    `json:"flag" csv:"flag" form:"flag"`
 	VarId      string    `json:"var_id" csv:"var_id" form:"var_id"`
+	DataType   string    `json:"data_type" csv:"data_type" form:"data_type"`
+	ByteOrder  string    `json:"byte_order" csv:"byte_order" form:"byte_order"`
 	LastUpdate time.Time `json:"last_update" csv:"last_update"`
 	ErrTimes   int       `json:"err_times" form:"err_times"`
 	LastError  string    `json:"last_error" form:"last_error"`
@@ -84,18 +84,15 @@ type ModbusReg struct {
 
 // ModbusVar 变量定义
 type ModbusVar struct {
-	Id            string    `json:"id" csv:"id" form:"id"`
-	Name          string    `json:"name" csv:"name" form:"name"`
-	Oid           string    `json:"oid" csv:"oid" form:"oid"`
-	DataType      string    `json:"data_type" csv:"data_type" form:"data_type"`
-	Unit          string    `json:"unit" csv:"unit" form:"unit"`
-	ByteOrder     string    `json:"byte_order" csv:"byte_order" form:"byte_order"`
-	ScriptId      string    `json:"script_id" csv:"script_id" form:"script_id"`
-	DataFactor    string    `json:"data_factor" csv:"data_factor" form:"data_factor"`
-	ChannelStatus string    `json:"channel_status" csv:"channel_status" form:"channel_status"`
-	Remark        string    `json:"remark" csv:"remark" form:"remark"`
-	CreatedAt     time.Time `json:"created_at"`
-	UpdatedAt     time.Time `json:"updated_at" `
+	Id         string    `json:"id" csv:"id" form:"id"`
+	Name       string    `json:"name" csv:"name" form:"name"`
+	Oid        string    `json:"oid" csv:"oid" form:"oid"`
+	Unit       string    `json:"unit" csv:"unit" form:"unit"`
+	ScriptId   string    `json:"script_id" csv:"script_id" form:"script_id"`
+	DataFactor string    `json:"data_factor" csv:"data_factor" form:"data_factor"`
+	Remark     string    `json:"remark" csv:"remark" form:"remark"`
+	CreatedAt  time.Time `json:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at" `
 }
 
 type ModbusVarTpl struct {
