@@ -164,7 +164,7 @@
                         {header: {content: "headerMenu"}, headermenu: false, width: 35}
                     ],
                     rightSplit: 1,
-                    pager: true,
+                    pager: false,
                     on: {
                         onItemDblClick: function (id, e, node) {
                             openDetail(this.getItem(id))
@@ -175,11 +175,6 @@
                             openDetail(this.getItem(id))
                         },
                     },
-                }),
-                wxui.getTableFooterBar({
-                    tableid: tableid,
-                    callback: reloadData,
-                    actions: [],
                 }),
             ]
         })

@@ -3,6 +3,7 @@ package webserver
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/labstack/echo/v4"
@@ -127,7 +128,7 @@ func (s *WebServer) ModbusMetricsLineData(c echo.Context) error {
 	var items []metricLineItem
 	for _, reg := range regs {
 		item := metricLineItem{
-			Name:   string(reg.Name),
+			Name:   strconv.Itoa(reg.StartAddr),
 			Values: make([][]interface{}, 0),
 		}
 		points, _ := app.TsDB().Select(

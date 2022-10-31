@@ -194,11 +194,16 @@
                                             template: "{common.checkbox()}"
                                         },
                                         {
-                                            id: "detail", header: [""], adjust: true,
+                                            id: "detail", header: [""], adjust: true, headermenu: false,
                                             template: "<a class='do_detail' href='javascript:void(0)'>详情</a>"
                                         },
                                         {
-                                            id: "name", header: ["名称"], fillspace: true, editor: "text", sort: "string"
+                                            id: "var_id",
+                                            header: "变量",
+                                            editor: "select",
+                                            options: "/admin/modbus/var/options",
+                                            adjust: true,
+                                            sort: "string"
                                         },
                                         {
                                             id: "reg_type",
@@ -209,16 +214,17 @@
                                             sort: "string"
                                         },
                                         {id: "start_addr", header: "地址", editor: "text", adjust: true, sort: "int"},
-                                        {id: "data_len", header: "长度", editor: "text", adjust: true, sort: "int"},
+                                        {id: "data_type", header: "数据类型", editor: "select", options: "/admin/datatype/options", adjust: true, sort: "string"},
                                         {id: "access_type", header: "读写", editor: "text", adjust: true, sort: "string"},
                                         {
-                                            id: "var_id",
-                                            header: "变量",
+                                            id: "byte_order",
+                                            header: "字节序",
                                             editor: "select",
-                                            options: "/admin/modbus/var/options",
+                                            options: "/admin/byteorder/options",
                                             adjust: true,
                                             sort: "string"
                                         },
+                                        {id: "rtd", header: ["实时数据"], sort: "string", adjust: true},
                                         {
                                             id: "status",
                                             editor: "select",
@@ -227,17 +233,12 @@
                                             adjust: true,
                                             sort: "string"
                                         },
-                                        {id: "rtd", header: ["实时数据"], sort: "string", adjust: true},
                                         {id: "remark", header: ["备注"], editor: "text", sort: "string", hidden: true},
+                                        {id: "null", header: [""],  headermenu: false, fillspace:true},
                                         {header: {content: "headerMenu"}, headermenu: false, width: 35}
                                     ],
                                     rightSplit: 1,
-                                    pager: true
-                                }),
-                                wxui.getTableFooterBar({
-                                    tableid: tableid,
-                                    actions: [],
-                                    callback: reloadData
+                                    pager: false
                                 }),
                             ]
                         },
