@@ -1,3 +1,3 @@
-id,device_id,name,reg_type,start_addr,data_len,intervals,byte_order,access_type,data,var_id,status,remark
-1000,1,总烃,HoldingRegister,0,1,100,BigEndian,R,2.13,10000,enabled,N/A
-1001,1,温度,HoldingRegister,1,1,100,BigEndian,R,18,10011,enabled,N/A
+id,device_id,name,reg_type,start_addr,data_len,data_type,intervals,byte_order,access_type,data,var_id,status,remark
+1000,1,总烃,HoldingRegister,0,1,uint16,100,BigEndian,R,2.13,10000,enabled,N/A
+1001,1,温度,HoldingRegister,1,1,uint16,100,BigEndian,R,18,10011,enabled,N/A

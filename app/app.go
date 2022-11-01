@@ -148,11 +148,6 @@ func Migrate(track bool) (err error) {
 	return nil
 }
 
-func Initdb() {
-	_ = gormDB.Migrator().DropTable(models.Tables...)
-	_ = gormDB.Migrator().AutoMigrate(models.Tables...)
-}
-
 func Config() *config.AppConfig {
 	return appConfig
 }

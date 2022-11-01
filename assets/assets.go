@@ -27,3 +27,9 @@ var OprMenudata []byte
 
 //go:embed funcs
 var LuaFuncs embed.FS
+
+//go:embed funcs/HandlerModbusData.lua
+var HandlerModbusData string
+
+//go:embed funcs/HandlerDataStream.lua
+var HandlerDataStream string

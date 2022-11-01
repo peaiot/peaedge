@@ -1,3 +1,3 @@
 id,name,register,reg_type,length,value,remark
-1,"温度",1,"HoldingRegister",1,"000f","温度寄存器"
+1,"温度",1,HoldingRegister,1,"000f","温度寄存器"
 2,总烃,0,HoldingRegister,1,0400,总烃寄存器

@@ -35,7 +35,8 @@ var (
 	x         = flag.Bool("x", false, "debug pprof mode")
 	showVer   = flag.Bool("v", false, "show version")
 	conffile  = flag.String("c", "", "config yml file")
-	initdb    = flag.Bool("initdb", false, "run initdb")
+	initdb    = flag.Bool("initdb", false, "initdb")
+	inittest  = flag.Bool("init-test", false, "init test data")
 	install   = flag.Bool("install", false, "run install")
 	uninstall = flag.Bool("uninstall", false, "run uninstall")
 	initcfg   = flag.Bool("initcfg", false, "write default config > /etc/peaedge.yml")
@@ -124,6 +125,12 @@ func main() {
 		return
 	}
 
+	if *inittest {
+		app.Init(_config)
+		app.InitTestData()
+		return
+	}
+
 	// 根据依赖关系按顺序进行初始化
 	// 1-应用全局初始化
 	app.Init(_config)
@@ -131,7 +138,7 @@ func main() {
 	// 2-任务调度初始化
 	jobs.Init()
 	defer app.OnExit()
-	
+
 	if err := mqttc.StartAll(); err != nil {
 		log.Error(err)
 	}

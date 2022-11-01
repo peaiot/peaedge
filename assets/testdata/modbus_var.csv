@@ -1,3 +1,3 @@
-id,name,data_type,unit,byte_order,script_id,data_factor,channel_status,remark
-10000,总烃,uint16,mg/m3,BigEndian,bm3wnhieckryy,a24087,enabled,N/A
-10011,温度,uint16,C,BigEndian,,a05002,enabled,N/A
+id,name,data_type,unit,script_id,data_factor,remark
+10000,总烃,uint16,mg/m3,1000001,a24087,N/A
+10011,温度,uint16,C,,a05002,N/A
