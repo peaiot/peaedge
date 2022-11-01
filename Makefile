@@ -25,9 +25,9 @@ buildpre:
 	echo "CommitSubject=${COMMIT_SUBJECT}" >> assets/build.txt
 
 build:
-	buildpre
 	go generate
-	CGO_ENABLED=0 go build -a -ldflags \
+	make buildpre
+	CGO_ENABLED=1 go build --tags "libsqlite3 darwin" -a -ldflags \
 	'\
 	-X "main.BuildVersion=${BUILD_VERSION}"\
 	-X "main.ReleaseVersion=${RELEASE_VERSION}"\
@@ -37,7 +37,6 @@ build:
 	-X "main.CommitDate=${COMMIT_DATE}"\
 	-X "main.CommitUser=${COMMIT_USER}"\
 	-X "main.CommitSubject=${COMMIT_SUBJECT}"\
-	-s -w -extldflags "-static"\
 	' \
     -o ${BUILD_NAME} ${SOURCE}
 
