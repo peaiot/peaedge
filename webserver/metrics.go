@@ -3,13 +3,16 @@ package webserver
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/host"
 	"github.com/shirou/gopsutil/mem"
+	"github.com/shirou/gopsutil/process"
 	"github.com/toughstruct/peaedge/app"
 	"github.com/toughstruct/peaedge/common"
 	"github.com/toughstruct/peaedge/models"
@@ -27,8 +30,11 @@ func NewMetrics(icon string, value interface{}, title string) *Metrics {
 
 func (s *WebServer) initMetricsRouters() {
 	s.get("/admin/metrics/system/cpuusage", s.MetricsCpuusage)
+	s.get("/admin/metrics/system/main/cpuusage", s.MetricsMainCpuusage)
 	s.get("/admin/metrics/system/memusage", s.MetricsMemusage)
+	s.get("/admin/metrics/system/main/memusage", s.MetricsMainMemusage)
 	s.get("/admin/metrics/system/uptime", s.MetricsUptime)
+	s.get("/admin/metrics/system/procnum", s.MetricsProcNum)
 	s.get("/admin/metrics/modbus/:name/count", s.ModbusCounter)
 	s.get("/admin/metrics/modbus/line", s.ModbusMetricsLine)
 	s.get("/admin/metrics/modbus/linedata", s.ModbusMetricsLineData)
@@ -46,7 +52,33 @@ func (s *WebServer) MetricsCpuusage(c echo.Context) error {
 	return c.Render(http.StatusOK, "metrics",
 		NewMetrics("mdi mdi-circle-slice-2",
 			fmt.Sprintf("%.2f%%", _cpuuse[0]),
-			fmt.Sprintf("Cpu %d Core", _cpucount)))
+			fmt.Sprintf("系统Cpu负载 (%d Core)", _cpucount)))
+}
+
+// MetricsMainCpuusage /admin/metrics/system/main/cpuusage
+func (s *WebServer) MetricsMainCpuusage(c echo.Context) error {
+	var cpuuse float64
+	p, err := process.NewProcess(int32(os.Getpid()))
+	if err != nil {
+		cpuuse, _ = p.CPUPercent()
+	}
+	return c.Render(http.StatusOK, "metrics",
+		NewMetrics("mdi mdi-circle-slice-2", fmt.Sprintf("%.2f%%", cpuuse), "主程序Cpu负载"))
+}
+
+// MetricsMainMemusage /admin/metrics/system/main/memusage
+func (s *WebServer) MetricsMainMemusage(c echo.Context) error {
+	var memuse uint64
+	p, err := process.NewProcess(int32(os.Getpid()))
+	if err == nil {
+		meminfo, err := p.MemoryInfo()
+		if err == nil {
+			memuse = meminfo.RSS / 1024 / 1024
+		}
+	}
+
+	return c.Render(http.StatusOK, "metrics",
+		NewMetrics("mdi mdi-memory", fmt.Sprintf("%d MB", memuse), "主程序内存使用"))
 }
 
 // MetricsMemusage /admin/metrics/system/memusage
@@ -60,7 +92,7 @@ func (s *WebServer) MetricsMemusage(c echo.Context) error {
 	}
 	return c.Render(http.StatusOK, "metrics",
 		NewMetrics("mdi mdi-memory", fmt.Sprintf("%.2f%%", _usage),
-			fmt.Sprintf("Memory Total: %d G", _total)))
+			fmt.Sprintf("系统内存占用 (总内存: %d G)", _total)))
 }
 
 // MetricsUptime /admin/metrics/system/uptime
@@ -73,7 +105,36 @@ func (s *WebServer) MetricsUptime(c echo.Context) error {
 	return c.Render(http.StatusOK, "metrics",
 		NewMetrics("mdi mdi-clock",
 			fmt.Sprintf("%.1f Hour",
-				float64(_hour)/float64(3600)), "运行时长"))
+				float64(_hour)/float64(3600)), "系统运行时长"))
+}
+
+var procnumLock = sync.Mutex{}
+
+// MetricsProcNum /admin/metrics/system/procnum
+func (s *WebServer) MetricsProcNum(c echo.Context) error {
+	var pnum int
+	cpnum, err := app.Cache().Get([]byte("ProcessNum"))
+	if err != nil || cpnum == nil {
+		go func() {
+			procnumLock.Lock()
+			defer procnumLock.Unlock()
+			ps, err := process.Processes()
+			if err == nil {
+				pnum = len(ps)
+				if pnum > 0 {
+					bs := []byte(strconv.Itoa(pnum))
+					app.Cache().Set([]byte("ProcessNum"), bs, 60)
+				}
+			}
+		}()
+		return c.Render(http.StatusOK, "metrics",
+			NewMetrics("mdi mdi-cogs", "reading ...", "系统进程数"))
+	} else {
+		pnum, _ = strconv.Atoi(string(cpnum))
+	}
+
+	return c.Render(http.StatusOK, "metrics",
+		NewMetrics("mdi mdi-cogs", fmt.Sprintf("%d", pnum), "系统进程数"))
 }
 
 func (s *WebServer) ModbusCounter(c echo.Context) error {

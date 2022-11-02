@@ -6,6 +6,7 @@ require (
 	github.com/360EntSecGroup-Skylar/excelize v1.4.1
 	github.com/asaskevich/EventBus v0.0.0-20200907212545-49d423059eef
 	github.com/bwmarrin/snowflake v0.3.0
+	github.com/coocood/freecache v1.2.3
 	github.com/denisbrodbeck/machineid v1.0.1
 	github.com/dpapathanasiou/go-modbus v0.0.0-20200626124227-44739634e73d
 	github.com/eclipse/paho.mqtt.golang v1.4.1
@@ -13,6 +14,7 @@ require (
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/goburrow/modbus v0.1.0
 	github.com/goburrow/serial v0.1.0
+	github.com/gocarina/gocsv v0.0.0-20220927221512-ad3251f9fa25
 	github.com/golang-jwt/jwt/v4 v4.4.2
 	github.com/gorilla/sessions v1.2.1
 	github.com/guonaihong/gout v0.3.1
@@ -52,7 +54,6 @@ require (
 	github.com/go-playground/locales v0.13.0 // indirect
 	github.com/go-playground/universal-translator v0.17.0 // indirect
 	github.com/go-playground/validator/v10 v10.4.1 // indirect
-	github.com/gocarina/gocsv v0.0.0-20220927221512-ad3251f9fa25 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/gorilla/context v1.1.1 // indirect

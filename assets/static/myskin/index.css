@@ -768,20 +768,22 @@ button {
 
 .webix_template .widget-metrics .icon {
     float: left;
-    font-size: 4em;
-    color: #eeeeee;
+    font-size: 45px;
+    color: rgba(238, 238, 238, 0.89);
     height: 40px;
     padding-left: 10px;
     padding-top: 10px;
 }
 
 .webix_template .widget-metrics .value {
-    font-size: 16px;
+    font-size: 18px;
+    font-weight: 600;
     color: #eeeeee;
 }
 
 .webix_template .widget-metrics .title {
     font-size: 14px;
+    font-weight: 400;
     color: #eeeeee;
     padding-top: 5px;
 }

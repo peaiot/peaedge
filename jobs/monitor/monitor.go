@@ -25,7 +25,7 @@ func ProcessMonitorTask() {
 		return
 	}
 
-	cpuuse, _ := p.CPUPercent()
+	cpuuse, err := p.CPUPercent()
 	if err != nil {
 		cpuuse = 0
 	}
