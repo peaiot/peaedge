@@ -23,6 +23,8 @@ PeaEdge是一个物联网边缘网关软件，可以运行在各种支持Linux�
 
 参见 [GNU LESSER GENERAL PUBLIC LICENSE](LICENSE)
 
+- [安装说明]()
+
 ## 贡献
 
 我们欢迎任何形式的贡献，包括但不限于问题、拉动请求、文档、例子等。

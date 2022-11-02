@@ -8,6 +8,7 @@ import (
 	"time"
 
 	evbus "github.com/asaskevich/EventBus"
+	"github.com/coocood/freecache"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/nakabonne/tstorage"
 	"github.com/peaiot/logging"
@@ -30,7 +31,7 @@ var (
 	evBus     evbus.Bus
 	mbTcpPool *modbus.TcpTransporterPool
 	mbRtuPool *modbus.RtuTransporterPool
-	// cache  *freecache.Cache
+	cache     *freecache.Cache
 )
 
 // Init Global initialization call
@@ -40,7 +41,7 @@ func Init(cfg *config.AppConfig) {
 	setupTimeZone()
 	setupLogger()
 	setupTsStorage()
-	// Cache = freecache.NewCache(32 * 1024 * 1024)
+	cache = freecache.NewCache(1024 * 1024)
 	var err error
 	gormDB, err = getGormDB()
 	common.Must(err)
@@ -161,6 +162,10 @@ func EvBUS() evbus.Bus {
 
 func TsDB() tstorage.Storage {
 	return tsdb
+}
+
+func Cache() *freecache.Cache {
+	return cache
 }
 
 func IsDebug() bool {
